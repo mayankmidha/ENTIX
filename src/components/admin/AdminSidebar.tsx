@@ -1,13 +1,13 @@
 'use client';
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Home, ShoppingBag, Package, LayoutGrid, Boxes, Users, 
   BarChart3, BadgePercent,
-  Settings, LogOut, Link2, Sparkles, ShieldCheck,
+  Settings, LogOut, Link2, Menu, X, Search, PanelLeft,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 
 const groups = [
   {
@@ -43,68 +43,136 @@ const groups = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <aside className="hidden w-64 shrink-0 border-r border-ink/10 bg-ivory/60 px-5 py-10 backdrop-blur lg:block lg:h-screen lg:sticky lg:top-0">
-      <Link href="/admin" className="block font-display text-[22px] font-medium tracking-logo text-ink">
-        ENTIX<span className="ml-2 font-mono text-[10px] tracking-caps text-ink/50">· ADMIN</span>
-      </Link>
-
-      <div className="mt-7 rounded-[28px] border border-ink/6 bg-white/75 p-4 shadow-sm">
-        <div className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.22em] text-ink/36">
-          <Sparkles size={12} className="text-champagne-700" />
-          Merchant operating mode
-        </div>
-        <div className="mt-3 font-display text-[24px] font-light tracking-display text-ink">
-          Jewellery-first.
-        </div>
-        <div className="mt-2 text-[12px] leading-relaxed text-ink/52">
-          Merchandising, fulfilment, cataloguing, and trust cues built for high-consideration purchases.
-        </div>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-jade/10 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-jade">
-          <ShieldCheck size={11} />
-          Internal launch surface
-        </div>
-      </div>
-
-      <div className="mt-10 space-y-8">
-        {groups.map((group, gIndex) => (
-          <div key={gIndex}>
-            {group.label && (
-              <div className="px-4 pb-2 font-mono text-[9px] uppercase tracking-[0.25em] text-ink/40">
-                {group.label}
-              </div>
-            )}
-            <nav className="grid gap-1">
-              {group.items.map((item) => {
-                const active = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href) && item.href !== '/';
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      'group relative flex items-center gap-3 rounded-full px-4 py-2.5 font-mono text-[11px] uppercase tracking-caps transition-all duration-300',
-                      active ? 'text-ivory bg-ink shadow-md' : 'text-ink/64 hover:bg-ink/5 hover:text-ink'
-                    )}
-                  >
-                    <Icon size={14} className={cn(active ? 'text-champagne-300' : 'text-ink/40')} />
-                    <span className="relative z-10">{item.label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
+    <>
+      <div className="fixed inset-x-0 top-0 z-50 border-b border-ink/10 bg-[#f6f4ef]/94 px-4 py-3 backdrop-blur-xl lg:hidden">
+        <div className="flex items-center justify-between">
+          <Link href="/admin" className="font-display text-[20px] font-medium tracking-logo text-ink">
+            ENTIX
+          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/admin/products" aria-label="Search products" className="flex h-10 w-10 items-center justify-center border border-ink/10 bg-white text-ink/55">
+              <Search size={17} />
+            </Link>
+            <button
+              type="button"
+              aria-label="Open admin navigation"
+              onClick={() => setMobileOpen(true)}
+              className="flex h-10 w-10 items-center justify-center bg-ink text-ivory"
+            >
+              <Menu size={18} />
+            </button>
           </div>
-        ))}
+        </div>
       </div>
 
-      <div className="absolute bottom-10 left-5 right-5 border-t border-ink/10 pt-6">
+      {mobileOpen && (
+        <div className="fixed inset-0 z-[80] lg:hidden">
+          <button
+            type="button"
+            aria-label="Close admin navigation"
+            className="absolute inset-0 bg-ink/45"
+            onClick={() => setMobileOpen(false)}
+          />
+          <div className="absolute inset-y-0 left-0 flex w-[min(88vw,320px)] flex-col border-r border-ink/10 bg-[#f6f4ef] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-ink/10 px-5 py-4">
+              <div>
+                <Link href="/admin" onClick={() => setMobileOpen(false)} className="font-display text-[20px] font-medium tracking-logo text-ink">
+                  ENTIX
+                </Link>
+                <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.2em] text-ink/38">Admin console</div>
+              </div>
+              <button className="flex h-10 w-10 items-center justify-center border border-ink/10 bg-white text-ink/55" onClick={() => setMobileOpen(false)}>
+                <X size={18} />
+              </button>
+            </div>
+            <SidebarNav pathname={pathname} onNavigate={() => setMobileOpen(false)} />
+          </div>
+        </div>
+      )}
+
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[280px] border-r border-ink/10 bg-[#f6f4ef] lg:flex lg:flex-col">
+        <div className="border-b border-ink/10 px-6 py-5">
+          <Link href="/admin" className="flex items-center justify-between">
+            <span className="font-display text-[22px] font-medium tracking-logo text-ink">ENTIX</span>
+            <span className="flex h-9 w-9 items-center justify-center border border-ink/10 bg-white text-ink/45">
+              <PanelLeft size={16} />
+            </span>
+          </Link>
+          <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.22em] text-ink/38">Commerce console</div>
+        </div>
+        <SidebarNav pathname={pathname} />
+      </aside>
+    </>
+  );
+}
+
+function SidebarNav({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5">
+        <div className="mb-5 border border-ink/8 bg-white p-3">
+          <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink/35">Today</div>
+          <div className="mt-2 grid grid-cols-3 gap-2 text-center">
+            <Mini label="Orders" value="Live" />
+            <Mini label="Stock" value="Risk" />
+            <Mini label="Launch" value="Ready" />
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          {groups.map((group, gIndex) => (
+            <div key={gIndex}>
+              {group.label && (
+                <div className="px-2 pb-2 font-mono text-[9px] uppercase tracking-[0.22em] text-ink/35">
+                  {group.label}
+                </div>
+              )}
+              <nav className="grid gap-1">
+                {group.items.map((item) => {
+                  const active = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href) && item.href !== '/';
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={onNavigate}
+                      className={cn(
+                        'group flex min-h-11 items-center gap-3 border px-3 py-2.5 font-mono text-[11px] uppercase tracking-[0.13em] transition-colors',
+                        active
+                          ? 'border-ink bg-ink text-ivory'
+                          : 'border-transparent text-ink/62 hover:border-ink/10 hover:bg-white hover:text-ink'
+                      )}
+                    >
+                      <Icon size={15} className={cn(active ? 'text-champagne-300' : 'text-ink/38 group-hover:text-ink/60')} />
+                      <span className="truncate">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="border-t border-ink/10 p-4">
         <form action="/api/admin/logout" method="post">
-          <button className="flex w-full items-center gap-3 rounded-full px-4 py-2 font-mono text-[11px] uppercase tracking-caps text-ink/60 transition hover:bg-oxblood/5 hover:text-oxblood">
-            <LogOut size={14} /> Sign out
+          <button className="flex w-full items-center gap-3 border border-transparent px-3 py-2.5 font-mono text-[11px] uppercase tracking-[0.13em] text-ink/55 transition hover:border-oxblood/10 hover:bg-white hover:text-oxblood">
+            <LogOut size={15} /> Sign out
           </button>
         </form>
       </div>
-    </aside>
+    </div>
+  );
+}
+
+function Mini({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="bg-[#f6f4ef] px-2 py-2">
+      <div className="font-display text-[15px] leading-none text-ink">{value}</div>
+      <div className="mt-1 truncate font-mono text-[8px] uppercase tracking-[0.12em] text-ink/35">{label}</div>
+    </div>
   );
 }

@@ -1,8 +1,24 @@
 import { prisma } from '@/lib/prisma';
 import { formatInr } from '@/lib/utils';
-import { 
-  ShoppingBag, Users, Box, 
-  TrendingUp, Clock, Gem, Truck, MessageCircle, Camera, BadgeCheck, FileText, Search, Settings, ShieldCheck
+import {
+  AlertTriangle,
+  ArrowUpRight,
+  BadgeCheck,
+  BarChart3,
+  Box,
+  Camera,
+  CheckCircle2,
+  Clock,
+  FileText,
+  Package,
+  PackageCheck,
+  Search,
+  Settings,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkles,
+  TrendingUp,
+  Users,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -14,6 +30,7 @@ const PREVIEW_RECENT_ORDERS = [
     orderNumber: 'ENTIX-2401',
     shippingName: 'Nupur Khanna',
     totalInr: 18499,
+    status: 'paid',
     createdAt: new Date(),
     items: [{ imageUrl: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=400&q=80' }],
   },
@@ -22,6 +39,7 @@ const PREVIEW_RECENT_ORDERS = [
     orderNumber: 'ENTIX-2402',
     shippingName: 'Chahat Kapoor',
     totalInr: 12499,
+    status: 'processing',
     createdAt: new Date(Date.now() - 1000 * 60 * 42),
     items: [{ imageUrl: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=400&q=80' }],
   },
@@ -30,6 +48,7 @@ const PREVIEW_RECENT_ORDERS = [
     orderNumber: 'ENTIX-2403',
     shippingName: 'Aarohi Mehta',
     totalInr: 9499,
+    status: 'shipped',
     createdAt: new Date(Date.now() - 1000 * 60 * 78),
     items: [{ imageUrl: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=400&q=80' }],
   },
@@ -82,15 +101,15 @@ async function getMetrics() {
       prisma.product.count(),
       prisma.order.aggregate({
         _sum: { totalInr: true },
-        where: { paymentStatus: 'captured' }
+        where: { paymentStatus: 'captured' },
       }),
       prisma.order.findMany({
-        take: 5,
+        take: 6,
         orderBy: { createdAt: 'desc' },
-        include: { items: { take: 1 } }
+        include: { items: { take: 1 } },
       }),
       prisma.inventoryItem.count({
-        where: { stockQty: { lte: 3 } }
+        where: { stockQty: { lte: 3 } },
       }),
       prisma.collection.count({ where: { isActive: true } }),
       prisma.product.count({ where: { isActive: true, images: { none: {} } } }),
@@ -127,310 +146,256 @@ async function getMetrics() {
       isPreview: false,
     };
   } catch (error) {
-    console.error("Dashboard metrics error:", error);
+    console.error('Dashboard metrics error:', error);
     return createPreviewMetrics();
   }
 }
 
 export default async function AdminDashboard() {
   const m = await getMetrics();
+  const catalogueProgress = Math.min(Math.round((m.productsCount / 300) * 100), 100);
+  const issueCount = m.lowStockCount + m.productsMissingImages + m.reviewQueue;
 
   return (
-    <div className="max-w-7xl">
-      <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+    <div className="mx-auto max-w-[1520px]">
+      <header className="grid gap-4 border-b border-ink/10 pb-5 xl:grid-cols-[1fr_420px] xl:items-end">
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink/40">Jewellery Operating System</div>
-          <h1 className="font-display mt-4 text-[56px] font-light leading-tight tracking-display">
-            Entix <span className="font-display-italic text-champagne-600">Command.</span>
-          </h1>
-          <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-ink/45">
-            A jewellery-first backend for catalogue preparation, high-value orders, inventory risk,
-            reviews, concierge conversations, and fulfilment readiness.
+          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink/38">Entix admin</div>
+          <div className="mt-3 flex flex-wrap items-end gap-x-4 gap-y-2">
+            <h1 className="font-display text-[34px] font-medium leading-none tracking-normal text-ink sm:text-[42px]">
+              Operations Dashboard
+            </h1>
+            <StatusBadge tone={m.isPreview ? 'warn' : 'good'} label={m.isPreview ? 'Preview data' : 'Live data'} />
+          </div>
+          <p className="mt-3 max-w-3xl text-[14px] leading-relaxed text-ink/55">
+            Monitor order flow, catalogue readiness, stock risk, and launch configuration from one working surface.
           </p>
         </div>
-        <div className="text-left lg:pb-2 lg:text-right">
-          <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 ${m.isPreview ? 'bg-champagne-100 text-champagne-900' : 'bg-jade/10 text-jade'}`}>
-            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
-            <span className="font-mono text-[11px] font-medium uppercase tracking-caps">{m.isPreview ? 'Preview Mode' : 'Internal Launch Ready'}</span>
-          </div>
-        </div>
-      </div>
 
-      {m.isPreview && (
-        <section className="mt-8 rounded-[32px] border border-champagne-200 bg-gradient-to-r from-champagne-50 via-white to-ivory p-5 shadow-sm">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne-900/60">Admin preview</div>
-              <p className="mt-2 max-w-3xl text-[13px] leading-relaxed text-ink/55">
-                The live database is not responding in production yet, so this control room is rendering curated launch-preview metrics instead of breaking.
-              </p>
-            </div>
-            <Link href="/admin/settings" className="inline-flex items-center justify-center rounded-full border border-ink/10 bg-white px-5 py-3 font-mono text-[10px] uppercase tracking-[0.18em] text-ink transition-colors hover:border-ink/20">
-              Review launch settings
-            </Link>
-          </div>
-        </section>
-      )}
+        <form action="/admin/products" className="relative">
+          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/28" />
+          <input
+            name="q"
+            placeholder="Search product, SKU, customer, order"
+            className="h-12 w-full border border-ink/10 bg-white pl-11 pr-4 font-mono text-[12px] uppercase tracking-[0.11em] text-ink outline-none placeholder:text-ink/28 focus:border-ink/35"
+          />
+        </form>
+      </header>
 
-      <div className="mt-10 grid gap-4 lg:grid-cols-4">
-        <LaunchCard icon={Camera} label="Catalogue runway" value={`${m.productsCount}/300`} text={`${Math.max(300 - m.productsCount, 0)} real products left for final import`} href="/admin/products" />
-        <LaunchCard icon={Gem} label="Collections live" value={m.activeCollections.toString()} text="Shop-ready merchandising surfaces" href="/admin/collections" />
-        <LaunchCard icon={Truck} label="Orders in motion" value={m.pendingOrders.toString()} text="Paid or processing orders needing fulfilment" href="/admin/orders" />
-        <LaunchCard icon={MessageCircle} label="Review queue" value={m.reviewQueue.toString()} text="Customer proof awaiting approval" href="/admin/reviews" />
-      </div>
-
-      <section className="mt-6 rounded-[36px] border border-ink/5 bg-white p-5 shadow-sm lg:p-6">
-        <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr_0.9fr]">
-          <form action="/admin/products" className="relative">
-            <Search size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-ink/25" />
-            <input
-              name="q"
-              placeholder="Search SKU, product, order, customer..."
-              className="h-full min-h-16 w-full rounded-[24px] bg-ivory-2 px-12 font-mono text-[12px] uppercase tracking-[0.12em] text-ink outline-none placeholder:text-ink/25 focus:ring-1 focus:ring-ink/15"
-            />
-          </form>
-          <div className="grid grid-cols-3 gap-3">
-            <PipelinePill label="Paid" value={m.paidOrders} />
-            <PipelinePill label="Packing" value={m.processingOrders} />
-            <PipelinePill label="Shipped" value={m.shippedOrders} />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <QuickAction icon={FileText} label="Import 300" href="/admin/products/import" />
-            <QuickAction icon={Settings} label="Launch settings" href="/admin/settings" />
-          </div>
-        </div>
+      <section className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <Metric label="Revenue" value={formatInr(m.totalRevenue)} delta="+12%" icon={TrendingUp} />
+        <Metric label="Orders" value={m.ordersCount.toString()} delta={`${m.pendingOrders} active`} icon={ShoppingBag} />
+        <Metric label="AOV" value={formatInr(m.aov)} delta="30d" icon={BarChart3} />
+        <Metric label="Customers" value={m.customerCount.toString()} delta="collector base" icon={Users} />
       </section>
 
-      {/* Metrics Grid */}
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard label="Total Revenue" value={formatInr(m.totalRevenue)} trend="+12%" />
-        <MetricCard label="Total Orders"  value={m.ordersCount.toString()} trend="+5%" />
-        <MetricCard label="Avg. Order Value" value={formatInr(m.aov)} />
-        <MetricCard label="Active Collectors" value={m.customerCount.toString()} />
-      </div>
-
-      <div className="mt-12 grid gap-8 lg:grid-cols-3">
-        {/* Recent Activity Feed */}
-        <section className="lg:col-span-2">
-          <div className="flex items-center justify-between border-b border-ink/5 pb-5">
-            <h2 className="font-display text-[28px] font-medium tracking-display">Recent Acquisitions</h2>
-            <Link href="/admin/orders" className="font-mono text-[11px] uppercase tracking-caps text-ink/40 underline-draw">
-              View All Orders
-            </Link>
+      <section className="mt-5 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
+        <Panel title="Order Queue" action="View orders" href="/admin/orders">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Pipeline label="Paid" value={m.paidOrders} href="/admin/orders?status=paid" />
+            <Pipeline label="Packing" value={m.processingOrders} href="/admin/orders?status=processing" />
+            <Pipeline label="Shipped" value={m.shippedOrders} href="/admin/orders?status=shipped" />
           </div>
 
-          <div className="mt-6 space-y-1">
-            {m.recentOrders.map((order) => (
-              <Link 
-                key={order.id} 
-                href={`/admin/orders/${order.id}`}
-                className="group flex items-center justify-between rounded-[20px] p-4 transition-colors hover:bg-white hover:shadow-sm"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ivory-2 text-ink/20">
-                    {order.items[0]?.imageUrl ? (
-                      <img src={order.items[0].imageUrl} className="h-full w-full rounded-full object-cover grayscale transition-all group-hover:grayscale-0" alt="" />
-                    ) : <ShoppingBag size={20} />}
+          <div className="mt-5 overflow-hidden border border-ink/8 bg-white">
+            <div className="grid grid-cols-[1fr_88px_104px] border-b border-ink/8 bg-[#f6f4ef] px-4 py-3 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38 sm:grid-cols-[1fr_120px_120px_112px]">
+              <span>Order</span>
+              <span className="hidden sm:block">Status</span>
+              <span className="text-right">Value</span>
+              <span className="text-right">Time</span>
+            </div>
+            {m.recentOrders.length > 0 ? (
+              m.recentOrders.map((order: any) => (
+                <Link
+                  key={order.id}
+                  href={`/admin/orders/${order.id}`}
+                  className="grid grid-cols-[1fr_88px_104px] items-center gap-3 border-b border-ink/6 px-4 py-3 transition-colors last:border-b-0 hover:bg-[#fbfaf7] sm:grid-cols-[1fr_120px_120px_112px]"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="relative h-11 w-9 shrink-0 overflow-hidden border border-ink/8 bg-[#eee8de]">
+                      {order.items?.[0]?.imageUrl ? (
+                        <img src={order.items[0].imageUrl} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <Package size={15} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-ink/25" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="truncate font-mono text-[12px] font-medium text-ink">{order.orderNumber}</div>
+                      <div className="truncate text-[12px] text-ink/45">{order.shippingName}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="font-mono text-[13px] font-medium text-ink">{order.orderNumber}</div>
-                    <div className="font-mono text-[10px] uppercase tracking-caps text-ink/40">{order.shippingName}</div>
+                  <div className="hidden sm:block">
+                    <StatusBadge label={String(order.status || 'pending')} tone="neutral" />
                   </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-mono text-[14px] font-medium text-ink">{formatInr(order.totalInr)}</div>
-                  <div className="font-mono text-[9px] uppercase tracking-caps text-ink/30">
+                  <div className="text-right font-mono text-[12px] font-medium text-ink">{formatInr(order.totalInr)}</div>
+                  <div className="text-right font-mono text-[10px] uppercase tracking-[0.08em] text-ink/35">
                     {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
-                </div>
-              </Link>
-            ))}
-            {m.recentOrders.length === 0 && (
-              <div className="py-20 text-center font-display text-xl text-ink/20 italic">Awaiting your first collector...</div>
+                </Link>
+              ))
+            ) : (
+              <div className="px-4 py-10 text-center text-[13px] text-ink/35">No recent orders.</div>
             )}
           </div>
-        </section>
+        </Panel>
 
-        <aside className="space-y-8">
-          <div>
-            <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-4">Merchant Alerts</h3>
-            <div className="mt-6 space-y-4">
-              <div className="rounded-[24px] border border-ink/5 bg-white p-6">
-                <div className="flex items-start justify-between text-ink/40">
-                  <BadgeCheck size={18} />
-                  <span className="font-mono text-[10px] uppercase tracking-caps bg-jade/10 px-2 py-0.5 rounded-full text-jade">Launch</span>
-                </div>
-                <div className="mt-4 font-display text-[20px] font-medium text-ink">Dummy Data Preserved</div>
-                <p className="mt-2 text-[13px] leading-relaxed text-ink/50 italic">
-                  Demo products remain live until the 300-product final catalogue and photography are imported.
-                </p>
-                <Link href="/admin/products/import" className="mt-5 inline-block font-mono text-[10px] uppercase tracking-widest text-ink underline-draw">Prepare Import →</Link>
+        <Panel title="Risk & Readiness" action="Settings" href="/admin/settings">
+          <div className="grid gap-3">
+            <RiskItem icon={Camera} label="Products missing photos" value={m.productsMissingImages} tone={m.productsMissingImages > 0 ? 'bad' : 'good'} href="/admin/files" />
+            <RiskItem icon={Box} label="Low-stock pieces" value={m.lowStockCount} tone={m.lowStockCount > 0 ? 'warn' : 'good'} href="/admin/inventory" />
+            <RiskItem icon={BadgeCheck} label="Reviews pending" value={m.reviewQueue} tone={m.reviewQueue > 0 ? 'warn' : 'good'} href="/admin/reviews" />
+            <RiskItem icon={AlertTriangle} label="Open action count" value={issueCount} tone={issueCount > 0 ? 'bad' : 'good'} href="/admin" />
+          </div>
+        </Panel>
+      </section>
+
+      <section className="mt-5 grid gap-5 xl:grid-cols-[0.85fr_1.15fr]">
+        <Panel title="Catalogue Progress" action="Import" href="/admin/products/import">
+          <div className="grid gap-4 sm:grid-cols-[160px_1fr] sm:items-center">
+            <div className="border border-ink/8 bg-[#120f0d] p-5 text-ivory">
+              <div className="font-display text-[44px] leading-none">{catalogueProgress}%</div>
+              <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ivory/45">300-piece target</div>
+            </div>
+            <div>
+              <div className="h-2 bg-ink/8">
+                <div className="h-full bg-ink" style={{ width: `${catalogueProgress}%` }} />
               </div>
-
-              {m.productsMissingImages > 0 && (
-                <div className="rounded-[24px] border border-oxblood/10 bg-oxblood/5 p-6">
-                  <div className="flex items-start justify-between text-oxblood">
-                    <Camera size={18} />
-                    <span className="font-mono text-[10px] uppercase tracking-caps bg-white px-2 py-0.5 rounded-full">Images</span>
-                  </div>
-                  <div className="mt-4 font-display text-[20px] font-medium text-ink">{m.productsMissingImages} Pieces Missing Photos</div>
-                  <p className="mt-2 text-[13px] leading-relaxed text-ink/50 italic">Image completeness is the biggest luxury conversion lever.</p>
-                  <Link href="/admin/files" className="mt-5 inline-block font-mono text-[10px] uppercase tracking-widest text-oxblood underline-draw">Review Files →</Link>
-                </div>
-              )}
-
-              {m.lowStockCount > 0 && (
-                <div className="rounded-[24px] border border-champagne-100 bg-champagne-50/50 p-6">
-                  <div className="flex items-start justify-between text-champagne-800">
-                    <Box size={18} />
-                    <span className="font-mono text-[10px] uppercase tracking-caps bg-champagne-200 px-2 py-0.5 rounded-full">Inventory</span>
-                  </div>
-                  <div className="mt-4 font-display text-[20px] font-medium text-champagne-950">{m.lowStockCount} Pieces Low</div>
-                  <p className="mt-2 text-[13px] leading-relaxed text-champagne-900/60 italic">Your bestsellers are moving. Consider restocking the Gurgaon studio.</p>
-                  <Link href="/admin/inventory" className="mt-5 inline-block font-mono text-[10px] uppercase tracking-widest text-champagne-800 underline-draw">Restock Flow →</Link>
-                </div>
-              )}
-
-              <div className="rounded-[24px] border border-ink/5 bg-white p-6">
-                <div className="flex items-start justify-between text-ink/40">
-                  <Clock size={18} />
-                  <span className="font-mono text-[10px] uppercase tracking-caps bg-ink/5 px-2 py-0.5 rounded-full">Fulfillment</span>
-                </div>
-                <div className="mt-4 font-display text-[20px] font-medium text-ink">3 Orders Pending</div>
-                <p className="mt-2 text-[13px] leading-relaxed text-ink/50 italic">Items ready for insured global dispatch.</p>
-                <Link href="/admin/orders?status=paid" className="mt-5 inline-block font-mono text-[10px] uppercase tracking-widest text-ink underline-draw">Ship Items →</Link>
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                <MiniStat label="Products" value={m.productsCount} />
+                <MiniStat label="Collections" value={m.activeCollections} />
+                <MiniStat label="Discounts" value={m.activeDiscounts} />
               </div>
             </div>
           </div>
-        </aside>
-      </div>
+        </Panel>
 
-      <section className="mt-12 grid gap-6 lg:grid-cols-3">
-        <ReadinessPanel
-          title="Catalogue Quality"
-          items={[
-            [`${m.productsCount}/300 products`, m.productsCount >= 300],
-            [`${m.productsMissingImages} products missing photos`, m.productsMissingImages === 0],
-            [`${m.lowStockCount} low-stock alerts`, m.lowStockCount === 0],
-          ]}
-        />
-        <ReadinessPanel
-          title="Revenue Stack"
-          items={[
-            ['Razorpay keys configured', m.razorpayReady],
-            [`${m.activeDiscounts} active discounts`, m.activeDiscounts > 0],
-            ['Checkout + order capture routes live', true],
-          ]}
-        />
-        <ReadinessPanel
-          title="Client Handoff"
-          items={[
-            ['Production URL configured', m.baseUrlReady],
-            ['Email provider configured', m.resendReady],
-            ['Admin login protected', true],
-          ]}
-        />
+        <Panel title="Launch Systems" action="Configure" href="/admin/settings">
+          <div className="grid gap-3 md:grid-cols-3">
+            <SystemCheck icon={ShieldCheck} label="Payments" ok={m.razorpayReady} />
+            <SystemCheck icon={Sparkles} label="Email" ok={m.resendReady} />
+            <SystemCheck icon={PackageCheck} label="Base URL" ok={m.baseUrlReady} />
+          </div>
+          {m.isPreview && (
+            <div className="mt-4 border border-champagne-200 bg-champagne-50 p-4">
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-champagne-900/55">Preview mode</div>
+              <p className="mt-2 text-[13px] leading-relaxed text-ink/55">
+                Live database data is unavailable, so the dashboard is using launch-preview metrics instead of breaking.
+              </p>
+            </div>
+          )}
+        </Panel>
       </section>
 
-      <section className="mt-12 rounded-[40px] bg-ink p-8 text-ivory lg:p-10">
-        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-          <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-champagne-300">Today&apos;s operating focus</div>
-            <h2 className="mt-4 font-display text-[38px] font-light leading-tight tracking-display">
-              Finish catalogue readiness before the final photos arrive.
-            </h2>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            <CommandTask label="Catalogue" text="Keep dummy products live, then replace with the 300-piece final import." href="/admin/products/import" />
-            <CommandTask label="Photography" text="Audit missing or mismatched photos before the client review." href="/admin/files" />
-            <CommandTask label="Launch ops" text="Confirm payments, shipping, policies, and tracking before handoff." href="/admin/settings" />
-          </div>
-        </div>
+      <section className="mt-5 grid gap-3 md:grid-cols-3">
+        <QuickAction icon={FileText} label="Import catalogue" href="/admin/products/import" text="Upload or repair product data." />
+        <QuickAction icon={PackageCheck} label="Fulfil orders" href="/admin/orders" text="Move paid orders through dispatch." />
+        <QuickAction icon={Settings} label="Launch settings" href="/admin/settings" text="Payments, domains, policies, SEO." />
       </section>
     </div>
   );
 }
 
-function PipelinePill({ label, value }: { label: string; value: number }) {
+function Panel({ title, action, href, children }: { title: string; action: string; href: string; children: React.ReactNode }) {
   return (
-    <Link href="/admin/orders" className="rounded-[22px] bg-ivory-2 p-4 text-center transition-colors hover:bg-champagne-50">
-      <div className="font-display text-[28px] font-medium text-ink">{value}</div>
-      <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.18em] text-ink/35">{label}</div>
-    </Link>
+    <section className="border border-ink/8 bg-white p-4 shadow-sm sm:p-5">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 className="font-display text-[22px] font-medium tracking-normal text-ink">{title}</h2>
+        <Link href={href} className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-ink/45 hover:text-ink">
+          {action} <ArrowUpRight size={13} />
+        </Link>
+      </div>
+      {children}
+    </section>
   );
 }
 
-function QuickAction({ icon: Icon, label, href }: { icon: any; label: string; href: string }) {
+function Metric({ label, value, delta, icon: Icon }: { label: string; value: string; delta: string; icon: any }) {
   return (
-    <Link href={href} className="flex items-center justify-center gap-2 rounded-[22px] bg-ink px-4 py-5 font-mono text-[10px] uppercase tracking-[0.16em] text-ivory transition-colors hover:bg-ink-2">
-      <Icon size={14} />
-      {label}
-    </Link>
-  );
-}
-
-function LaunchCard({ icon: Icon, label, value, text, href }: { icon: any; label: string; value: string; text: string; href: string }) {
-  return (
-    <Link href={href} className="group rounded-[30px] border border-ink/5 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-ink/10 hover:shadow-luxe">
-      <div className="flex items-start justify-between">
-        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-ivory-2 text-ink/40 group-hover:bg-ink group-hover:text-ivory">
+    <div className="border border-ink/8 bg-white p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">{label}</div>
+          <div className="mt-3 font-display text-[28px] font-medium leading-none text-ink">{value}</div>
+        </div>
+        <span className="flex h-10 w-10 items-center justify-center border border-ink/8 bg-[#f6f4ef] text-ink/45">
           <Icon size={17} />
-        </div>
-        <div className="font-display text-[30px] font-medium tracking-display text-ink">{value}</div>
+        </span>
       </div>
-      <div className="mt-7 font-mono text-[10px] uppercase tracking-[0.2em] text-ink/40">{label}</div>
-      <p className="mt-3 text-[13px] leading-relaxed text-ink/50 italic">{text}</p>
-    </Link>
-  );
-}
-
-function MetricCard({ label, value, trend }: { label: string; value: string; trend?: string }) {
-  return (
-    <div className="group rounded-[32px] border border-ink/5 bg-white p-8 transition-all hover:border-ink/10 hover:shadow-luxe">
-      <div className="flex items-start justify-between">
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/40 group-hover:text-ink/60 transition-colors">{label}</span>
-        {trend && (
-          <div className="flex items-center gap-1 text-jade">
-            <TrendingUp size={12} />
-            <span className="font-mono text-[10px] font-bold tracking-tighter">{trend}</span>
-          </div>
-        )}
-      </div>
-      <div className="mt-6 font-display text-[32px] font-medium tracking-display text-ink">{value}</div>
+      <div className="mt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-jade">{delta}</div>
     </div>
   );
 }
 
-function ReadinessPanel({ title, items }: { title: string; items: [string, boolean][] }) {
-  const passed = items.filter(([, ok]) => ok).length;
-
+function Pipeline({ label, value, href }: { label: string; value: number; href: string }) {
   return (
-    <div className="rounded-[34px] border border-ink/5 bg-white p-7 shadow-sm">
+    <Link href={href} className="border border-ink/8 bg-[#f6f4ef] p-4 transition-colors hover:bg-champagne-50">
+      <div className="font-display text-[30px] font-medium leading-none text-ink">{value}</div>
+      <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/40">{label}</div>
+    </Link>
+  );
+}
+
+function RiskItem({ icon: Icon, label, value, tone, href }: { icon: any; label: string; value: number; tone: 'good' | 'warn' | 'bad'; href: string }) {
+  const toneClass = tone === 'good' ? 'text-jade bg-jade/10' : tone === 'warn' ? 'text-champagne-900 bg-champagne-100' : 'text-oxblood bg-oxblood/10';
+  return (
+    <Link href={href} className="grid grid-cols-[36px_1fr_44px] items-center gap-3 border border-ink/8 p-3 transition-colors hover:bg-[#fbfaf7]">
+      <span className="flex h-9 w-9 items-center justify-center bg-[#f6f4ef] text-ink/45">
+        <Icon size={16} />
+      </span>
+      <span className="text-[13px] text-ink/62">{label}</span>
+      <span className={`px-2 py-1 text-center font-mono text-[11px] font-medium ${toneClass}`}>{value}</span>
+    </Link>
+  );
+}
+
+function MiniStat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="border border-ink/8 p-3">
+      <div className="font-display text-[24px] leading-none text-ink">{value}</div>
+      <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-ink/35">{label}</div>
+    </div>
+  );
+}
+
+function SystemCheck({ icon: Icon, label, ok }: { icon: any; label: string; ok: boolean }) {
+  return (
+    <div className="border border-ink/8 p-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-display text-[24px] font-medium tracking-display text-ink">{title}</h3>
-        <div className="rounded-full bg-ivory-2 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-ink/45">
-          {passed}/{items.length}
-        </div>
+        <Icon size={17} className="text-ink/45" />
+        {ok ? <CheckCircle2 size={17} className="text-jade" /> : <Clock size={17} className="text-champagne-700" />}
       </div>
-      <div className="mt-7 space-y-4">
-        {items.map(([label, ok]) => (
-          <div key={label} className="flex items-center justify-between gap-4 border-b border-ink/5 pb-3 last:border-b-0 last:pb-0">
-            <span className="text-[13px] leading-relaxed text-ink/55">{label}</span>
-            <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full ${ok ? 'bg-jade/10 text-jade' : 'bg-champagne-100 text-champagne-800'}`}>
-              {ok ? <ShieldCheck size={14} /> : <Clock size={14} />}
-            </span>
-          </div>
-        ))}
-      </div>
+      <div className="mt-5 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">{label}</div>
+      <div className="mt-2 text-[13px] text-ink/60">{ok ? 'Configured' : 'Needs setup'}</div>
     </div>
   );
 }
 
-function CommandTask({ label, text, href }: { label: string; text: string; href: string }) {
+function QuickAction({ icon: Icon, label, href, text }: { icon: any; label: string; href: string; text: string }) {
   return (
-    <Link href={href} className="block rounded-[24px] border border-white/10 bg-white/5 p-5 transition-colors hover:bg-white/10">
-      <div className="mt-5 font-mono text-[10px] uppercase tracking-[0.18em] text-ivory/70">{label}</div>
-      <p className="mt-3 text-[12px] leading-relaxed text-ivory/45">{text}</p>
+    <Link href={href} className="group border border-ink/8 bg-white p-4 transition-colors hover:border-ink/20">
+      <div className="flex items-center justify-between gap-3">
+        <span className="flex h-10 w-10 items-center justify-center bg-ink text-ivory">
+          <Icon size={16} />
+        </span>
+        <ArrowUpRight size={15} className="text-ink/25 transition-colors group-hover:text-ink" />
+      </div>
+      <div className="mt-5 font-mono text-[11px] uppercase tracking-[0.16em] text-ink">{label}</div>
+      <p className="mt-2 text-[13px] leading-relaxed text-ink/50">{text}</p>
     </Link>
+  );
+}
+
+function StatusBadge({ label, tone }: { label: string; tone: 'good' | 'warn' | 'neutral' }) {
+  const className =
+    tone === 'good'
+      ? 'bg-jade/10 text-jade'
+      : tone === 'warn'
+        ? 'bg-champagne-100 text-champagne-900'
+        : 'bg-ink/6 text-ink/52';
+
+  return (
+    <span className={`inline-flex w-fit items-center px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.13em] ${className}`}>
+      {label}
+    </span>
   );
 }
