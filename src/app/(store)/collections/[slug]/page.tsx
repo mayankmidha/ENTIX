@@ -14,6 +14,14 @@ interface Props {
   searchParams: Promise<{ sort?: string; priceMin?: string; priceMax?: string; material?: string }>;
 }
 
+const COLLECTION_NAV = [
+  { label: 'All', href: '/collections/all' },
+  { label: 'Bangles', href: '/collections/bangles' },
+  { label: 'Necklaces', href: '/collections/necklaces' },
+  { label: 'Earrings', href: '/collections/earrings' },
+  { label: 'Rings', href: '/collections/rings' },
+];
+
 const TAXONOMY_COLLECTIONS: Record<
   string,
   { title: string; eyebrow: string; description: string; terms: string[] }
@@ -42,6 +50,24 @@ const TAXONOMY_COLLECTIONS: Record<
     description: 'Studs, hoops, drops, and dramatic evening silhouettes shaped for modern ritual dressing.',
     terms: ['earring', 'earrings', 'stud', 'studs', 'hoop', 'hoops', 'jhumka', 'drops'],
   },
+  gifts: {
+    title: 'Gifts',
+    eyebrow: 'The Gifting Room',
+    description: 'Considered shine for birthdays, festivals, thank-yous, and self-gifting rituals.',
+    terms: ['gift', 'gifting', 'pearl', 'stud', 'pendant', 'ring', 'bracelet'],
+  },
+  bridal: {
+    title: 'Bridal',
+    eyebrow: 'The Bridal Room',
+    description: 'Ceremonial pieces for vows, heirloom portraits, and the jewellery box after the wedding.',
+    terms: ['bridal', 'wedding', 'choker', 'kundan', 'polki', 'necklace', 'bangle'],
+  },
+  everyday: {
+    title: 'Everyday',
+    eyebrow: 'The Everyday Room',
+    description: 'Quiet pieces designed to be reached for often: light, layerable, and easy to style.',
+    terms: ['everyday', 'minimal', 'stud', 'chain', 'ring', 'pendant', 'bracelet'],
+  },
 };
 
 async function resolveCollection(slug: string) {
@@ -53,6 +79,7 @@ async function resolveCollection(slug: string) {
           product: {
             include: {
               images: { orderBy: { position: 'asc' } },
+              inventory: true,
             },
           },
         },
@@ -87,6 +114,7 @@ async function resolveCollection(slug: string) {
     },
     include: {
       images: { orderBy: { position: 'asc' } },
+      inventory: true,
     },
     orderBy: [{ isFeatured: 'desc' }, { isBestseller: 'desc' }, { createdAt: 'desc' }],
   });
@@ -177,7 +205,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
 
   return (
     <div className="min-h-screen bg-ivory pb-32">
-      <header className="relative flex min-h-[68vh] items-end overflow-hidden px-6 pb-12 lg:px-12 lg:pb-16">
+      <header className="relative flex min-h-[70svh] items-end overflow-hidden px-6 pb-12 lg:px-12 lg:pb-16">
         <div className="absolute inset-0 z-0">
            {collection.heroImage ? (
              <img src={collection.heroImage} className="h-full w-full object-cover" alt={collection.title} />
@@ -189,21 +217,42 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         
         <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
            <ScrollReveal>
-              <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-champagne-200">{collection.eyebrow}</div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne-200">{collection.eyebrow}</div>
+              <div className="mt-8 grid max-w-sm grid-cols-2 gap-px bg-ivory/20">
+                <div className="bg-ink/35 p-4 backdrop-blur">
+                  <div className="font-display text-[30px] font-medium leading-none text-ivory">{collection.products.length}</div>
+                  <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ivory/48">Pieces</div>
+                </div>
+                <div className="bg-ink/35 p-4 backdrop-blur">
+                  <div className="font-display text-[30px] font-medium leading-none text-ivory">{filteredProducts.length}</div>
+                  <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ivory/48">Visible</div>
+                </div>
+              </div>
             </ScrollReveal>
             <ScrollReveal delay={0.08}>
-              <h1 className="font-display text-[19vw] font-light leading-[0.82] tracking-normal text-ivory md:text-[9rem]">
-                {collection.title.split(' ')[0]} <span className="font-display-italic text-champagne-400">{collection.title.split(' ').slice(1).join(' ')}</span>
+              <h1 className="font-display text-6xl font-light leading-[0.9] tracking-normal text-ivory sm:text-7xl md:text-8xl lg:text-9xl">
+                {collection.title}
               </h1>
               {collection.description && (
                 <p className="mt-7 max-w-xl text-[17px] leading-relaxed text-ivory/68">{collection.description}</p>
               )}
+              <div className="mt-8 flex flex-wrap gap-2">
+                {COLLECTION_NAV.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="border border-ivory/22 bg-ivory/8 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ivory/72 backdrop-blur transition-colors hover:bg-ivory hover:text-ink"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
            </ScrollReveal>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-24">
-        <div className="mb-8 flex items-center justify-between gap-4 border-b border-ink/10 pb-5">
+        <div className="mb-8 grid gap-4 border-b border-ink/10 pb-5 sm:grid-cols-[1fr_auto] sm:items-end">
           <span className="font-mono text-[11px] uppercase tracking-widest text-ink/40">
             {filteredProducts.length} Piece{filteredProducts.length !== 1 ? 's' : ''}
           </span>
@@ -224,6 +273,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
                     ...product,
                     image: product.images[0]?.url || '',
                     imageHover: product.images[1]?.url,
+                    tag: product.isBestseller ? 'Most loved' : product.isNewArrival ? 'New piece' : undefined,
                   }} 
                 />
              </ScrollReveal>

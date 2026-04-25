@@ -11,7 +11,7 @@ export async function generateGSTInvoice(order: any) {
   
   doc.setFontSize(10);
   doc.text('GSTIN: 08ABCDE1234F1Z5', 14, 28);
-  doc.text('Studio: Sector 52, Gurgaon, Haryana', 14, 33);
+  doc.text('Studio: India', 14, 33);
   
   // Invoice Details
   doc.setFontSize(12);
@@ -51,7 +51,7 @@ export async function generateGSTInvoice(order: any) {
   
   doc.text(`Subtotal: ${formatInr(order.subtotalInr)}`, 140, finalY);
   doc.text(`Shipping: ${order.shippingInr === 0 ? 'Complimentary' : formatInr(order.shippingInr)}`, 140, finalY + 5);
-  doc.text(`GST (3%): ${formatInr(order.taxInr)}`, 140, finalY + 10);
+  doc.text(`GST (18%): ${formatInr(order.taxInr)}`, 140, finalY + 10);
   
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');

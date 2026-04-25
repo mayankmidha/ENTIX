@@ -63,7 +63,7 @@ export const ShippingConfirmationEmail = ({
               Dear {customerName},
             </Text>
             <Text className="text-ink text-[14px] leading-[24px]">
-              Great news! Your order <strong>{orderNumber}</strong> has been carefully packaged and dispatched from our Gurgaon studio.
+              Great news! Your order <strong>{orderNumber}</strong> has been carefully packaged and dispatched from our studio.
             </Text>
             
             <Section className="mt-[32px] mb-[32px] p-[20px] bg-[#f8f7f5] rounded-[12px]">

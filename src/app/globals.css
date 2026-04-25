@@ -38,6 +38,11 @@ body {
   .eyebrow {
     @apply font-mono text-[10px] uppercase tracking-[0.3em] text-ink/40;
   }
+
+  .font-display-italic {
+    font-family: var(--font-display);
+    font-style: italic;
+  }
 }
 
 @layer utilities {

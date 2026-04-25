@@ -51,7 +51,7 @@ export async function RelatedProducts({ productId, relatedSlugs, material }: Rel
       <ScrollReveal>
         <div className="text-center mb-16">
           <div className="font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-4">
-            — You May Also Covet
+            You May Also Covet
           </div>
           <h2 className="font-display text-[36px] font-medium tracking-display text-ink">
             Complementary Pieces

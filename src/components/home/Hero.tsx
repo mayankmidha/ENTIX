@@ -51,7 +51,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 36 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12, duration: 1 }}
-            className="mt-5 font-display text-[24vw] font-light leading-[0.78] tracking-normal text-ivory md:text-[10.5rem] lg:text-[14rem]"
+            className="mt-5 font-display text-7xl font-light leading-[0.78] tracking-normal text-ivory sm:text-9xl md:text-[10.5rem] lg:text-[14rem]"
           >
             ENTIX
           </motion.h1>
@@ -72,10 +72,10 @@ export function Hero() {
             transition={{ delay: 0.38, duration: 0.8 }}
             className="mt-10 flex flex-col gap-3 sm:flex-row"
           >
-            <Link href="/collections/all" className="rounded-full bg-ivory px-9 py-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink shadow-xl transition-all hover:bg-champagne-100 active:scale-95">
+            <Link href="/collections/all" className="bg-ivory px-9 py-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink shadow-xl transition-all hover:bg-champagne-100 active:scale-95">
               Shop the edit
             </Link>
-            <Link href="/collections/bangles" className="inline-flex items-center justify-center gap-3 rounded-full border border-white/22 bg-white/8 px-9 py-4 font-mono text-[11px] uppercase tracking-[0.18em] text-ivory backdrop-blur transition-all hover:border-white/45 hover:bg-white/14">
+            <Link href="/collections/bangles" className="inline-flex items-center justify-center gap-3 border border-white/22 bg-white/8 px-9 py-4 font-mono text-[11px] uppercase tracking-[0.18em] text-ivory backdrop-blur transition-all hover:border-white/45 hover:bg-white/14">
               View bangles <ArrowRight size={14} />
             </Link>
           </motion.div>

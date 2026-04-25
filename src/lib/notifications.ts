@@ -16,7 +16,7 @@ export const notifications = {
    * Sends an order confirmation via WhatsApp and SMS
    */
   async sendOrderConfirmation({ orderId, customerName, phone, amount }: OrderNotification) {
-    const message = `Namaste ${customerName}, your Entix Jewellery order #${orderId} for ₹${amount} is confirmed. Our Gurgaon studio is now preparing your piece. Track your heirloom here: https://entix.jewellery/orders/${orderId}`;
+    const message = `Namaste ${customerName}, your Entix Jewellery order #${orderId} for ₹${amount} is confirmed. Our studio is now preparing your piece. Track your heirloom here: https://entix.jewellery/orders/${orderId}`;
 
     console.log('--- NOTIFICATION LOG ---');
     console.log(`To: ${phone}`);
@@ -35,7 +35,7 @@ export const notifications = {
    * Sends a shipping update notification
    */
   async sendShippingUpdate({ orderId, customerName, phone, trackingNumber }: OrderNotification & { trackingNumber: string }) {
-    const message = `Exquisite news, ${customerName}! Your Entix order #${orderId} has left our Gurgaon studio. Tracking: ${trackingNumber}. View status: https://entix.jewellery/track/${trackingNumber}`;
+    const message = `Exquisite news, ${customerName}! Your Entix order #${orderId} has left our studio. Tracking: ${trackingNumber}. View status: https://entix.jewellery/track/${trackingNumber}`;
 
     console.log('--- SHIPPING NOTIFICATION ---');
     console.log(`To: ${phone}`);

@@ -7,17 +7,17 @@ import { cn } from '@/lib/utils';
 
 const PRICE_RANGES = [
   { label: 'Under ₹10,000', min: 0, max: 10000 },
-  { label: '₹10,000 – ₹25,000', min: 10000, max: 25000 },
-  { label: '₹25,000 – ₹50,000', min: 25000, max: 50000 },
-  { label: '₹50,000 – ₹1,00,000', min: 50000, max: 100000 },
+  { label: '₹10,000 - ₹25,000', min: 10000, max: 25000 },
+  { label: '₹25,000 - ₹50,000', min: 25000, max: 50000 },
+  { label: '₹50,000 - ₹1,00,000', min: 50000, max: 100000 },
   { label: 'Above ₹1,00,000', min: 100000, max: Infinity },
 ];
 
 const MATERIALS = ['Gold', 'Silver', 'Platinum', 'Rose Gold', 'Kundan', 'Polki', 'Diamond', 'Pearl'];
 const SORT_OPTIONS = [
   { label: 'Newest', value: 'newest' },
-  { label: 'Price: Low → High', value: 'price_asc' },
-  { label: 'Price: High → Low', value: 'price_desc' },
+  { label: 'Price: Low to High', value: 'price_asc' },
+  { label: 'Price: High to Low', value: 'price_desc' },
   { label: 'Bestsellers', value: 'bestseller' },
 ];
 
@@ -32,6 +32,7 @@ export function CollectionToolbar() {
   const activePrice = searchParams.get('priceMin');
   const activeMaterial = searchParams.get('material');
   const activeSort = searchParams.get('sort') || 'newest';
+  const activeSortLabel = SORT_OPTIONS.find((option) => option.value === activeSort)?.label || 'Newest';
 
   const hasFilters = activePrice || activeMaterial;
 
@@ -56,37 +57,49 @@ export function CollectionToolbar() {
 
   return (
     <div className="relative">
-      <div className="flex items-center justify-between border-b border-ink/5 pb-8 mb-16">
-        <div className="font-mono text-[11px] uppercase tracking-widest text-ink/40 flex items-center gap-4">
+      <div className="mb-10 grid gap-3 border-y border-ink/8 py-4 md:mb-16 md:grid-cols-[1fr_auto] md:items-center">
+        <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/42">
           <button
             onClick={() => { setFiltersOpen(!filtersOpen); setSortOpen(false); }}
             className={cn(
-              'flex items-center gap-2 hover:text-ink transition-colors px-3 py-1.5 rounded-full border',
-              filtersOpen ? 'border-ink text-ink bg-ink/5' : 'border-transparent',
+              'flex h-11 items-center gap-2 border px-4 transition-colors hover:text-ink',
+              filtersOpen ? 'border-ink bg-ink text-ivory' : 'border-ink/10 bg-white/45',
             )}
           >
             <SlidersHorizontal size={14} /> Filter
           </button>
+          <div className="hidden h-11 items-center border border-ink/8 bg-white/35 px-4 md:flex">
+            {hasFilters ? 'Filtered selection' : 'All available pieces'}
+          </div>
+          {activeMaterial && (
+            <button
+              onClick={() => updateQuery({ material: null })}
+              className="flex h-11 items-center gap-2 border border-ink/8 bg-white/35 px-4 text-ink/55 transition-colors hover:text-ink"
+            >
+              {activeMaterial} <X size={12} />
+            </button>
+          )}
           {hasFilters && (
             <button
               onClick={clearAll}
-              className="flex items-center gap-1 text-oxblood hover:text-oxblood/80 transition-colors"
+              className="flex h-11 items-center gap-2 border border-oxblood/12 bg-oxblood/5 px-4 text-oxblood transition-colors hover:bg-oxblood/10"
             >
               <X size={12} /> Clear
             </button>
           )}
         </div>
 
-        <div className="relative">
+        <div className="relative w-full md:w-auto">
           <button
             onClick={() => { setSortOpen(!sortOpen); setFiltersOpen(false); }}
-            className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-ink/60 hover:text-ink transition-colors"
+            className="flex h-11 w-full items-center justify-between gap-4 border border-ink/10 bg-white/45 px-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/60 transition-colors hover:text-ink md:w-[230px]"
           >
-            Sort By <ChevronDown size={12} className={cn('transition-transform', sortOpen && 'rotate-180')} />
+            <span>Sort: {activeSortLabel}</span>
+            <ChevronDown size={12} className={cn('transition-transform', sortOpen && 'rotate-180')} />
           </button>
 
           {sortOpen && (
-            <div className="absolute right-0 top-full mt-3 w-56 bg-white border border-ink/5 rounded-[20px] shadow-luxe p-2 z-50">
+            <div className="absolute right-0 top-full z-50 mt-2 w-full border border-ink/10 bg-ivory p-2 shadow-luxe md:w-64">
               {SORT_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
@@ -95,7 +108,7 @@ export function CollectionToolbar() {
                     setSortOpen(false);
                   }}
                   className={cn(
-                    'w-full text-left px-4 py-3 rounded-[14px] font-mono text-[11px] uppercase tracking-widest transition-colors',
+                    'w-full px-4 py-3 text-left font-mono text-[10px] uppercase tracking-[0.16em] transition-colors',
                     activeSort === opt.value
                       ? 'bg-ink text-ivory'
                       : 'text-ink/60 hover:bg-ink/5 hover:text-ink',
@@ -111,11 +124,11 @@ export function CollectionToolbar() {
 
       {/* Filter Panel */}
       {filtersOpen && (
-        <div className="mb-16 p-8 rounded-[32px] border border-ink/5 bg-white shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="grid md:grid-cols-2 gap-10">
+        <div className="mb-14 border border-ink/8 bg-white/72 p-5 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300 md:p-8">
+          <div className="grid gap-8 md:grid-cols-2 md:gap-10">
             {/* Price Filter */}
             <div>
-              <h4 className="font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-4">Price Range</h4>
+              <h4 className="mb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/40">Price Range</h4>
               <div className="flex flex-wrap gap-2">
                 {PRICE_RANGES.map((range) => {
                   const isActive = activePrice === String(range.min);
@@ -129,10 +142,10 @@ export function CollectionToolbar() {
                         })
                       }
                       className={cn(
-                        'px-4 py-2 rounded-full border font-mono text-[10px] uppercase tracking-widest transition-all',
+                        'border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-all',
                         isActive
                           ? 'bg-ink text-ivory border-ink'
-                          : 'border-ink/10 text-ink/50 hover:border-ink/30',
+                          : 'border-ink/10 bg-ivory text-ink/50 hover:border-ink/30 hover:text-ink',
                       )}
                     >
                       {range.label}
@@ -144,7 +157,7 @@ export function CollectionToolbar() {
 
             {/* Material Filter */}
             <div>
-              <h4 className="font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-4">Material</h4>
+              <h4 className="mb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/40">Material</h4>
               <div className="flex flex-wrap gap-2">
                 {MATERIALS.map((mat) => {
                   const isActive = activeMaterial === mat.toLowerCase();
@@ -157,10 +170,10 @@ export function CollectionToolbar() {
                         })
                       }
                       className={cn(
-                        'px-4 py-2 rounded-full border font-mono text-[10px] uppercase tracking-widest transition-all',
+                        'border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-all',
                         isActive
                           ? 'bg-ink text-ivory border-ink'
-                          : 'border-ink/10 text-ink/50 hover:border-ink/30',
+                          : 'border-ink/10 bg-ivory text-ink/50 hover:border-ink/30 hover:text-ink',
                       )}
                     >
                       {mat}

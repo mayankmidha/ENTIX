@@ -30,17 +30,24 @@ const collectionRooms = [
   },
 ];
 
+const shopSignals = [
+  { label: 'Bangles', text: 'Stacks, cuffs, ceremony wristwear', href: '/collections/bangles' },
+  { label: 'Necklaces', text: 'Pendants, chains, bridal necklines', href: '/collections/necklaces' },
+  { label: 'Earrings', text: 'Studs, hoops, drops, jhumkas', href: '/collections/earrings' },
+  { label: 'Rings', text: 'Bands, objects, cocktail signatures', href: '/collections/rings' },
+];
+
 async function getHomeData() {
   try {
     const [featured, newArrivals] = await Promise.all([
       prisma.product.findMany({
         where: { isActive: true, isBestseller: true },
-        include: { images: { orderBy: { position: 'asc' } } },
+        include: { images: { orderBy: { position: 'asc' } }, inventory: true },
         take: 4,
       }),
       prisma.product.findMany({
         where: { isActive: true, isNewArrival: true },
-        include: { images: { orderBy: { position: 'asc' } } },
+        include: { images: { orderBy: { position: 'asc' } }, inventory: true },
         take: 8,
       }),
     ]);
@@ -60,12 +67,30 @@ export default async function HomePage() {
       <Hero />
       <Marquee />
 
-      <section className="bg-ivory px-6 py-18 lg:px-12 lg:py-24">
+      <section className="bg-ink px-6 py-5 text-ivory lg:px-12">
+        <div className="mx-auto grid max-w-7xl gap-px bg-white/12 md:grid-cols-4">
+          {shopSignals.map((signal) => (
+            <Link
+              key={signal.href}
+              href={signal.href}
+              className="group flex min-h-28 flex-col justify-between bg-ink p-5 transition-colors hover:bg-ivory hover:text-ink"
+            >
+              <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-current/42">{signal.text}</span>
+              <span className="mt-7 flex items-center justify-between gap-4 font-display text-[25px] font-light leading-none tracking-normal">
+                {signal.label}
+                <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-ivory px-6 py-16 lg:px-12 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <ScrollReveal className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
             <div className="eyebrow">The Entix House</div>
             <div>
-              <h2 className="font-display text-[13vw] font-light leading-[0.9] tracking-normal text-ink md:text-[7rem]">
+              <h2 className="font-display text-5xl font-light leading-[0.9] tracking-normal text-ink sm:text-6xl md:text-7xl">
                 Jewellery with a <span className="font-display-italic text-oxblood">point of view.</span>
             </h2>
               <p className="mt-7 max-w-2xl text-[16px] leading-relaxed text-ink/55">
@@ -108,7 +133,7 @@ export default async function HomePage() {
           <ScrollReveal className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
               <div className="eyebrow">Selected Pieces</div>
-              <h2 className="mt-5 font-display text-[11vw] font-light leading-[0.9] tracking-normal text-ink md:text-[5.8rem]">
+              <h2 className="mt-5 font-display text-5xl font-light leading-[0.9] tracking-normal text-ink sm:text-6xl md:text-7xl">
                 Pieces that hold <span className="font-display-italic text-champagne-700">the frame.</span>
               </h2>
             </div>
@@ -142,9 +167,9 @@ export default async function HomePage() {
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <ScrollReveal>
             <div className="eyebrow text-champagne-300">Entix Standard</div>
-            <h2 className="mt-6 font-display text-[12vw] font-light leading-[0.9] tracking-normal md:text-[6.5rem]">
-              The beauty is in <span className="font-display-italic text-champagne-200">the evidence.</span>
-            </h2>
+              <h2 className="mt-6 font-display text-5xl font-light leading-[0.9] tracking-normal sm:text-6xl md:text-7xl">
+                The beauty is in <span className="font-display-italic text-champagne-200">the evidence.</span>
+              </h2>
           </ScrollReveal>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -160,7 +185,7 @@ export default async function HomePage() {
         <div className="mx-auto max-w-7xl">
           <ScrollReveal className="mb-14 text-center">
             <div className="eyebrow">New Arrivals</div>
-            <h2 className="mt-5 font-display text-[10vw] font-light leading-tight tracking-normal text-ink md:text-[5rem]">
+            <h2 className="mt-5 font-display text-5xl font-light leading-tight tracking-normal text-ink sm:text-6xl">
               Recently <span className="font-display-italic text-champagne-700">collected.</span>
             </h2>
           </ScrollReveal>

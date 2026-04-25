@@ -19,7 +19,7 @@ export default async function CollectionsLandingPage() {
   return (
     <div className="min-h-screen bg-ivory px-6 pb-28 pt-16 lg:px-12">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-16 grid gap-8 border-b border-ink/10 pb-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
+        <header className="mb-14 grid gap-8 border-b border-ink/10 pb-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
            <div>
              <div className="eyebrow">Collection Rooms</div>
              <div className="mt-8 grid gap-px bg-ink/10 sm:grid-cols-2 lg:block lg:bg-transparent">
@@ -28,14 +28,23 @@ export default async function CollectionsLandingPage() {
              </div>
            </div>
            <div>
-           <h1 className="font-display text-[18vw] font-light leading-[0.84] tracking-normal text-ink md:text-[8rem]">
-             Our <span className="font-display-italic text-champagne-600">Collections.</span>
-           </h1>
+             <h1 className="font-display text-6xl font-light leading-[0.9] tracking-normal text-ink sm:text-7xl md:text-8xl">
+               Our <span className="font-display-italic text-champagne-600">Collections.</span>
+             </h1>
              <p className="mt-6 max-w-2xl text-[17px] leading-relaxed text-ink/55">
-             Explore edited rooms of jewellery, each shaped around silhouette, ceremony, and the way a piece catches light.
-           </p>
+               Explore edited rooms of jewellery, each shaped around silhouette, ceremony, and the way a piece catches light.
+             </p>
            </div>
         </header>
+
+        <div className="mb-12 grid gap-px bg-ink/10 md:grid-cols-4">
+          {['Ceremony', 'Stacking', 'Gifting', 'Everyday'].map((intent) => (
+            <div key={intent} className="bg-ivory p-5">
+              <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink/35">Shop by intent</div>
+              <div className="mt-8 font-display text-[24px] font-light leading-none text-ink">{intent}</div>
+            </div>
+          ))}
+        </div>
 
         <div className="grid gap-px bg-ink/10 sm:grid-cols-2">
            {rooms.map((c) => (

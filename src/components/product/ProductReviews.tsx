@@ -75,7 +75,7 @@ export function ProductReviews({
     <section className="mt-24 border-t border-ink/5 pt-16">
       <div className="flex items-start justify-between gap-8 flex-wrap mb-12">
         <div>
-          <div className="eyebrow mb-3">— Collector Reviews</div>
+          <div className="eyebrow mb-3">Collector Reviews</div>
           <h2 className="font-display text-[40px] font-light tracking-display text-ink">
             {totalReviews > 0 ? (
               <>
@@ -99,7 +99,7 @@ export function ProductReviews({
         <button
           type="button"
           onClick={() => setShowForm((v) => !v)}
-          className="px-6 py-3 rounded-full border border-ink/10 bg-white font-mono text-[11px] uppercase tracking-widest text-ink hover:bg-ink hover:text-ivory transition-all"
+          className="border border-ink/10 bg-white px-6 py-3 font-mono text-[11px] uppercase tracking-widest text-ink transition-all hover:bg-ink hover:text-ivory"
         >
           {showForm ? 'Cancel' : 'Write a Review'}
         </button>
@@ -108,7 +108,7 @@ export function ProductReviews({
       {showForm && (
         <form
           onSubmit={submit}
-          className="mb-16 rounded-[32px] border border-ink/5 bg-white p-8 space-y-6 shadow-sm"
+          className="mb-16 space-y-6 border border-ink/8 bg-white p-6 shadow-sm sm:p-8"
         >
           <div>
             <label className="block font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-3">Your Rating</label>
@@ -147,7 +147,7 @@ export function ProductReviews({
                 value={authorName}
                 onChange={(e) => setAuthorName(e.target.value)}
                 placeholder="As it should appear"
-                className="w-full bg-ivory-2/40 rounded-full px-5 py-3 font-mono text-[13px] focus:outline-none focus:ring-1 focus:ring-ink/20"
+                className="w-full border border-ink/8 bg-ivory-2/40 px-5 py-3 font-mono text-[13px] focus:outline-none focus:ring-1 focus:ring-ink/20"
               />
             </div>
             <div>
@@ -156,7 +156,7 @@ export function ProductReviews({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. An heirloom in the making"
-                className="w-full bg-ivory-2/40 rounded-full px-5 py-3 font-mono text-[13px] focus:outline-none focus:ring-1 focus:ring-ink/20"
+                className="w-full border border-ink/8 bg-ivory-2/40 px-5 py-3 font-mono text-[13px] focus:outline-none focus:ring-1 focus:ring-ink/20"
               />
             </div>
           </div>
@@ -168,7 +168,7 @@ export function ProductReviews({
               value={body}
               onChange={(e) => setBody(e.target.value)}
               placeholder="Tell us about the piece, the craftsmanship, the occasion..."
-              className="w-full bg-ivory-2/40 rounded-[20px] px-5 py-4 font-mono text-[13px] leading-relaxed focus:outline-none focus:ring-1 focus:ring-ink/20"
+              className="w-full border border-ink/8 bg-ivory-2/40 px-5 py-4 font-mono text-[13px] leading-relaxed focus:outline-none focus:ring-1 focus:ring-ink/20"
             />
           </div>
 
@@ -176,7 +176,7 @@ export function ProductReviews({
             <button
               type="submit"
               disabled={isPending}
-              className="px-8 py-3.5 rounded-full bg-ink text-ivory font-mono text-[11px] uppercase tracking-[0.2em] hover:bg-ink-2 transition-all disabled:opacity-50"
+              className="bg-ink px-8 py-3.5 font-mono text-[11px] uppercase tracking-[0.2em] text-ivory transition-all hover:bg-ink-2 disabled:opacity-50"
             >
               {isPending ? 'Submitting…' : 'Submit Review'}
             </button>
@@ -189,7 +189,7 @@ export function ProductReviews({
           {reviews.map((r) => (
             <article
               key={r.id}
-              className="rounded-[28px] border border-ink/5 bg-white p-8"
+              className="border border-ink/8 bg-white p-6 sm:p-8"
             >
               <div className="flex items-center justify-between mb-4">
                 <Stars value={r.rating} />
@@ -213,7 +213,7 @@ export function ProductReviews({
         </div>
       ) : (
         !showForm && (
-          <div className="py-16 text-center rounded-[32px] border border-dashed border-ink/10 bg-ivory-2/40">
+          <div className="border border-dashed border-ink/10 bg-ivory-2/40 py-16 text-center">
             <p className="font-display text-xl text-ink/30 italic">Be the first to share your thoughts.</p>
           </div>
         )

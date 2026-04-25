@@ -41,21 +41,21 @@ export function NotifyMe({ productId, productTitle }: NotifyMeProps) {
 
   if (submitted) {
     return (
-      <div className="flex items-center gap-3 p-5 rounded-[20px] bg-jade/5 border border-jade/10">
+      <div className="flex items-center gap-3 border border-jade/10 bg-jade/5 p-5">
         <CheckCircle2 size={18} className="text-jade shrink-0" />
         <p className="font-mono text-[11px] uppercase tracking-widest text-jade">
-          You&apos;ll be notified when this piece returns to the atelier
+          You&apos;ll be notified when this piece returns
         </p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 rounded-[24px] border border-ink/5 bg-white/40 space-y-4">
+    <div className="space-y-4 border border-ink/8 bg-white/40 p-6">
       <div className="flex items-center gap-3">
         <Bell size={16} className="text-champagne-600" />
         <span className="font-mono text-[10px] uppercase tracking-widest text-ink/60">
-          Out of Stock — Get Notified
+          Out of stock - get notified
         </span>
       </div>
       <form onSubmit={handleSubmit} className="flex gap-2">
@@ -65,13 +65,13 @@ export function NotifyMe({ productId, productTitle }: NotifyMeProps) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="your@email.com"
-          className="flex-1 bg-ivory border border-ink/10 rounded-full px-5 py-3 font-mono text-[12px] focus:outline-none focus:border-ink transition-all"
+          className="flex-1 border border-ink/10 bg-ivory px-5 py-3 font-mono text-[12px] transition-all focus:border-ink focus:outline-none"
         />
         <button
           type="submit"
           disabled={isSubmitting}
           className={cn(
-            'px-6 py-3 rounded-full bg-ink text-ivory font-mono text-[10px] uppercase tracking-widest hover:bg-ink-2 transition-all disabled:opacity-50',
+            'bg-ink px-6 py-3 font-mono text-[10px] uppercase tracking-widest text-ivory transition-all hover:bg-ink-2 disabled:opacity-50',
           )}
         >
           {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : 'Notify Me'}

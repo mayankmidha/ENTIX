@@ -64,7 +64,7 @@ export const OrderConfirmationEmail = ({
               Dear {customerName},
             </Text>
             <Text className="text-ink text-[14px] leading-[24px]">
-              Thank you for your patronage. Your order <strong>{orderNumber}</strong> has been received and is currently being prepared by our Gurgaon studio.
+              Thank you for your patronage. Your order <strong>{orderNumber}</strong> has been received and is currently being prepared by our studio.
             </Text>
             <Section className="mt-[32px] mb-[32px]">
               <Text className="text-ink text-[12px] font-bold tracking-[0.1em] uppercase border-b border-solid border-[#eee] pb-2">
