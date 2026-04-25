@@ -100,12 +100,6 @@ export default async function HomePage() {
             </div>
           </ScrollReveal>
 
-          <div className="mt-10 grid gap-px bg-ink/10 sm:grid-cols-3">
-            <LaunchStat value="300" label="Product catalogue target" />
-            <LaunchStat value={featured.length + newArrivals.length > 0 ? `${featured.length + newArrivals.length}` : 'Build'} label="Current sample feed" />
-            <LaunchStat value="Mobile" label="Checkout-first experience" />
-          </div>
-
           <div className="mt-14 grid gap-px bg-ink/10 lg:grid-cols-3">
             {collectionRooms.map((room, idx) => (
               <ScrollReveal key={room.href} delay={idx * 0.08}>
@@ -225,15 +219,6 @@ function TrustCard({ icon: Icon, title, text }: { icon: any; title: string; text
         <p className="mt-4 text-[13px] leading-relaxed text-ivory/50 italic">{text}</p>
       </div>
     </ScrollReveal>
-  );
-}
-
-function LaunchStat({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="bg-ivory p-5">
-      <div className="font-display text-[34px] font-medium leading-none text-ink">{value}</div>
-      <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">{label}</div>
-    </div>
   );
 }
 
