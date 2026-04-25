@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { formatInr, cn } from '@/lib/utils';
-import { AlertTriangle, Gem, ImageOff, Package, Plus, Search } from 'lucide-react';
+import { AlertTriangle, Gem, ImageOff, Package, Plus, Search, Wand2, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { ProductListRow } from '@/components/admin/ProductListRow';
 import type { Prisma } from '@prisma/client';
@@ -94,9 +94,17 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
               className="h-12 w-full border border-ink/10 bg-white pl-11 pr-4 font-mono text-[12px] uppercase tracking-[0.11em] text-ink outline-none placeholder:text-ink/28 focus:border-ink/35"
             />
           </form>
-          <Link href="/admin/products/new" className="inline-flex h-12 items-center justify-center gap-2 bg-ink px-5 font-mono text-[10px] uppercase tracking-[0.14em] text-ivory transition-colors hover:bg-ink-2">
-            <Plus size={14} /> New piece
-          </Link>
+          <div className="grid gap-2 sm:grid-cols-3">
+            <Link href="/admin/products/import" className="inline-flex h-12 items-center justify-center gap-2 border border-ink/10 bg-white px-4 font-mono text-[10px] uppercase tracking-[0.14em] text-ink/58 transition-colors hover:border-ink/25 hover:text-ink">
+              <Upload size={14} /> Import
+            </Link>
+            <Link href="/admin/products/bulk" className="inline-flex h-12 items-center justify-center gap-2 border border-ink/10 bg-white px-4 font-mono text-[10px] uppercase tracking-[0.14em] text-ink/58 transition-colors hover:border-ink/25 hover:text-ink">
+              <Wand2 size={14} /> Bulk
+            </Link>
+            <Link href="/admin/products/new" className="inline-flex h-12 items-center justify-center gap-2 bg-ink px-4 font-mono text-[10px] uppercase tracking-[0.14em] text-ivory transition-colors hover:bg-ink-2">
+              <Plus size={14} /> New
+            </Link>
+          </div>
         </div>
       </header>
 

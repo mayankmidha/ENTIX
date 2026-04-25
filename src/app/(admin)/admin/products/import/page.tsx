@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { importProducts } from '../actions';
+import { importProducts, previewProductsCsv } from '../actions';
 import { cn } from '@/lib/utils';
 
 export default function ImportPage() {
@@ -18,6 +18,20 @@ export default function ImportPage() {
     failed: number;
     errors: string[];
     collections?: number;
+  } | null>(null);
+  const [preview, setPreview] = useState<{
+    rows: number;
+    products: number;
+    variants: number;
+    missingSku: number;
+    missingPrice: number;
+    missingImages: number;
+    missingMaterial: number;
+    missingCare: number;
+    missingSeo: number;
+    missingCollections: number;
+    duplicateSkus: string[];
+    warnings: string[];
   } | null>(null);
 
   const downloadTemplate = () => {
@@ -60,9 +74,36 @@ export default function ImportPage() {
     if (selectedFile && selectedFile.type === 'text/csv') {
       setFile(selectedFile);
       setResults(null);
+      setPreview(null);
     } else {
       toast.error('Please select a valid CSV file');
     }
+  };
+
+  const readFileText = async () => {
+    if (!file) return;
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => resolve(String(event.target?.result || ''));
+      reader.onerror = () => reject(new Error('File could not be read'));
+      reader.readAsText(file);
+    });
+  };
+
+  const onPreview = async () => {
+    if (!file) return;
+
+    startTransition(async () => {
+      try {
+        const text = await readFileText();
+        if (!text) return;
+        const res = await previewProductsCsv(text);
+        setPreview(res);
+        toast.success(`Preflight checked ${res.products} products`);
+      } catch {
+        toast.error('Could not preview this CSV');
+      }
+    });
   };
 
   const onImport = async () => {
@@ -70,19 +111,16 @@ export default function ImportPage() {
 
     startTransition(async () => {
       try {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          const text = e.target?.result as string;
-          const res = await importProducts(text);
-          setResults(res);
-          if (res.failed === 0) {
-            toast.success(`Successfully cataloged ${res.success} heirloom pieces`);
-          } else {
-            toast.error(`Import completed with ${res.failed} discrepancies`);
-          }
-        };
-        reader.readAsText(file);
-      } catch (error) {
+        const text = await readFileText();
+        if (!text) return;
+        const res = await importProducts(text);
+        setResults(res);
+        if (res.failed === 0) {
+          toast.success(`Successfully cataloged ${res.success} heirloom pieces`);
+        } else {
+          toast.error(`Import completed with ${res.failed} discrepancies`);
+        }
+      } catch {
         toast.error('An error occurred during the import process');
       }
     });
@@ -128,6 +166,13 @@ export default function ImportPage() {
 
           <div className="mt-10 flex flex-col items-center gap-4">
             <button
+              onClick={onPreview}
+              disabled={!file || isPending}
+              className="flex items-center gap-3 rounded-full border border-ink/10 bg-white px-8 py-3 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/58 transition-all hover:border-ink/25 hover:text-ink active:scale-95 disabled:opacity-50"
+            >
+              {isPending ? <Loader2 size={15} className="animate-spin" /> : <Info size={15} />} Preview CSV health
+            </button>
+            <button
               onClick={onImport}
               disabled={!file || isPending}
               className="flex items-center gap-3 px-12 py-4 rounded-full bg-ink text-ivory font-mono text-[11px] uppercase tracking-[0.2em] hover:bg-ink-2 transition-all shadow-xl shadow-ink/10 active:scale-95 disabled:opacity-50"
@@ -152,6 +197,41 @@ export default function ImportPage() {
             </button>
           </div>
         </section>
+
+        {preview && (
+          <section className="rounded-[32px] border border-ink/5 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4">
+            <h3 className="font-display text-[20px] font-medium text-ink mb-6">CSV Preflight</h3>
+            <div className="mb-8 grid gap-3 sm:grid-cols-3">
+              <MiniStat label="Rows" value={preview.rows} />
+              <MiniStat label="Products" value={preview.products} />
+              <MiniStat label="Variant rows" value={preview.variants} />
+              <MiniStat label="Missing images" value={preview.missingImages} tone={preview.missingImages > 0 ? 'bad' : 'good'} />
+              <MiniStat label="Missing jewellery data" value={preview.missingMaterial + preview.missingCare} tone={preview.missingMaterial + preview.missingCare > 0 ? 'bad' : 'good'} />
+              <MiniStat label="Missing SEO" value={preview.missingSeo} tone={preview.missingSeo > 0 ? 'bad' : 'good'} />
+            </div>
+
+            {preview.warnings.length > 0 ? (
+              <div className="space-y-2 rounded-[20px] border border-oxblood/8 bg-oxblood/[0.03] p-4">
+                {preview.warnings.map((warning) => (
+                  <div key={warning} className="flex items-start gap-2 font-mono text-[11px] uppercase tracking-[0.1em] text-oxblood/75">
+                    <AlertCircle size={13} className="mt-0.5 shrink-0" />
+                    <span>{warning}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-[20px] border border-jade/10 bg-jade/5 p-4 font-mono text-[11px] uppercase tracking-[0.12em] text-jade">
+                No obvious import gaps detected.
+              </div>
+            )}
+
+            {preview.duplicateSkus.length > 0 && (
+              <div className="mt-4 rounded-[20px] border border-ink/8 bg-ivory-2 p-4 font-mono text-[10px] uppercase tracking-[0.12em] text-ink/45">
+                Duplicate SKU sample: {preview.duplicateSkus.join(', ')}
+              </div>
+            )}
+          </section>
+        )}
 
         {results && (
           <section className="rounded-[32px] border border-ink/5 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4">
@@ -193,7 +273,7 @@ export default function ImportPage() {
                 <div className="max-h-60 overflow-y-auto rounded-[20px] bg-oxblood/[0.02] border border-oxblood/5 p-4 space-y-2">
                   {results.errors.map((error, i) => (
                     <div key={i} className="font-mono text-[11px] text-oxblood/70 flex items-start gap-2">
-                      <span className="shrink-0">•</span>
+                      <span className="shrink-0">-</span>
                       <span>{error}</span>
                     </div>
                   ))}
@@ -203,6 +283,17 @@ export default function ImportPage() {
           </section>
         )}
       </div>
+    </div>
+  );
+}
+
+function MiniStat({ label, value, tone = 'neutral' }: { label: string; value: number; tone?: 'neutral' | 'good' | 'bad' }) {
+  return (
+    <div className={cn('rounded-[22px] border p-4', tone === 'good' ? 'border-jade/10 bg-jade/5' : tone === 'bad' ? 'border-oxblood/10 bg-oxblood/5' : 'border-ink/5 bg-ivory-2')}>
+      <div className={cn('font-display text-[28px] leading-none', tone === 'good' ? 'text-jade' : tone === 'bad' ? 'text-oxblood' : 'text-ink')}>
+        {value}
+      </div>
+      <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/35">{label}</div>
     </div>
   );
 }

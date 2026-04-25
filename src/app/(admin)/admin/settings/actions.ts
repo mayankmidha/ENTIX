@@ -374,6 +374,54 @@ export async function savePolicySettings(formData: FormData) {
   saved('/admin/settings/policies');
 }
 
+export async function saveContentSettings(formData: FormData) {
+  const session = await requireAdminRole(['owner', 'admin', 'operator']);
+  await saveSiteSettings(formData, [
+    'announcement.enabled',
+    'announcement.message',
+    'announcement.href',
+    'content.homeEyebrow',
+    'content.homeHeadline',
+    'content.homeBody',
+  ]);
+
+  const contentBlocks = [
+    {
+      key: 'home.hero',
+      title: String(formData.get('home.hero.title') || '').trim(),
+      body: String(formData.get('home.hero.body') || '').trim(),
+      imageUrl: String(formData.get('home.hero.imageUrl') || '').trim(),
+    },
+    {
+      key: 'menu.featured',
+      title: String(formData.get('menu.featured.title') || '').trim(),
+      body: String(formData.get('menu.featured.body') || '').trim(),
+      imageUrl: String(formData.get('menu.featured.imageUrl') || '').trim(),
+    },
+  ];
+
+  await Promise.all(
+    contentBlocks.map((block) =>
+      prisma.pageContent.upsert({
+        where: { key: block.key },
+        create: block,
+        update: {
+          title: block.title,
+          body: block.body,
+          imageUrl: block.imageUrl,
+        },
+      }),
+    ),
+  );
+
+  revalidatePath('/');
+  revalidatePath('/admin/content');
+  await writeAuditLog(session, 'content.update', 'storefront-content', {
+    announcement: String(formData.get('announcement.message') || ''),
+  });
+  redirect('/admin/content?saved=1');
+}
+
 export async function saveUserSecuritySettings(formData: FormData) {
   const session = await requireAdminRole(['owner', 'admin']);
   await saveSiteSettings(formData, [

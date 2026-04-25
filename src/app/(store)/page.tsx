@@ -7,7 +7,7 @@ import { ProductCard } from '@/components/product/ProductCard';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { ArrowRight, Gem, HeartHandshake, PackageCheck, ShieldCheck, Sparkles } from 'lucide-react';
 import { giftEdits, lookbookScenes, trustLayer } from '@/lib/storefront-world';
-import { hasDatabaseUrl } from '@/lib/settings';
+import { getSiteSettings, hasDatabaseUrl } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 60;
@@ -65,7 +65,10 @@ async function getHomeData() {
 }
 
 export default async function HomePage() {
-  const { featured, newArrivals } = await getHomeData();
+  const [{ featured, newArrivals }, contentSettings] = await Promise.all([
+    getHomeData(),
+    getSiteSettings(['content.homeEyebrow', 'content.homeHeadline', 'content.homeBody']),
+  ]);
   const hasFeatured = featured.length > 0;
   const hasNewArrivals = newArrivals.length > 0;
 
@@ -136,14 +139,13 @@ export default async function HomePage() {
       <section className="bg-ivory px-6 py-16 lg:px-12 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <ScrollReveal className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
-            <div className="eyebrow">The Entix House</div>
+            <div className="eyebrow">{contentSettings['content.homeEyebrow']}</div>
             <div>
               <h2 className="font-display text-5xl font-light leading-[0.9] tracking-normal text-ink sm:text-6xl md:text-7xl">
-                Jewellery with a <span className="font-display-italic text-oxblood">point of view.</span>
+                {contentSettings['content.homeHeadline']}
             </h2>
               <p className="mt-7 max-w-2xl text-[16px] leading-relaxed text-ink/55">
-                Entix is built around edited rooms, tactile surfaces, and clear paths to the piece:
-                an online house where collection, material, and intent stay visible.
+                {contentSettings['content.homeBody']}
             </p>
             </div>
           </ScrollReveal>
