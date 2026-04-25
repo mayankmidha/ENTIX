@@ -11,7 +11,6 @@ interface RelatedProductsProps {
 export async function RelatedProducts({ productId, relatedSlugs, material }: RelatedProductsProps) {
   let products: any[] = [];
 
-  // First try explicitly set related products
   if (relatedSlugs.length > 0) {
     products = await prisma.product.findMany({
       where: {
@@ -26,7 +25,6 @@ export async function RelatedProducts({ productId, relatedSlugs, material }: Rel
     });
   }
 
-  // Fallback: same material or bestsellers
   if (products.length < 4) {
     const existing = products.map((p) => p.id);
     const fallback = await prisma.product.findMany({
@@ -49,13 +47,18 @@ export async function RelatedProducts({ productId, relatedSlugs, material }: Rel
   return (
     <section className="mt-32 border-t border-ink/5 pt-20">
       <ScrollReveal>
-        <div className="text-center mb-16">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-4">
-            You May Also Covet
+        <div className="mb-16 grid gap-5 text-left sm:grid-cols-[1fr_auto] sm:items-end">
+          <div>
+            <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.22em] text-ink/38">
+              Complete The Look
+            </div>
+            <h2 className="font-display text-5xl font-light leading-[0.92] tracking-normal text-ink sm:text-6xl">
+              Pieces that speak the same language.
+            </h2>
           </div>
-          <h2 className="font-display text-[36px] font-medium tracking-display text-ink">
-            Complementary Pieces
-          </h2>
+          <p className="max-w-sm text-[14px] leading-relaxed text-ink/52">
+            Chosen to echo finish, mood, and silhouette without making the set feel forced.
+          </p>
         </div>
       </ScrollReveal>
 

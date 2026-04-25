@@ -4,10 +4,13 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { CollectionToolbar } from '@/components/collection/CollectionToolbar';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
+import Image from 'next/image';
 import { Suspense } from 'react';
 import Link from 'next/link';
+import { ArrowRight, Gem, Gift, Sparkles } from 'lucide-react';
 import { getCanonicalBaseUrl } from '@/lib/site-url';
-import { getSiteSettings } from '@/lib/settings';
+import { getSiteSettings, hasDatabaseUrl } from '@/lib/settings';
+import { getCollectionMood } from '@/lib/storefront-world';
 
 export const dynamic = 'force-dynamic';
 
@@ -73,53 +76,57 @@ const TAXONOMY_COLLECTIONS: Record<
 };
 
 async function resolveCollection(slug: string) {
-  const collection = await prisma.collection.findUnique({
-    where: { slug },
-    include: {
-      products: {
-        include: {
-          product: {
-            include: {
-              images: { orderBy: { position: 'asc' } },
-              inventory: true,
+  if (hasDatabaseUrl()) {
+    const collection = await prisma.collection.findUnique({
+      where: { slug },
+      include: {
+        products: {
+          include: {
+            product: {
+              include: {
+                images: { orderBy: { position: 'asc' } },
+                inventory: true,
+              },
             },
           },
+          orderBy: { position: 'asc' },
         },
-        orderBy: { position: 'asc' },
       },
-    },
-  });
+    }).catch(() => null);
 
-  if (collection) {
-    return {
-      type: 'collection' as const,
-      title: collection.title,
-      description:
-        collection.description || `Explore our ${collection.title} collection at Entix Jewellery.`,
-      heroImage: collection.heroImage,
-      eyebrow: 'Entix Selection',
-      products: collection.products.map((cp) => cp.product),
-    };
+    if (collection) {
+      return {
+        type: 'collection' as const,
+        title: collection.title,
+        description:
+          collection.description || `Explore our ${collection.title} collection at Entix Jewellery.`,
+        heroImage: collection.heroImage,
+        eyebrow: 'Entix Selection',
+        products: collection.products.map((cp) => cp.product),
+      };
+    }
   }
 
   const taxonomy = TAXONOMY_COLLECTIONS[slug];
   if (!taxonomy) return null;
 
-  const products = await prisma.product.findMany({
-    where: {
-      isActive: true,
-      OR: taxonomy.terms.flatMap((term) => [
-        { title: { contains: term, mode: 'insensitive' } },
-        { subtitle: { contains: term, mode: 'insensitive' } },
-        { description: { contains: term, mode: 'insensitive' } },
-      ]),
-    },
-    include: {
-      images: { orderBy: { position: 'asc' } },
-      inventory: true,
-    },
-    orderBy: [{ isFeatured: 'desc' }, { isBestseller: 'desc' }, { createdAt: 'desc' }],
-  });
+  const products = hasDatabaseUrl()
+    ? await prisma.product.findMany({
+      where: {
+        isActive: true,
+        OR: taxonomy.terms.flatMap((term) => [
+          { title: { contains: term, mode: 'insensitive' } },
+          { subtitle: { contains: term, mode: 'insensitive' } },
+          { description: { contains: term, mode: 'insensitive' } },
+        ]),
+      },
+      include: {
+        images: { orderBy: { position: 'asc' } },
+        inventory: true,
+      },
+      orderBy: [{ isFeatured: 'desc' }, { isBestseller: 'desc' }, { createdAt: 'desc' }],
+    }).catch(() => [])
+    : [];
 
   return {
     type: 'taxonomy' as const,
@@ -217,6 +224,8 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   if (!collection) return notFound();
 
   const filteredProducts = applyCollectionFilters(collection.products, filters);
+  const mood = getCollectionMood(slug);
+  const leadProduct = filteredProducts[0];
   const baseUrl = getCanonicalBaseUrl(settings['domain.canonical'], settings['domain.primary']);
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -287,7 +296,80 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         </div>
       </header>
 
+      <section className="relative z-10 mx-auto -mt-10 max-w-7xl px-6 lg:px-12">
+        <ScrollReveal>
+          <div className="grid gap-px bg-ink/10 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="relative min-h-[420px] overflow-hidden bg-ink">
+              <Image
+                src={mood.image}
+                alt={`${collection.title} mood`}
+                fill
+                sizes="(min-width: 1024px) 48vw, 100vw"
+                className="object-cover opacity-92"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.76),rgba(18,15,13,0.08))]" />
+              <div className="absolute bottom-7 left-7 right-7 text-ivory">
+                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne-200">How to enter</div>
+                <h2 className="mt-4 max-w-xl font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
+                  Start with the mood, then choose the piece.
+                </h2>
+              </div>
+            </div>
+
+            <div className="grid bg-[#f6f1e8] sm:grid-cols-3 lg:grid-cols-1">
+              <MoodCell icon={Sparkles} title="Wear it" text={mood.wear} />
+              <MoodCell icon={Gem} title="Material cue" text={mood.material} />
+              <MoodCell icon={Gift} title="Gift logic" text={mood.gift} />
+            </div>
+          </div>
+        </ScrollReveal>
+      </section>
+
       <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-24">
+        <div className="mb-10 flex gap-2 overflow-x-auto pb-2 lg:hidden">
+          {COLLECTION_NAV.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="shrink-0 border border-ink/10 bg-white/55 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink/55"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+
+        {leadProduct && (
+          <ScrollReveal>
+            <Link href={`/products/${leadProduct.slug}`} className="group mb-14 grid gap-px overflow-hidden bg-ink/10 lg:grid-cols-[0.72fr_1.28fr]">
+              <div className="bg-ink p-7 text-ivory sm:p-9">
+                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne-300">Lead Piece</div>
+                <h2 className="mt-8 font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
+                  {leadProduct.title}
+                </h2>
+                <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-ivory/58">
+                  {leadProduct.subtitle || leadProduct.story || leadProduct.description}
+                </p>
+                <div className="mt-9 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-champagne-200">
+                  View product <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+              <div className="relative min-h-[360px] overflow-hidden bg-[#eee8de]">
+                {leadProduct.images[0]?.url ? (
+                  <Image
+                    src={leadProduct.images[0].url}
+                    alt={leadProduct.title}
+                    fill
+                    sizes="(min-width: 1024px) 62vw, 100vw"
+                    className="object-cover transition duration-[1400ms] group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-ivory-2" />
+                )}
+              </div>
+            </Link>
+          </ScrollReveal>
+        )}
+
         <div className="mb-8 grid gap-4 border-b border-ink/10 pb-5 sm:grid-cols-[1fr_auto] sm:items-end">
           <span className="font-mono text-[11px] uppercase tracking-widest text-ink/40">
             {filteredProducts.length} Piece{filteredProducts.length !== 1 ? 's' : ''}
@@ -318,11 +400,21 @@ export default async function CollectionPage({ params, searchParams }: Props) {
 
         {filteredProducts.length === 0 && (
            <div className="py-40 text-center">
-              <p className="font-display text-2xl text-ink/20 italic">No pieces match your filters.</p>
-              <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-ink/30">Try adjusting your criteria</p>
+              <p className="font-display text-3xl text-ink/24 italic">This exact edit is hiding for now.</p>
+              <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-ink/30">Adjust the filters or return to the full room</p>
            </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function MoodCell({ icon: Icon, title, text }: { icon: any; title: string; text: string }) {
+  return (
+    <div className="border-b border-ink/8 bg-[#f6f1e8] p-6 sm:border-r lg:border-r-0">
+      <Icon size={18} className="text-champagne-700" />
+      <h3 className="mt-8 font-display text-[28px] font-light leading-none tracking-normal text-ink">{title}</h3>
+      <p className="mt-4 text-[13px] leading-relaxed text-ink/56">{text}</p>
     </div>
   );
 }

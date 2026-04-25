@@ -1,10 +1,13 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { Hero } from '@/components/home/HeroClient';
 import { Marquee } from '@/components/home/Marquee';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { ArrowRight, Gem, PackageCheck, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, Gem, HeartHandshake, PackageCheck, ShieldCheck, Sparkles } from 'lucide-react';
+import { giftEdits, lookbookScenes, trustLayer } from '@/lib/storefront-world';
+import { hasDatabaseUrl } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 60;
@@ -13,7 +16,7 @@ const collectionRooms = [
   {
     title: 'The Ceremonial Edit',
     text: 'Gold-toned forms for vows, festivals, and evening light.',
-    href: '/collections/spring-26',
+    href: '/collections/bridal',
     image: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1400&q=92',
   },
   {
@@ -38,6 +41,10 @@ const shopSignals = [
 ];
 
 async function getHomeData() {
+  if (!hasDatabaseUrl()) {
+    return { featured: [], newArrivals: [] };
+  }
+
   try {
     const [featured, newArrivals] = await Promise.all([
       prisma.product.findMany({
@@ -66,6 +73,47 @@ export default async function HomePage() {
     <>
       <Hero />
       <Marquee />
+
+      <section className="relative overflow-hidden bg-ink px-6 py-16 text-ivory lg:px-12 lg:py-24">
+        <div className="absolute inset-0 noise opacity-20" />
+        <div className="relative z-10 mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.86fr_1.14fr] lg:items-end">
+          <ScrollReveal>
+            <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-champagne-300">A House In Motion</div>
+            <h2 className="mt-6 font-display text-5xl font-light leading-[0.9] tracking-normal sm:text-6xl md:text-7xl">
+              A jewellery film in three rooms.
+            </h2>
+            <p className="mt-7 max-w-xl text-[15px] leading-relaxed text-ivory/58">
+              Ritual, object, gift, and collection move together before the piece becomes yours.
+            </p>
+          </ScrollReveal>
+
+          <div className="grid gap-px bg-white/10 sm:grid-cols-3">
+            {lookbookScenes.map((scene, idx) => (
+              <ScrollReveal key={scene.title} delay={idx * 0.06}>
+                <Link href={scene.href} className="group block bg-ink p-3 transition-colors hover:bg-ivory hover:text-ink">
+                  <div className="relative aspect-[3/4] overflow-hidden bg-white/5">
+                    <Image
+                      src={scene.image}
+                      alt={scene.title}
+                      fill
+                      sizes="(min-width: 1024px) 22vw, 92vw"
+                      className="object-cover opacity-84 transition duration-[1400ms] group-hover:scale-105 group-hover:opacity-100"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink/64 via-transparent to-transparent group-hover:opacity-0 transition-opacity" />
+                  </div>
+                  <div className="p-2 pt-5">
+                    <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-current/40">{scene.eyebrow}</div>
+                    <div className="mt-3 flex items-end justify-between gap-3 font-display text-[27px] font-light leading-none tracking-normal">
+                      {scene.title}
+                      <ArrowRight size={14} className="shrink-0 transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </div>
+                </Link>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section className="bg-ink px-6 py-5 text-ivory lg:px-12">
         <div className="mx-auto grid max-w-7xl gap-px bg-white/12 md:grid-cols-4">
@@ -157,6 +205,54 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="bg-ivory px-6 py-20 lg:px-12 lg:py-28">
+        <div className="mx-auto grid max-w-7xl gap-px bg-ink/10 lg:grid-cols-[0.98fr_1.02fr]">
+          <ScrollReveal>
+            <div className="relative min-h-[520px] overflow-hidden bg-ink">
+              <Image
+                src={giftEdits[0].image}
+                alt="Entix gift guide"
+                fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                className="object-cover opacity-88"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.82),rgba(18,15,13,0.05))]" />
+              <div className="absolute bottom-8 left-8 right-8 text-ivory">
+                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne-200">Gift Guide</div>
+                <h2 className="mt-5 max-w-lg font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
+                  When the choice needs to feel personal.
+                </h2>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.08}>
+            <div className="flex h-full flex-col justify-between bg-[#f6f1e8] p-7 sm:p-10 lg:p-12">
+              <div>
+                <HeartHandshake size={22} className="text-champagne-700" />
+                <p className="mt-8 max-w-xl text-[17px] leading-relaxed text-ink/62">
+                  Choose by certainty: earrings and pendants when sizing is unknown, rings when the fit is known, bangles when the gift needs presence.
+                </p>
+              </div>
+              <div className="mt-12 grid gap-px bg-ink/10 sm:grid-cols-3">
+                {giftEdits.map((edit) => (
+                  <Link key={edit.title} href={edit.href} className="group bg-ivory p-4 transition-colors hover:bg-ink hover:text-ivory">
+                    <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-current/40">{edit.cue}</div>
+                    <div className="mt-8 flex items-end justify-between gap-3 font-display text-[22px] font-light leading-none">
+                      {edit.title}
+                      <ArrowRight size={13} />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              <Link href="/gift-guide" className="mt-8 inline-flex w-fit items-center gap-2 bg-ink px-6 py-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ivory transition-colors hover:bg-ink-2">
+                Open gift guide <ArrowRight size={13} />
+              </Link>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       <section className="bg-ink px-6 py-24 text-ivory lg:px-12 lg:py-32">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <ScrollReveal>
@@ -167,10 +263,10 @@ export default async function HomePage() {
           </ScrollReveal>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <TrustCard icon={Gem} title="Material clarity" text="Metal, finish, gemstone, dimensions, and care stay close to every product decision." />
-            <TrustCard icon={ShieldCheck} title="Purchase confidence" text="Reviews, wishlist, secure checkout, returns, and tracking support the path to purchase." />
-            <TrustCard icon={PackageCheck} title="Catalogue depth" text="The store is ready to carry a broad fine-jewellery catalogue without losing editorial control." />
-            <TrustCard icon={Sparkles} title="Guided discovery" text="Collections are shaped around occasion, silhouette, and gifting intent instead of endless scrolling." />
+            <TrustCard icon={Gem} title={trustLayer[1].title} text={trustLayer[1].text} />
+            <TrustCard icon={ShieldCheck} title={trustLayer[2].title} text={trustLayer[2].text} />
+            <TrustCard icon={PackageCheck} title={trustLayer[0].title} text={trustLayer[0].text} />
+            <TrustCard icon={Sparkles} title="Guided Discovery" text="Collections are shaped around occasion, silhouette, and gifting intent instead of endless scrolling." />
           </div>
         </div>
       </section>
@@ -249,11 +345,11 @@ function EditorialPlaceholderGrid({ compact = false }: { compact?: boolean }) {
           <div className="relative aspect-[4/5] overflow-hidden border border-ink/8 bg-[#eee8de]">
             <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
             <div className="absolute inset-x-3 top-3 border border-white/50 bg-white/50 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur">
-              Catalogue cue
+              Entix room
             </div>
           </div>
           <h3 className="mt-5 font-display text-[22px] font-medium leading-tight text-ink">{item.title}</h3>
-          <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">Ready for final SKU import</p>
+          <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">Editorial collection</p>
         </div>
       ))}
     </div>

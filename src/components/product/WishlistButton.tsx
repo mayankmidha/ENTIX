@@ -10,21 +10,22 @@ export function WishlistButton({ product }: { product: WishlistItem }) {
 
   return (
     <button
+      type="button"
+      aria-label={active ? `Remove ${product.title} from wishlist` : `Save ${product.title} to wishlist`}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
         toggle(product);
-        if (!active) {
-          toast.success('Added to wishlist', {
-            className: 'bg-ivory font-mono'
-          });
-        }
+        toast(active ? 'Removed from wishlist' : 'Saved to wishlist', {
+          description: active ? product.title : 'Your saved edit is waiting.',
+          className: 'bg-ivory font-mono'
+        });
       }}
       className={cn(
-        "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300",
+        "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 active:scale-95",
         active 
-          ? "bg-oxblood text-ivory shadow-lg" 
-          : "bg-white/40 text-ink/40 backdrop-blur-md hover:text-oxblood"
+          ? "bg-oxblood text-ivory shadow-lg ring-4 ring-oxblood/10" 
+          : "bg-white/50 text-ink/45 backdrop-blur-md hover:bg-white hover:text-oxblood"
       )}
     >
       <Heart size={18} fill={active ? "currentColor" : "none"} />

@@ -4,9 +4,11 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { CollectionToolbar } from '@/components/collection/CollectionToolbar';
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Suspense } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Gem, ShieldCheck, Sparkles } from 'lucide-react';
 import { hasDatabaseUrl } from '@/lib/settings';
+import { editorialRooms, trustLayer } from '@/lib/storefront-world';
 
 export const dynamic = 'force-dynamic';
 
@@ -115,6 +117,32 @@ export default async function AllCollectionsPage({ searchParams }: Props) {
           ))}
         </div>
 
+        <ScrollReveal>
+          <section className="mb-14 grid gap-px bg-ink/10 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="relative min-h-[430px] overflow-hidden bg-ink">
+              <Image
+                src={editorialRooms[2].image}
+                alt="Entix editorial jewellery"
+                fill
+                sizes="(min-width: 1024px) 55vw, 100vw"
+                className="object-cover opacity-90"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.82),rgba(18,15,13,0.08))]" />
+              <div className="absolute bottom-7 left-7 right-7 text-ivory">
+                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne-200">Browse with intent</div>
+                <h2 className="mt-5 max-w-2xl font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
+                  Every piece deserves an emotional route.
+                </h2>
+              </div>
+            </div>
+            <div className="grid bg-[#f6f1e8] sm:grid-cols-3 lg:grid-cols-1">
+              <CatalogueCue icon={Gem} title="Choose by material" text="Gold tone, finish, stone, weight, and dimensions stay close to the product." />
+              <CatalogueCue icon={Sparkles} title="Choose by occasion" text="Bridal, gifting, festive, everyday, and new arrivals give faster entry points." />
+              <CatalogueCue icon={ShieldCheck} title={trustLayer[0].title} text={trustLayer[0].text} />
+            </div>
+          </section>
+        </ScrollReveal>
+
         {hasProducts && (
           <Suspense fallback={null}>
             <CollectionToolbar />
@@ -145,17 +173,17 @@ export default async function AllCollectionsPage({ searchParams }: Props) {
           <div className="border border-ink/10 bg-white/45 p-8 md:p-12">
             <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
               <div>
-                <div className="eyebrow">Catalogue Required</div>
+                <div className="eyebrow">Entix Rooms</div>
                 <h2 className="mt-5 font-display text-5xl font-light leading-[0.9] tracking-normal text-ink md:text-7xl">
-                  Import the final Entix product file.
+                  Begin with the room, then collect the piece.
                 </h2>
               </div>
               <div className="grid gap-3 text-[13px] leading-relaxed text-ink/55 md:grid-cols-2">
                 {[
-                  '300 products with SKU, price, stock, weights, dimensions, and images',
-                  'Collections for bangles, rings, earrings, necklaces, bridal, gifting, and everyday',
-                  'Jewellery fields: material, stone, finish, care, dispatch, certification, warranty',
-                  'Hover images and gallery order ready for the product cards',
+                  'Bangles, rings, earrings, necklaces, bridal, gifting, and everyday rooms',
+                  'Material, stone, finish, care, sizing, dispatch, and authenticity cues',
+                  'Wishlist, cart, checkout, order tracking, returns, and concierge support',
+                  'Editorial routes for gifting, ceremony, daily wear, and statement dressing',
                 ].map((item) => (
                   <div key={item} className="border border-ink/8 bg-[#f6f4ef] p-4">
                     {item}
@@ -182,6 +210,16 @@ function Stat({ value, label }: { value: string; label: string }) {
     <div className="bg-ivory p-4 lg:mt-4 lg:border lg:border-ink/10">
       <div className="font-display text-[30px] font-medium leading-none text-ink">{value}</div>
       <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/38">{label}</div>
+    </div>
+  );
+}
+
+function CatalogueCue({ icon: Icon, title, text }: { icon: any; title: string; text: string }) {
+  return (
+    <div className="border-b border-ink/8 bg-[#f6f1e8] p-6">
+      <Icon size={18} className="text-champagne-700" />
+      <h3 className="mt-8 font-display text-[27px] font-light leading-none tracking-normal text-ink">{title}</h3>
+      <p className="mt-4 text-[13px] leading-relaxed text-ink/55">{text}</p>
     </div>
   );
 }

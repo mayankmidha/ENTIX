@@ -145,7 +145,7 @@ export function ProductActions({ product }: ProductActionsProps) {
                 <ShieldCheck size={14} className="shrink-0 text-jade" /> Secure Checkout
              </div>
              <div className="flex items-center gap-2 bg-ivory px-3 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-ink/42">
-                <Truck size={14} className="shrink-0 text-champagne-500" /> Tracked Dispatch
+                <Truck size={14} className="shrink-0 text-champagne-500" /> Insured Shipping
              </div>
              <div className="flex items-center gap-2 bg-ivory px-3 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-ink/42">
                 <MessageCircle size={14} className="shrink-0 text-oxblood" /> Concierge Support

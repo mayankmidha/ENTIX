@@ -2,30 +2,34 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, ShoppingBag, User, Search, Menu, X, Heart } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowRight, ChevronDown, Gem, Heart, Menu, Search, ShieldCheck, ShoppingBag, User, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CartDrawer } from './CartDrawer';
+import { MegaMenu } from './MegaMenu';
 import { useCart } from '@/stores/cart-store';
+import { editorialCollections, editorialRooms, trustLayer } from '@/lib/storefront-world';
 
 const NAV_LINKS = [
   { label: 'Shop All', href: '/collections/all' },
-  { label: 'New', href: '/collections/spring-26' },
   { label: 'Bangles', href: '/collections/bangles' },
   { label: 'Necklaces', href: '/collections/necklaces' },
   { label: 'Earrings', href: '/collections/earrings' },
   { label: 'Rings', href: '/collections/rings' },
+  { label: 'Bridal', href: '/collections/bridal' },
   { label: 'Gifts', href: '/collections/gifts' },
 ];
 
-const MENU_FEATURES = [
-  { label: 'Spring 26', href: '/collections/spring-26' },
-  { label: 'Bridal', href: '/collections/bridal' },
+const EDITORIAL_LINKS = [
+  { label: 'Lookbook', href: '/lookbook' },
+  { label: 'Gift Guide', href: '/gift-guide' },
   { label: 'Everyday', href: '/collections/everyday' },
-  { label: 'Gifts', href: '/collections/gifts' },
 ];
 
 const MOBILE_EXTRA = [
   { label: 'New Arrivals', href: '/collections/all?sort=newest' },
+  { label: 'Lookbook', href: '/lookbook' },
+  { label: 'Gift Guide', href: '/gift-guide' },
   { label: 'About Entix', href: '/about' },
   { label: 'Contact', href: '/contact' },
   { label: 'Track Order', href: '/track' },
@@ -50,7 +54,12 @@ export function Header() {
       )}>
         <div className="relative mx-auto flex h-20 max-w-[1500px] items-center justify-between gap-8 px-6 lg:px-12">
           {/* Mobile menu toggle */}
-          <button className="lg:hidden p-2 -ml-2" onClick={() => setMobileOpen(true)}>
+          <button
+            type="button"
+            aria-label="Open menu"
+            className="-ml-2 p-2 transition-colors hover:text-champagne-600 lg:hidden"
+            onClick={() => setMobileOpen(true)}
+          >
             <Menu size={20} />
           </button>
 
@@ -66,27 +75,16 @@ export function Header() {
               onMouseEnter={() => setShopOpen(true)}
               onMouseLeave={() => setShopOpen(false)}
             >
-              <button className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] transition-colors hover:text-champagne-500">
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] transition-colors hover:text-champagne-500"
+                onFocus={() => setShopOpen(true)}
+              >
                 Shop <ChevronDown size={12} />
               </button>
               {shopOpen && (
-                <div className="absolute left-0 top-full z-50 mt-6 w-[520px] border border-ink/10 bg-ivory/95 p-7 text-ink shadow-2xl backdrop-blur-xl">
-                  <div className="grid grid-cols-[0.9fr_1.1fr] gap-8">
-                    <div>
-                      <div className="font-mono text-[9px] uppercase tracking-[0.24em] text-ink/35">Shop the house</div>
-                      <p className="mt-4 font-display text-[28px] font-light leading-tight tracking-normal text-ink">
-                        Browse by ritual, silhouette, or gifting mood.
-                      </p>
-                    </div>
-                    <div className="grid gap-2">
-                      {[...MENU_FEATURES, ...NAV_LINKS.filter((link) => !MENU_FEATURES.some((item) => item.href === link.href))].map((link) => (
-                          <Link key={link.href} href={link.href} className="flex items-center justify-between border-b border-ink/5 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/55 transition-colors hover:text-ink">
-                            {link.label}
-                            <span>→</span>
-                          </Link>
-                        ))}
-                    </div>
-                  </div>
+                <div className="absolute left-0 top-full z-50 mt-6 w-[920px] max-w-[calc(100vw-6rem)] border border-ink/10 bg-ivory/96 p-3 text-ink shadow-[0_28px_90px_rgba(18,15,13,0.16)] backdrop-blur-2xl animate-in fade-in slide-in-from-top-2 duration-300">
+                  <MegaMenu onNavigate={() => setShopOpen(false)} />
                 </div>
               )}
             </div>
@@ -95,12 +93,17 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            {EDITORIAL_LINKS.slice(0, 1).map((link) => (
+              <Link key={link.href} href={link.href} className="font-mono text-[10px] uppercase tracking-[0.2em] transition-colors hover:text-champagne-500">
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
           {/* Actions */}
           <div className="flex items-center gap-4 sm:gap-6">
-            <Link href="/about" className="hidden font-mono text-[10px] uppercase tracking-[0.2em] transition-colors hover:text-champagne-500 xl:block">
-              About
+            <Link href="/gift-guide" className="hidden font-mono text-[10px] uppercase tracking-[0.2em] transition-colors hover:text-champagne-500 xl:block">
+              Gifts
             </Link>
             <Link href="/contact" className="hidden font-mono text-[10px] uppercase tracking-[0.2em] transition-colors hover:text-champagne-500 xl:block">
               Contact
@@ -116,7 +119,7 @@ export function Header() {
             </Link>
             
             <CartDrawer>
-              <button className="p-2 relative group hover:text-champagne-500 transition-colors">
+              <button type="button" aria-label="Open cart" className="group relative p-2 transition-colors hover:text-champagne-500">
                 <ShoppingBag size={18} />
                 {totalItems() > 0 && (
                   <span className="absolute -top-1 -right-1 h-4 w-4 bg-champagne-500 text-ink text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-ivory group-hover:scale-110 transition-transform">
@@ -133,50 +136,104 @@ export function Header() {
       {mobileOpen && (
         <div className="fixed inset-0 z-[200] lg:hidden">
           <div className="absolute inset-0 bg-ink/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-full max-w-sm bg-ivory shadow-2xl flex flex-col animate-in slide-in-from-left duration-300">
-            <div className="flex items-center justify-between p-6 border-b border-ink/5">
+          <div className="absolute inset-y-0 left-0 flex w-full max-w-[430px] flex-col bg-ivory shadow-2xl animate-in slide-in-from-left duration-300">
+            <div className="flex items-center justify-between border-b border-ink/5 p-5">
               <Link href="/" className="font-display text-[22px] font-medium tracking-logo text-ink" onClick={() => setMobileOpen(false)}>
                 ENTIX
               </Link>
-              <button className="h-10 w-10 rounded-full bg-ink/5 flex items-center justify-center text-ink/60" onClick={() => setMobileOpen(false)}>
+              <button
+                type="button"
+                aria-label="Close menu"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-ink/5 text-ink/60 transition-colors hover:text-ink"
+                onClick={() => setMobileOpen(false)}
+              >
                 <X size={20} />
               </button>
             </div>
 
-            <nav className="flex-1 overflow-y-auto p-6 space-y-1">
-              <div className="font-mono text-[9px] uppercase tracking-[0.25em] text-ink/30 px-4 pb-3">Shop</div>
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={cn(
-                    'block px-4 py-3.5 font-mono text-[12px] uppercase tracking-widest transition-colors',
-                    pathname === link.href ? 'bg-ink text-ivory' : 'text-ink/70 hover:bg-ink/5 hover:text-ink'
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
+            <nav className="flex-1 space-y-7 overflow-y-auto p-5 custom-scrollbar">
+              <Link
+                href="/lookbook"
+                onClick={() => setMobileOpen(false)}
+                className="group relative block min-h-[210px] overflow-hidden bg-ink text-ivory"
+              >
+                <Image
+                  src={editorialRooms[2].image}
+                  alt="Entix lookbook"
+                  fill
+                  sizes="430px"
+                  className="object-cover opacity-78 transition duration-[1200ms] group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.84),rgba(18,15,13,0.08))]" />
+                <div className="absolute inset-x-5 bottom-5">
+                  <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-champagne-200">Entix lookbook</div>
+                  <div className="mt-3 flex items-end justify-between gap-5">
+                    <div className="font-display text-[38px] font-light leading-none tracking-normal">Enter the lookbook</div>
+                    <ArrowRight size={18} className="shrink-0" />
+                  </div>
+                </div>
+              </Link>
 
-              <div className="font-mono text-[9px] uppercase tracking-[0.25em] text-ink/30 px-4 pt-6 pb-3">More</div>
-              {MOBILE_EXTRA.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="block px-4 py-3.5 font-mono text-[12px] uppercase tracking-widest text-ink/50 transition-colors hover:bg-ink/5 hover:text-ink"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              <div>
+                <div className="px-1 pb-3 font-mono text-[9px] uppercase tracking-[0.25em] text-ink/30">Shop rooms</div>
+                <div className="grid grid-cols-2 gap-px bg-ink/10">
+                  {editorialCollections.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        'min-h-28 bg-ivory p-4 transition-colors hover:bg-ink hover:text-ivory',
+                        pathname === link.href ? 'bg-ink text-ivory' : 'text-ink'
+                      )}
+                    >
+                      <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-current/40">{link.kicker}</div>
+                      <div className="mt-7 flex items-end justify-between gap-3 font-display text-[24px] font-light leading-none">
+                        {link.label}
+                        <ArrowRight size={14} />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="px-1 pb-3 font-mono text-[9px] uppercase tracking-[0.25em] text-ink/30">More</div>
+                <div className="grid gap-1">
+                  {MOBILE_EXTRA.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-between bg-white/50 px-4 py-3.5 font-mono text-[11px] uppercase tracking-widest text-ink/58 transition-colors hover:bg-ink hover:text-ivory"
+                    >
+                      {link.label}
+                      <ArrowRight size={13} />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid gap-px bg-ink/10">
+                {trustLayer.slice(0, 3).map((item, index) => (
+                  <div key={item.title} className="grid grid-cols-[36px_1fr] items-center gap-3 bg-[#f6f2eb] p-4">
+                    <div className="flex h-9 w-9 items-center justify-center border border-ink/10 text-champagne-700">
+                      {index === 0 ? <ShieldCheck size={15} /> : <Gem size={15} />}
+                    </div>
+                    <div>
+                      <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink/45">{item.title}</div>
+                      <p className="mt-1 line-clamp-1 text-[12px] text-ink/45">{item.text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </nav>
 
-            <div className="p-6 border-t border-ink/5 space-y-3">
+            <div className="space-y-3 border-t border-ink/5 p-5">
               <Link
                 href="/account"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 font-mono text-[11px] uppercase tracking-widest text-ink/60 hover:bg-ink/5"
+                className="flex items-center gap-3 bg-ink px-4 py-3 font-mono text-[11px] uppercase tracking-widest text-ivory transition-colors hover:bg-ink-2"
               >
                 <User size={16} /> My Account
               </Link>

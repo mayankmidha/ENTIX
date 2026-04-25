@@ -3,6 +3,7 @@ import {
   BadgeCheck, ChevronRight, Gem, MessageCircle, PackageCheck, Ruler, ShieldCheck, Sparkles, Truck
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { Metadata } from 'next';
@@ -10,6 +11,7 @@ import { Metadata } from 'next';
 import { ProductActions } from '@/components/product/ProductActions';
 import { ProductGallery } from '@/components/product/ProductGallery';
 import { ProductReviews } from '@/components/product/ProductReviews';
+import { RecentlyViewed } from '@/components/product/RecentlyViewed';
 import { RelatedProducts } from '@/components/product/RelatedProducts';
 import { WishlistButton } from '@/components/product/WishlistButton';
 import { getCanonicalBaseUrl } from '@/lib/site-url';
@@ -124,6 +126,7 @@ export default async function ProductPage({ params }: Props) {
   const narrative = product.story || product.description;
   const careText = product.careInstructions || 'Store separately, keep away from perfume and water, and wipe gently with a soft cloth after wear.';
   const primaryImage = product.images[0]?.url || null;
+  const storyImage = product.images[1]?.url || primaryImage;
 
   return (
     <div className="bg-ivory px-6 pb-40 pt-10 lg:px-12 lg:pb-32">
@@ -185,8 +188,8 @@ export default async function ProductPage({ params }: Props) {
                     specs.map((item) => <SpecRow key={item.label} label={item.label} value={item.value} />)
                   ) : (
                     <>
-                      <SpecRow label="Catalogue" value="Final product specifications pending" />
-                      <SpecRow label="Care" value="Care details will be mapped per SKU" />
+                      <SpecRow label="Details" value="Concierge can confirm product notes before purchase" />
+                      <SpecRow label="Care" value="Store softly and wipe gently after wear" />
                     </>
                   )}
                 </div>
@@ -204,11 +207,52 @@ export default async function ProductPage({ params }: Props) {
           </ScrollReveal>
 
           <div className="grid gap-px bg-ink/8 sm:grid-cols-2">
-            <AssuranceCell icon={Gem} title="Material visibility" text={product.material || 'Material, finish, gemstone, dimensions, and care are first-class catalogue fields.'} />
-            <AssuranceCell icon={Ruler} title="Scale cues" text={product.dimensions || 'Gallery thumbnails, dimensions, and product notes keep scale visible on mobile.'} />
-            <AssuranceCell icon={Truck} title="Dispatch clarity" text="Tracked shipping, secure checkout, and order updates are kept close to the purchase action." />
-            <AssuranceCell icon={MessageCircle} title="Concierge support" text="High-consideration jewellery shoppers can ask questions before committing." />
+            <AssuranceCell icon={Gem} title="Material visibility" text={product.material || 'Material, finish, gemstone, dimensions, and care stay visible before purchase.'} />
+            <AssuranceCell icon={Ruler} title="Scale cues" text={product.dimensions || 'Gallery details, dimensions, and product notes help the piece feel clear on mobile.'} />
+            <AssuranceCell icon={Truck} title="Dispatch clarity" text="Insured shipping, secure checkout, and order updates stay close to the purchase action." />
+            <AssuranceCell icon={MessageCircle} title="Concierge support" text="Ask about sizing, care, gifting, or styling before committing." />
           </div>
+        </section>
+
+        <section className="mt-20 grid gap-px overflow-hidden bg-ink/10 lg:grid-cols-[1.05fr_0.95fr]">
+          <ScrollReveal>
+            <div className="relative min-h-[560px] bg-ink">
+              {storyImage ? (
+                <Image
+                  src={storyImage}
+                  alt={`${product.title} worn mood`}
+                  fill
+                  sizes="(min-width: 1024px) 54vw, 100vw"
+                  className="object-cover opacity-92"
+                />
+              ) : (
+                <div className="h-full w-full bg-ink" />
+              )}
+              <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.78),rgba(18,15,13,0.08))]" />
+              <div className="absolute bottom-8 left-8 right-8 text-ivory">
+                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne-200">The feeling</div>
+                <h2 className="mt-5 max-w-xl font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
+                  A small object with a long memory.
+                </h2>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.08}>
+            <div className="flex h-full flex-col justify-between bg-[#f6f1e8] p-7 sm:p-10 lg:p-12">
+              <div>
+                <div className="eyebrow">Why it stays with you</div>
+                <p className="mt-8 max-w-xl text-[18px] leading-relaxed text-ink/64">
+                  {narrative}
+                </p>
+              </div>
+              <div className="mt-12 grid gap-px bg-ink/10 sm:grid-cols-3">
+                <StoryCue title="Wear" text={product.occasion || 'Made for repeat rituals'} />
+                <StoryCue title="Material" text={product.material || product.finish || 'Material clarity before checkout'} />
+                <StoryCue title="Care" text="Stored softly, worn often, cleaned gently" />
+              </div>
+            </div>
+          </ScrollReveal>
         </section>
 
         <section className="mt-20 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
@@ -224,9 +268,9 @@ export default async function ProductPage({ params }: Props) {
 
           <ScrollReveal delay={0.08}>
             <div className="grid h-full gap-px bg-ink/8">
-              <ProofRow icon={ShieldCheck} title="Quality checked" text="Each piece can carry its SKU, material notes, imagery, and dispatch status through admin." />
-              <ProofRow icon={PackageCheck} title="Gift-ready flow" text="Wishlist, cart, checkout, tracking, and order emails are already part of the store path." />
-              <ProofRow icon={BadgeCheck} title="Proof-led PDP" text="No hidden choices: variants, stock, price, care, reviews, and related pieces are visible." />
+              <ProofRow icon={ShieldCheck} title="Quality checked" text="Each piece can carry clear SKU, material notes, imagery, and dispatch status." />
+              <ProofRow icon={PackageCheck} title="Gift-ready flow" text="Wishlist, cart, checkout, tracking, and order emails support the gifting path." />
+              <ProofRow icon={BadgeCheck} title="Proof-led detail" text="Variants, stock, price, care, reviews, and related pieces stay visible." />
             </div>
           </ScrollReveal>
         </section>
@@ -249,6 +293,17 @@ export default async function ProductPage({ params }: Props) {
           productId={product.id}
           relatedSlugs={product.relatedProducts || []}
           material={product.material}
+        />
+
+        <RecentlyViewed
+          current={{
+            productId: product.id,
+            slug: product.slug,
+            title: product.title,
+            priceInr: product.priceInr,
+            imageUrl: primaryImage,
+            material: product.material || product.occasion,
+          }}
         />
       </div>
     </div>
@@ -288,6 +343,15 @@ function ProofRow({ icon: Icon, title, text }: { icon: any; title: string; text:
         <h3 className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink/45">{title}</h3>
         <p className="mt-2 text-[13px] leading-relaxed text-ink/55">{text}</p>
       </div>
+    </div>
+  );
+}
+
+function StoryCue({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="bg-ivory p-4">
+      <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink/35">{title}</div>
+      <div className="mt-3 font-display text-[19px] font-light leading-tight tracking-normal text-ink">{text}</div>
     </div>
   );
 }

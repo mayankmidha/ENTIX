@@ -31,8 +31,8 @@ export function ProductCard({ product }: { product: any }) {
   };
 
   return (
-    <article className="group">
-      <div className="relative block aspect-[4/5] overflow-hidden border border-ink/8 bg-[#eee8de]">
+    <article className="group transition duration-500 motion-safe:hover:-translate-y-1">
+      <div className="relative block aspect-[4/5] overflow-hidden border border-ink/8 bg-[#eee8de] shadow-[0_18px_46px_rgba(18,15,13,0)] transition-shadow duration-500 group-hover:shadow-[0_22px_70px_rgba(18,15,13,0.10)]">
         <Link href={`/products/${product.slug}`} className="absolute inset-0 z-0" aria-label={`View ${product.title}`}>
           {primaryImage ? (
             <Image
@@ -40,7 +40,7 @@ export function ProductCard({ product }: { product: any }) {
               alt={product.title}
               fill
               sizes="(min-width: 1280px) 24vw, (min-width: 768px) 45vw, 92vw"
-              className="object-cover transition-transform duration-[1400ms] group-hover:scale-105"
+              className="object-cover transition-transform duration-[1400ms] motion-safe:group-hover:scale-105"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-ivory-2 text-ink/10">
@@ -56,6 +56,7 @@ export function ProductCard({ product }: { product: any }) {
               className="object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
             />
           )}
+          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.38),rgba(18,15,13,0)_42%)] opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
         </Link>
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-3 p-3">
@@ -92,8 +93,9 @@ export function ProductCard({ product }: { product: any }) {
           </button>
         </div>
 
-        <div className="absolute bottom-3 left-3 z-10 hidden h-9 w-9 items-center justify-center border border-white/35 bg-white/45 text-ink/70 backdrop-blur-md transition-colors group-hover:text-ink sm:flex">
-          <Eye size={14} />
+        <div className="absolute bottom-3 left-3 z-10 hidden items-center gap-2 border border-white/35 bg-white/55 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/70 backdrop-blur-md transition-all group-hover:text-ink sm:flex">
+          <Eye size={13} />
+          View piece
         </div>
       </div>
 

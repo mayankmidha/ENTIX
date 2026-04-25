@@ -1,7 +1,7 @@
 'use client';
 import { Drawer } from 'vaul';
 import Link from 'next/link';
-import { X, ShoppingBag, Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
+import { ArrowRight, BadgeCheck, MessageCircle, Minus, Plus, ShieldCheck, ShoppingBag, Trash2, X } from 'lucide-react';
 import { useCart } from '@/stores/cart-store';
 import { formatInr } from '@/lib/utils';
 import Image from 'next/image';
@@ -37,6 +37,10 @@ export function CartDrawer({ children }: { children: React.ReactNode }) {
                 <Drawer.Close asChild>
                   <Link href="/collections/all" className="mt-8 bg-ink px-8 py-4 font-mono text-[11px] uppercase tracking-widest text-ivory transition-all hover:bg-ink-2">Explore Entix</Link>
                 </Drawer.Close>
+                <div className="mt-8 grid w-full max-w-xs gap-px bg-ink/8 text-left">
+                  <MiniTrust icon={ShieldCheck} title="Secure payments" />
+                  <MiniTrust icon={BadgeCheck} title="Authenticity cues" />
+                </div>
               </div>
             ) : (
               <div className="space-y-8">
@@ -88,6 +92,11 @@ export function CartDrawer({ children }: { children: React.ReactNode }) {
 
           {items.length > 0 && (
             <div className="p-8 bg-ivory-2/50 border-t border-ink/5 space-y-6">
+              <div className="grid gap-px bg-ink/8 sm:grid-cols-3">
+                <MiniTrust icon={ShieldCheck} title="Secure" />
+                <MiniTrust icon={BadgeCheck} title="Insured" />
+                <MiniTrust icon={MessageCircle} title="Concierge" />
+              </div>
               <div className="space-y-2">
                 <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40">
                   <span>Subtotal</span>
@@ -113,5 +122,14 @@ export function CartDrawer({ children }: { children: React.ReactNode }) {
         </Drawer.Content>
       </Drawer.Portal>
     </Drawer.Root>
+  );
+}
+
+function MiniTrust({ icon: Icon, title }: { icon: any; title: string }) {
+  return (
+    <div className="flex items-center gap-2 bg-ivory px-3 py-3 font-mono text-[9px] uppercase tracking-[0.12em] text-ink/42">
+      <Icon size={13} className="shrink-0 text-champagne-700" />
+      {title}
+    </div>
   );
 }
