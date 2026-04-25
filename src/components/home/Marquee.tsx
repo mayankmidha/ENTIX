@@ -1,5 +1,5 @@
 'use client';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 
 const items = [
   "Curated from Gurgaon",
@@ -11,12 +11,14 @@ const items = [
 ];
 
 export function Marquee() {
+  const reduceMotion = useReducedMotion();
+
   return (
     <div className="relative border-y border-ink/5 bg-white py-6 overflow-hidden">
       <div className="absolute inset-0 noise opacity-10" />
       <motion.div 
-        animate={{ x: [0, -1000] }}
-        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+        animate={reduceMotion ? undefined : { x: [0, -1000] }}
+        transition={reduceMotion ? undefined : { duration: 40, repeat: Infinity, ease: "linear" }}
         className="flex whitespace-nowrap gap-12 items-center"
       >
         {[...items, ...items, ...items].map((text, idx) => (

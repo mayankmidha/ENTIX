@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import {
   Home, ShoppingBag, Package, LayoutGrid, Boxes, Users, 
   BarChart3, BadgePercent,
-  Settings, LogOut, Link2,
+  Settings, LogOut, Link2, Sparkles, ShieldCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -49,6 +49,23 @@ export function AdminSidebar() {
       <Link href="/admin" className="block font-display text-[22px] font-medium tracking-logo text-ink">
         ENTIX<span className="ml-2 font-mono text-[10px] tracking-caps text-ink/50">· ADMIN</span>
       </Link>
+
+      <div className="mt-7 rounded-[28px] border border-ink/6 bg-white/75 p-4 shadow-sm">
+        <div className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.22em] text-ink/36">
+          <Sparkles size={12} className="text-champagne-700" />
+          Merchant operating mode
+        </div>
+        <div className="mt-3 font-display text-[24px] font-light tracking-display text-ink">
+          Jewellery-first.
+        </div>
+        <div className="mt-2 text-[12px] leading-relaxed text-ink/52">
+          Merchandising, fulfilment, cataloguing, and trust cues built for high-consideration purchases.
+        </div>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-jade/10 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-jade">
+          <ShieldCheck size={11} />
+          Internal launch surface
+        </div>
+      </div>
 
       <div className="mt-10 space-y-8">
         {groups.map((group, gIndex) => (

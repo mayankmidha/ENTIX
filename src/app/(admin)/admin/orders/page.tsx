@@ -34,14 +34,15 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
           <p className="mt-2 font-mono text-[11px] uppercase tracking-caps text-ink/30">Managing {orders.length} luxury transactions</p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="relative group">
+          <form action="/admin/orders" className="relative group">
             <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/20 group-focus-within:text-ink transition-colors" />
-            <input 
+            <input
+              name="q"
               className="pl-10 pr-6 py-3 rounded-full bg-white border border-ink/5 font-mono text-[12px] w-64 focus:outline-none focus:border-ink/20 transition-all placeholder:text-ink/20"
               placeholder="Order #, Email, or Name..."
               defaultValue={q}
             />
-          </div>
+          </form>
         </div>
       </div>
 

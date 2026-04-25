@@ -29,7 +29,7 @@ export default function ContactPage() {
                 At Your <span className="font-display-italic text-champagne-600">Service.</span>
               </h1>
               <p className="mt-4 text-[17px] text-ink/50 italic max-w-xl mx-auto leading-relaxed">
-                Product questions, order support, sizing guidance, and catalogue help without appointment friction.
+                Product questions, gifting help, order support, and sizing guidance with a luxury-service tone.
               </p>
            </ScrollReveal>
         </header>
@@ -73,6 +73,9 @@ export default function ContactPage() {
                     Gurgaon, Haryana, India
                  </p>
                  <p className="mt-6 font-mono text-[11px] text-ink/40 uppercase tracking-widest">Online concierge: Mon — Sat, 10am — 6pm IST</p>
+                 <p className="mt-3 text-[13px] leading-relaxed text-ink/50">
+                    Expect a response within one working day for product questions and within a few hours for active order support.
+                 </p>
               </div>
            </div>
 
@@ -92,11 +95,17 @@ export default function ContactPage() {
                     </div>
 
                     <div className="space-y-2">
+                       <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">Order Number (Optional)</label>
+                       <input className="w-full bg-ivory-2 border border-ink/5 rounded-full px-6 py-4 font-mono text-[13px] focus:outline-none focus:border-ink transition-all" placeholder="ENTIX-1001" />
+                    </div>
+
+                    <div className="space-y-2">
                        <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">Subject</label>
                        <select className="w-full bg-ivory-2 border border-ink/5 rounded-full px-6 py-4 font-mono text-[13px] focus:outline-none focus:border-ink transition-all appearance-none cursor-pointer">
                           <option>General Inquiry</option>
                           <option>Product Recommendation</option>
                           <option>Order Support</option>
+                          <option>Gift Consultation</option>
                           <option>Sizing Guidance</option>
                           <option>Return / Exchange Help</option>
                        </select>
@@ -113,6 +122,10 @@ export default function ContactPage() {
                     >
                        {isPending ? 'Transmitting...' : 'Send Message'} <Send size={16} />
                     </button>
+
+                    <p className="text-center font-mono text-[9px] uppercase tracking-[0.18em] text-ink/35">
+                      For urgent order help, WhatsApp is the fastest path.
+                    </p>
                  </form>
               </div>
            </ScrollReveal>

@@ -37,14 +37,15 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
           <p className="mt-2 font-mono text-[11px] uppercase tracking-caps text-ink/30">Curating {products.length} unique digital heirlooms</p>
         </div>
         <div className="flex flex-wrap items-center gap-4">
-          <div className="relative group">
+          <form action="/admin/products" className="relative group">
             <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/20 group-focus-within:text-ink transition-colors" />
-            <input 
+            <input
+              name="q"
               className="pl-10 pr-6 py-3 rounded-full bg-white border border-ink/5 font-mono text-[12px] w-64 focus:outline-none focus:border-ink/20 transition-all placeholder:text-ink/20"
               placeholder="Search by Title or SKU..."
               defaultValue={q}
             />
-          </div>
+          </form>
           <Link href="/admin/products/new" className="inline-flex items-center gap-2 rounded-full bg-ink px-8 py-3.5 font-mono text-[11px] uppercase tracking-[0.15em] text-ivory hover:bg-ink-2 transition-all shadow-xl shadow-ink/10 active:scale-95">
             <Plus size={14} /> New Piece
           </Link>

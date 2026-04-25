@@ -4,7 +4,7 @@ import { Hero } from '@/components/home/HeroClient';
 import { Marquee } from '@/components/home/Marquee';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { ArrowRight, Gem, PackageCheck, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, Gem, PackageCheck, ShieldCheck, Sparkles, ConciergeBell, Gift, MapPin } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 60;
@@ -52,6 +52,8 @@ async function getHomeData() {
 
 export default async function HomePage() {
   const { featured, newArrivals } = await getHomeData();
+  const featuredProducts = featured.length > 0 ? featured : newArrivals.slice(0, 4);
+  const latestProducts = newArrivals.length > 0 ? newArrivals : featured.slice(0, 8);
 
   return (
     <>
@@ -63,11 +65,11 @@ export default async function HomePage() {
           <ScrollReveal className="mx-auto max-w-4xl text-center">
             <div className="eyebrow">— The Entix House</div>
             <h2 className="mt-6 font-display text-[12vw] font-light leading-[0.86] tracking-display text-ink md:text-[6.8rem]">
-              Quiet luxury, shaped for <span className="font-display-italic text-champagne-700">Indian rituals.</span>
+              Quiet luxury, shaped for <span className="font-display-italic text-champagne-700">modern celebrations.</span>
             </h2>
             <p className="mx-auto mt-8 max-w-2xl text-[16px] leading-relaxed text-ink/50">
-              A jewellery storefront should not feel like a theme. It should feel like a house:
-              curated rooms, deliberate product stories, clear buying paths, and trust before checkout.
+              Entix is designed like a luxury house: clear categories, rich product storytelling,
+              secure trust cues, and an elegant path from discovery to purchase.
             </p>
           </ScrollReveal>
 
@@ -108,7 +110,7 @@ export default async function HomePage() {
           </ScrollReveal>
 
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {featured.map((product, idx) => (
+            {featuredProducts.map((product, idx) => (
               <ScrollReveal key={product.id} delay={idx * 0.08}>
                 <ProductCard
                   product={{
@@ -121,6 +123,15 @@ export default async function HomePage() {
               </ScrollReveal>
             ))}
           </div>
+
+          {featuredProducts.length === 0 && (
+            <div className="mt-10 rounded-[30px] border border-dashed border-ink/10 bg-white/60 px-8 py-12 text-center">
+              <p className="font-display text-[28px] italic text-ink/40">The bestseller edit is being refreshed.</p>
+              <Link href="/collections/all" className="mt-5 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-ink/60 hover:text-ink">
+                Browse the full collection <ArrowRight size={14} />
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
@@ -134,10 +145,35 @@ export default async function HomePage() {
           </ScrollReveal>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <TrustCard icon={Gem} title="Material clarity" text="Metal, finish, gemstone, weight, dimensions, and care belong on every product." />
-            <TrustCard icon={ShieldCheck} title="Purchase confidence" text="Wishlist, reviews, secure checkout, returns, and insured dispatch stay close to buying intent." />
-            <TrustCard icon={PackageCheck} title="Catalogue runway" text="Dummy data stays live until the final 300-product catalogue and photography are ready." />
-            <TrustCard icon={Sparkles} title="Concierge future" text="The structure is prepared for AI shopping, try-on, WhatsApp, and guided discovery later." />
+            <TrustCard icon={Gem} title="Material clarity" text="Metal, finish, gemstone, size, care, and styling context are visible before buyers hesitate." />
+            <TrustCard icon={ShieldCheck} title="Purchase confidence" text="Wishlist, reviews, secure checkout, returns, and insured dispatch stay close to intent." />
+            <TrustCard icon={PackageCheck} title="Gift-ready fulfilment" text="Premium packaging, high-value delivery, and order tracking are built into the buying journey." />
+            <TrustCard icon={ConciergeBell} title="Luxury concierge" text="Guided recommendations, gifting help, and conversion support can slot into the storefront naturally." />
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#f7f1e8] px-6 py-20 lg:px-12 lg:py-28">
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <ScrollReveal className="rounded-[38px] bg-white px-8 py-10 shadow-sm">
+            <div className="eyebrow">— Concierge Services</div>
+            <h2 className="mt-5 font-display text-[10vw] font-light leading-[0.9] tracking-display text-ink md:text-[4.7rem]">
+              Built for gifting, occasion styling, and <span className="font-display-italic text-champagne-700">high-intent support.</span>
+            </h2>
+            <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-ink/55">
+              Luxury jewellery shoppers need more than checkout. They need reassurance, timing, and guidance. Entix makes that feel natural, not bolted on.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Pill icon={Gift} label="Gifting guidance" />
+              <Pill icon={Sparkles} label="Occasion-led discovery" />
+              <Pill icon={MapPin} label="Gurgaon-based support" />
+            </div>
+          </ScrollReveal>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            <ServiceCard title="Gift finder" text="Guide buyers toward budgets, recipients, and packaging expectations without friction." />
+            <ServiceCard title="Bridal styling" text="Make it easy to shortlist statement pieces, coordinate sets, and request support." />
+            <ServiceCard title="Aftercare trust" text="Care, returns, re-polish, and post-purchase reassurance all stay close to the product story." />
           </div>
         </div>
       </section>
@@ -152,7 +188,7 @@ export default async function HomePage() {
           </ScrollReveal>
 
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {newArrivals.map((product, idx) => (
+            {latestProducts.map((product, idx) => (
               <ScrollReveal key={product.id} delay={idx * 0.04}>
                 <ProductCard
                   product={{
@@ -165,6 +201,14 @@ export default async function HomePage() {
               </ScrollReveal>
             ))}
           </div>
+
+          {latestProducts.length === 0 && (
+            <div className="mt-10 text-center">
+              <Link href="/collections/all" className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-ink/60 hover:text-ink">
+                View the full collection <ArrowRight size={14} />
+              </Link>
+            </div>
+          )}
         </div>
       </section>
     </>
@@ -180,6 +224,26 @@ function TrustCard({ icon: Icon, title, text }: { icon: any; title: string; text
         </div>
         <h3 className="font-display text-[28px] font-light tracking-display text-ivory">{title}</h3>
         <p className="mt-4 text-[13px] leading-relaxed text-ivory/50 italic">{text}</p>
+      </div>
+    </ScrollReveal>
+  );
+}
+
+function Pill({ icon: Icon, label }: { icon: any; label: string }) {
+  return (
+    <div className="inline-flex items-center gap-2 rounded-full border border-ink/8 bg-[#fffaf1] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/55">
+      <Icon size={12} className="text-champagne-700" />
+      {label}
+    </div>
+  );
+}
+
+function ServiceCard({ title, text }: { title: string; text: string }) {
+  return (
+    <ScrollReveal>
+      <div className="h-full rounded-[32px] border border-ink/5 bg-white px-6 py-7 shadow-sm">
+        <h3 className="font-display text-[28px] font-light tracking-display text-ink">{title}</h3>
+        <p className="mt-4 text-[14px] leading-relaxed text-ink/52">{text}</p>
       </div>
     </ScrollReveal>
   );

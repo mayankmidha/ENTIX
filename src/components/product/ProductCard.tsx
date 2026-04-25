@@ -1,11 +1,9 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { ShoppingBag, Heart, Plus } from 'lucide-react';
-import { formatInr, cn } from '@/lib/utils';
+import { ShoppingBag, Plus } from 'lucide-react';
+import { formatInr } from '@/lib/utils';
 import { useCart } from '@/stores/cart-store';
-import { useWishlist } from '@/stores/wishlist-store';
 import { toast } from 'sonner';
 import { WishlistButton } from './WishlistButton';
 
@@ -61,7 +59,7 @@ export function ProductCard({ product }: { product: any }) {
           </span>
         )}
 
-        <div className="absolute right-4 top-4 z-10 opacity-0 translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+        <div className="absolute right-4 top-4 z-10 opacity-100 transition-all duration-500 lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0">
           <WishlistButton product={{
             productId: product.id,
             slug: product.slug,
@@ -71,7 +69,7 @@ export function ProductCard({ product }: { product: any }) {
           }} />
         </div>
 
-        <div className="absolute inset-x-4 bottom-4 z-10 opacity-0 translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+        <div className="absolute inset-x-4 bottom-4 z-10 opacity-100 transition-all duration-500 lg:opacity-0 lg:translate-y-4 lg:group-hover:opacity-100 lg:group-hover:translate-y-0">
           <button 
             onClick={handleAddToCart}
             className="w-full rounded-full bg-ink py-3.5 font-mono text-[10px] uppercase tracking-widest text-ivory flex items-center justify-center gap-2 shadow-2xl active:scale-95 hover:bg-ink-2"

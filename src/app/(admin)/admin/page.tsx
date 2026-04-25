@@ -1,8 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import { formatInr } from '@/lib/utils';
-import { 
-  ShoppingBag, Users, Box, 
-  TrendingUp, Clock, Gem, Truck, MessageCircle, Camera, BadgeCheck, FileText, Search, Settings, ShieldCheck
+import {
+  ShoppingBag, Users, Box,
+  Clock, Gem, Truck, MessageCircle, Camera, BadgeCheck, FileText, Search, Settings, ShieldCheck, Sparkles, Wallet, TrendingUp
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -178,6 +178,36 @@ export default async function AdminDashboard() {
         <LaunchCard icon={Truck} label="Orders in motion" value={m.pendingOrders.toString()} text="Paid or processing orders needing fulfilment" href="/admin/orders" />
         <LaunchCard icon={MessageCircle} label="Review queue" value={m.reviewQueue.toString()} text="Customer proof awaiting approval" href="/admin/reviews" />
       </div>
+
+      <section className="mt-6 grid gap-4 lg:grid-cols-3">
+        <StudioPanel
+          icon={Sparkles}
+          title="Merchandising priorities"
+          items={[
+            `${Math.max(300 - m.productsCount, 0)} catalogue slots left before full launch`,
+            `${m.productsMissingImages} SKUs still need final photography`,
+            `${m.activeCollections} collections are currently merchandised`,
+          ]}
+        />
+        <StudioPanel
+          icon={Wallet}
+          title="Revenue discipline"
+          items={[
+            `${formatInr(m.totalRevenue)} captured across paid orders`,
+            `${formatInr(m.aov)} current average order value`,
+            `${m.activeDiscounts} live incentive surfaces running`,
+          ]}
+        />
+        <StudioPanel
+          icon={ShieldCheck}
+          title="Trust operations"
+          items={[
+            `${m.lowStockCount} low-stock risks need a decision`,
+            `${m.reviewQueue} customer reviews awaiting approval`,
+            `${m.pendingOrders} orders still moving through fulfilment`,
+          ]}
+        />
+      </section>
 
       <section className="mt-6 rounded-[36px] border border-ink/5 bg-white p-5 shadow-sm lg:p-6">
         <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr_0.9fr]">
@@ -397,6 +427,26 @@ function MetricCard({ label, value, trend }: { label: string; value: string; tre
         )}
       </div>
       <div className="mt-6 font-display text-[32px] font-medium tracking-display text-ink">{value}</div>
+    </div>
+  );
+}
+
+function StudioPanel({ icon: Icon, title, items }: { icon: any; title: string; items: string[] }) {
+  return (
+    <div className="rounded-[30px] border border-ink/5 bg-white p-6 shadow-sm">
+      <div className="flex items-center gap-3">
+        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-ivory-2 text-champagne-700">
+          <Icon size={16} />
+        </div>
+        <h3 className="font-display text-[24px] font-medium tracking-display text-ink">{title}</h3>
+      </div>
+      <div className="mt-6 space-y-3">
+        {items.map((item) => (
+          <div key={item} className="rounded-[20px] bg-ivory-2/65 px-4 py-3 text-[13px] leading-relaxed text-ink/58">
+            {item}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

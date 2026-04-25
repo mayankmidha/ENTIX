@@ -17,8 +17,8 @@ export default function AboutPage() {
            <ScrollReveal>
               <div className="eyebrow text-champagne-300 mb-6">— The Atelier Narrative</div>
               <h1 className="font-display text-[10vw] md:text-[7rem] font-light leading-[0.9] tracking-display text-ivory">
-                Gurgaon Studio, <br />
-                <span className="font-display-italic text-champagne-400">Modern Rituals.</span>
+                Gurgaon House, <br />
+                <span className="font-display-italic text-champagne-400">Modern Heirlooms.</span>
               </h1>
            </ScrollReveal>
         </div>
@@ -26,23 +26,22 @@ export default function AboutPage() {
 
       <div className="max-w-5xl mx-auto px-6 mt-24">
         <ScrollReveal>
-           <h2 className="font-display text-[42px] font-medium text-ink mb-10 tracking-display italic text-center">A house for jewellery that feels inherited, not mass-produced.</h2>
+           <h2 className="font-display text-[42px] font-medium text-ink mb-10 tracking-display italic text-center">A house for jewellery that feels collected slowly, not mass-produced.</h2>
            <div className="prose prose-ink prose-lg mx-auto max-w-3xl font-mono text-[15px] leading-relaxed text-ink/60 space-y-8">
               <p>
-                 Entix is being shaped as a founder-led jewellery house for modern Indian rituals:
-                 festive dressing, bridal moments, gifting, and everyday pieces that still feel
-                 considered. The brand sits between old-world craft and a digital-first buying
-                 experience.
+                 Entix is a Gurgaon-based jewellery house shaped around celebrations, gifting,
+                 bridal dressing, and everyday pieces that still carry emotional weight. The aim is
+                 not volume. It is discernment.
               </p>
               <p>
-                 The pieces are presented like an atelier archive, not a marketplace shelf. Every
-                 product page is designed to carry the emotional story, material confidence,
-                 size/care guidance, image-led browsing, and a smooth path to checkout.
+                 Each piece is presented with the calm of an atelier archive rather than the noise
+                 of a marketplace shelf. Materials, care, fit, storytelling, and imagery are all
+                 treated as part of the purchase decision.
               </p>
               <p>
-                 The launch system is built for a 300-product catalogue, insured fulfilment,
-                 Razorpay payments, Shiprocket or Delhivery logistics, reviews, wishlist,
-                 and concierge-style support once the final catalogue photography is ready.
+                 The store is also designed to support how high-value jewellery actually sells:
+                 concierge support, trust-first checkout, gifting, insured fulfilment, and a richer
+                 back office than a generic template can usually offer.
               </p>
            </div>
         </ScrollReveal>
@@ -54,7 +53,7 @@ export default function AboutPage() {
           <AboutProof icon={Sparkles} title="Luxury UX" text="The site is designed around rituals, discovery, and emotional buying rather than template grids." />
         </div>
 
-        <div className="grid grid-cols-2 gap-12 mt-32">
+        <div className="mt-24 grid gap-10 lg:grid-cols-2">
            <ScrollReveal delay={0.1}>
               <div className="aspect-[4/5] rounded-[40px] overflow-hidden border border-ink/5">
                  <img src="https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1200&q=88" className="w-full h-full object-cover" alt="" />
@@ -63,12 +62,18 @@ export default function AboutPage() {
               <p className="font-mono text-[12px] text-ink/40 uppercase tracking-widest mt-2">Where time slows down.</p>
            </ScrollReveal>
            <ScrollReveal delay={0.2}>
-              <div className="aspect-[4/5] rounded-[40px] overflow-hidden border border-ink/5 translate-y-12">
+              <div className="aspect-[4/5] rounded-[40px] overflow-hidden border border-ink/5 lg:translate-y-12">
                  <img src="https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?auto=format&fit=crop&w=1200&q=88" className="w-full h-full object-cover" alt="" />
               </div>
               <h3 className="font-display text-2xl font-medium text-ink mt-20">Artisanal Craft</h3>
               <p className="font-mono text-[12px] text-ink/40 uppercase tracking-widest mt-2">Finished by hand, for you.</p>
            </ScrollReveal>
+        </div>
+
+        <div className="mt-24 grid gap-4 md:grid-cols-3">
+          <AboutProof icon={ShieldCheck} title="Purchase confidence" text="Clear information on materials, care, reviews, dispatch, and returns helps collectors move with confidence." />
+          <AboutProof icon={PackageCheck} title="Delivery discipline" text="Pieces are packaged for gifting and prepared for insured dispatch, tracking, and high-value order handling." />
+          <AboutProof icon={Sparkles} title="Concierge thinking" text="The brand experience is designed around reassurance, not pressure: support for gifting, styling, and occasion selection." />
         </div>
       </div>
     </div>
