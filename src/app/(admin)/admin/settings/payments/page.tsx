@@ -1,145 +1,123 @@
 import { prisma } from '@/lib/prisma';
-import { formatInr, cn } from '@/lib/utils';
-import { 
-  ShieldCheck, CreditCard, ChevronLeft, 
-  Save, Landmark, Wallet, Percent
-} from 'lucide-react';
-import Link from 'next/link';
+import { Banknote, CreditCard, IndianRupee, ShieldCheck } from 'lucide-react';
+import { getSiteSettings, savePaymentSettings } from '../actions';
+import { Field, SelectInput, SettingsFrame, SettingsPanel, StatusPill, SubmitBar, TextInput, ToggleField } from '../SettingsUi';
 
 export const dynamic = 'force-dynamic';
 
-export default async function PaymentSettingsPage() {
+export default async function PaymentSettingsPage({ searchParams }: { searchParams: Promise<{ saved?: string }> }) {
+  const [{ saved }, settings, providers] = await Promise.all([
+    searchParams,
+    getSiteSettings(),
+    prisma.paymentProviderSetting.findMany({ where: { provider: { in: ['razorpay', 'cod'] } } }),
+  ]);
+
+  const razorpay = providers.find((provider) => provider.provider === 'razorpay');
+  const cod = providers.find((provider) => provider.provider === 'cod');
+
   return (
-    <div className="max-w-4xl mx-auto pb-24">
-      <Link href="/admin/settings" className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-ink/40 hover:text-ink transition-colors mb-8">
-        <ChevronLeft size={12} /> Back to Preferences
-      </Link>
+    <SettingsFrame
+      eyebrow="Checkout operations"
+      title="Payment settings"
+      description="Configure the payment gateway, COD controls, capture behavior, and refund policy that checkout depends on."
+      saved={saved === '1'}
+    >
+      <form action={savePaymentSettings} className="grid gap-5">
+        <div className="grid gap-5 xl:grid-cols-[1fr_0.85fr]">
+          <SettingsPanel icon={CreditCard} title="Razorpay gateway" description="Production keys stay masked. Leave the secret blank to keep the saved value.">
+            <div className="mb-4 flex flex-wrap gap-2">
+              <StatusPill tone={razorpay?.enabled ? 'good' : 'warn'}>{razorpay?.enabled ? 'Enabled' : 'Disabled'}</StatusPill>
+              <StatusPill>{razorpay?.mode || 'test'} mode</StatusPill>
+              <StatusPill tone={razorpay?.keySecret ? 'good' : 'warn'}>{razorpay?.keySecret ? 'Secret saved' : 'Secret missing'}</StatusPill>
+            </div>
 
-      <header className="mb-12">
-        <div className="eyebrow">— Gateway Config</div>
-        <h1 className="font-display mt-4 text-[42px] font-light leading-tight tracking-display text-ink">
-          Payment <span className="font-display-italic text-champagne-600">Vault.</span>
-        </h1>
-        <p className="mt-2 font-mono text-[11px] uppercase tracking-caps text-ink/30">Secure your atelier revenue stream</p>
-      </header>
+            <div className="grid gap-4">
+              <ToggleField name="razorpay.enabled" label="Enable Razorpay" description="Allow card, UPI, netbanking, and wallet payments through Razorpay." defaultChecked={razorpay?.enabled ?? false} />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Key ID">
+                  <TextInput name="razorpay.keyId" defaultValue={razorpay?.keyId ?? ''} placeholder="rzp_live_..." autoComplete="off" />
+                </Field>
+                <Field label="Key secret" hint={razorpay?.keySecret ? 'A secret is already saved. Enter a new one only if you want to rotate it.' : 'Paste the live or test secret before accepting payments.'}>
+                  <TextInput name="razorpay.keySecret" type="password" placeholder={razorpay?.keySecret ? 'Saved, leave blank to keep' : 'Paste key secret'} autoComplete="new-password" />
+                </Field>
+              </div>
+              <Field label="Gateway mode">
+                <SelectInput
+                  name="razorpay.mode"
+                  defaultValue={razorpay?.mode || 'test'}
+                  options={[
+                    { label: 'Test', value: 'test' },
+                    { label: 'Live', value: 'live' },
+                  ]}
+                />
+              </Field>
+            </div>
+          </SettingsPanel>
 
-      <div className="space-y-8">
-        {/* Razorpay Section */}
-        <section className="rounded-[40px] border border-ink/5 bg-white p-10 shadow-sm">
-          <div className="flex items-center gap-4 mb-10 pb-6 border-b border-ink/5">
-             <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                <ShieldCheck size={20} />
-             </div>
-             <div>
-                <h2 className="font-display text-[22px] font-medium text-ink">Razorpay Integration</h2>
-                <p className="font-mono text-[10px] uppercase tracking-widest text-ink/30">Primary Transaction Gateway</p>
-             </div>
-          </div>
-
-          <div className="grid gap-8">
-             <div className="grid sm:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                   <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">Key ID (Production)</label>
-                   <input className="w-full bg-ivory-2/40 border-none rounded-full px-6 py-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none" placeholder="rzp_live_..." type="password" />
-                </div>
-                <div className="space-y-2">
-                   <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">Key Secret</label>
-                   <input className="w-full bg-ivory-2/40 border-none rounded-full px-6 py-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none" placeholder="••••••••••••••••" type="password" />
-                </div>
-             </div>
-             <div className="flex items-center gap-4 p-5 rounded-[24px] bg-jade/5 text-jade/70 italic border border-jade/10">
-                <ShieldCheck size={16} />
-                <p className="text-[12px]">Webhooks verified. Payment signatures are active.</p>
-             </div>
-          </div>
-        </section>
-
-        {/* GST Section */}
-        <section className="rounded-[40px] border border-ink/5 bg-white p-10 shadow-sm">
-          <div className="flex items-center gap-4 mb-10 pb-6 border-b border-ink/5">
-             <div className="h-10 w-10 rounded-full bg-ivory-2 flex items-center justify-center text-ink/20">
-                <Percent size={20} />
-             </div>
-             <div>
-                <h2 className="font-display text-[22px] font-medium text-ink">Taxation (GST)</h2>
-                <p className="font-mono text-[10px] uppercase tracking-widest text-ink/30">Legal Compliance Registry</p>
-             </div>
-          </div>
-
-          <div className="space-y-6">
-             <div className="flex items-center justify-between p-6 rounded-[24px] bg-ivory-2/40">
-                <div>
-                   <div className="font-mono text-[11px] uppercase tracking-widest text-ink font-bold">Standard Jewellery Rate</div>
-                   <div className="font-mono text-[9px] text-ink/40 uppercase mt-1">Applied to all acquisitions</div>
-                </div>
-                <div className="font-display text-[24px] font-medium text-ink">18%</div>
-             </div>
-             <div className="group">
-                <label className="block font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-2 ml-4 transition-colors group-focus-within:text-ink">Atelier GSTIN</label>
-                <input className="w-full bg-ivory-2/40 border-none rounded-full px-6 py-4 font-mono text-[13px] focus:ring-1 focus:ring-ink/10 outline-none uppercase tracking-widest" defaultValue="08ABCDE1234F1Z5" />
-             </div>
-          </div>
-        </section>
-
-        {/* Local Flows Section */}
-        <section className="rounded-[40px] border border-ink/5 bg-white p-10 shadow-sm">
-          <div className="flex items-center gap-4 mb-10 pb-6 border-b border-ink/5">
-             <div className="h-10 w-10 rounded-full bg-ivory-2 flex items-center justify-center text-ink/20">
-                <Wallet size={20} />
-             </div>
-             <div>
-                <h2 className="font-display text-[22px] font-medium text-ink">Cash Flow Options</h2>
-                <p className="font-mono text-[10px] uppercase tracking-widest text-ink/30">Regional Tender Settings</p>
-             </div>
-          </div>
-
-          <div className="space-y-4">
-             <PaymentToggle 
-               label="Cash on Delivery (COD)"
-               description="Allow collectors to pay upon insured arrival."
-               active={true}
-             />
-             <div className="ml-14 mt-4">
-                <label className="block font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-2">Maximum COD Threshold</label>
-                <div className="relative max-w-xs">
-                   <span className="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-ink/20">₹</span>
-                   <input className="w-full bg-ivory-2/40 border-none rounded-full px-10 py-3 font-mono text-[13px] focus:ring-1 focus:ring-ink/10 outline-none" defaultValue="100000" />
-                </div>
-             </div>
-          </div>
-        </section>
-
-        <div className="flex justify-end">
-           <button className="flex items-center gap-3 px-10 py-5 rounded-full bg-ink text-ivory font-mono text-[11px] uppercase tracking-[0.2em] hover:bg-ink-2 transition-all shadow-xl active:scale-95">
-              <Save size={16} /> Finalize Settings
-           </button>
+          <SettingsPanel icon={Banknote} title="Cash on delivery" description="Use COD carefully for high-value jewellery; the threshold is stored for checkout rules.">
+            <div className="grid gap-4">
+              <ToggleField name="cod.enabled" label="Enable COD" description="Let customers place orders without online payment." defaultChecked={cod?.enabled ?? false} />
+              <Field label="Maximum COD value">
+                <TextInput name="payment.codLimit" type="number" defaultValue={settings['payment.codLimit']} />
+              </Field>
+              <Field label="Capture mode">
+                <SelectInput
+                  name="payment.captureMode"
+                  defaultValue={settings['payment.captureMode']}
+                  options={[
+                    { label: 'Automatic', value: 'automatic' },
+                    { label: 'Manual review', value: 'manual' },
+                  ]}
+                />
+              </Field>
+              <Field label="Refund window in days">
+                <TextInput name="payment.refundWindow" type="number" defaultValue={settings['payment.refundWindow']} />
+              </Field>
+            </div>
+          </SettingsPanel>
         </div>
-      </div>
-    </div>
-  );
-}
 
-function PaymentToggle({ label, description, active }: { label: string, description: string, active: boolean }) {
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <div className="flex items-center gap-4">
-         <div className={cn("h-10 w-10 rounded-full flex items-center justify-center border", active ? "border-jade text-jade" : "border-ink/10 text-ink/20")}>
-            <Landmark size={18} />
-         </div>
-         <div>
-            <div className="font-mono text-[11px] font-medium text-ink uppercase tracking-widest">{label}</div>
-            <div className="font-mono text-[9px] text-ink/40 uppercase tracking-caps mt-1">{description}</div>
-         </div>
-      </div>
-      <div className={cn(
-        "relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out",
-        active ? "bg-jade" : "bg-ink/10"
-      )}>
-        <span className={cn(
-          "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-300 ease-in-out",
-          active ? "translate-x-5" : "translate-x-0"
-        )} />
-      </div>
-    </div>
+        <SettingsPanel icon={ShieldCheck} title="Readiness checks" description="These are the payment tasks to close before launch traffic reaches checkout.">
+          <div className="grid gap-3 text-[13px] leading-relaxed text-ink/55 md:grid-cols-3">
+            <div className="border border-ink/8 bg-[#f6f4ef] p-4">Verify Razorpay live keys, webhook URL, and payment signature checks.</div>
+            <div className="border border-ink/8 bg-[#f6f4ef] p-4">Confirm refund, exchange, and cancellation copy against the final policies.</div>
+            <div className="border border-ink/8 bg-[#f6f4ef] p-4">Test one paid order and one COD order through the full admin workflow.</div>
+          </div>
+        </SettingsPanel>
+
+        <SettingsPanel icon={IndianRupee} title="Stored provider records" description="A quick audit view of what the backend has for active checkout routes.">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[560px] text-left text-[13px]">
+              <thead className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink/38">
+                <tr className="border-b border-ink/8">
+                  <th className="py-3 pr-4 font-normal">Provider</th>
+                  <th className="py-3 pr-4 font-normal">Status</th>
+                  <th className="py-3 pr-4 font-normal">Mode</th>
+                  <th className="py-3 pr-4 font-normal">Key ID</th>
+                </tr>
+              </thead>
+              <tbody className="text-ink/58">
+                {providers.length > 0 ? (
+                  providers.map((provider) => (
+                    <tr key={provider.id} className="border-b border-ink/6">
+                      <td className="py-3 pr-4 font-mono text-[12px] uppercase tracking-[0.08em] text-ink">{provider.provider}</td>
+                      <td className="py-3 pr-4">{provider.enabled ? 'Enabled' : 'Disabled'}</td>
+                      <td className="py-3 pr-4">{provider.mode}</td>
+                      <td className="py-3 pr-4">{provider.keyId || 'Not set'}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="py-4 text-ink/42">No payment provider records have been saved yet.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </SettingsPanel>
+
+        <SubmitBar />
+      </form>
+    </SettingsFrame>
   );
 }

@@ -153,7 +153,7 @@ async function getMetrics() {
 
 export default async function AdminDashboard() {
   const m = await getMetrics();
-  const catalogueProgress = Math.min(Math.round((m.productsCount / 300) * 100), 100);
+  const catalogueHealth = m.productsCount > 0 ? Math.max(Math.round(((m.productsCount - m.productsMissingImages) / m.productsCount) * 100), 0) : 0;
   const issueCount = m.lowStockCount + m.productsMissingImages + m.reviewQueue;
 
   return (
@@ -266,15 +266,15 @@ export default async function AdminDashboard() {
       </section>
 
       <section className="mt-5 grid gap-5 xl:grid-cols-[0.85fr_1.15fr]">
-        <Panel title="Catalogue Progress" action="Import" href="/admin/products/import">
+        <Panel title="Catalogue Health" action="Import" href="/admin/products/import">
           <div className="grid gap-4 sm:grid-cols-[160px_1fr] sm:items-center">
             <div className="border border-ink/8 bg-[#120f0d] p-5 text-ivory">
-              <div className="font-display text-[44px] leading-none">{catalogueProgress}%</div>
-              <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ivory/45">300-piece target</div>
+              <div className="font-display text-[44px] leading-none">{catalogueHealth}%</div>
+              <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ivory/45">Image coverage</div>
             </div>
             <div>
               <div className="h-2 bg-ink/8">
-                <div className="h-full bg-ink" style={{ width: `${catalogueProgress}%` }} />
+                <div className="h-full bg-ink" style={{ width: `${catalogueHealth}%` }} />
               </div>
               <div className="mt-4 grid grid-cols-3 gap-3">
                 <MiniStat label="Products" value={m.productsCount} />

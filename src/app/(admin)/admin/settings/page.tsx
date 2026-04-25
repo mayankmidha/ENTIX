@@ -14,6 +14,7 @@ import {
   Store,
   Truck,
   Users,
+  type LucideIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -50,7 +51,7 @@ const settingsGroups = [
 ];
 
 const launchChecks = [
-  '300 products imported with SKU, price, stock, image, material, and SEO data',
+  'Full catalogue imported with SKU, price, stock, image, material, and SEO data',
   'Contact, About, Return, Shipping, Privacy, Terms, and FAQ content approved',
   'Payment, tax, shipping, email, domain, and analytics settings verified',
   'Mobile storefront and mobile admin reviewed on real devices before launch',
@@ -71,8 +72,8 @@ export default async function SettingsPage() {
 
       <section className="mt-5 grid gap-3 sm:grid-cols-3">
         <Readiness label="Launch status" value="Buildout" icon={ShieldCheck} />
-        <Readiness label="Settings areas" value="12" icon={BadgeCheck} />
-        <Readiness label="Catalogue target" value="300" icon={Store} />
+        <Readiness label="Editable areas" value="9" icon={BadgeCheck} />
+        <Readiness label="Backend wiring" value="Live" icon={Store} />
       </section>
 
       <div className="mt-5 grid gap-5">
@@ -103,7 +104,7 @@ export default async function SettingsPage() {
   );
 }
 
-function Readiness({ label, value, icon: Icon }: { label: string; value: string; icon: any }) {
+function Readiness({ label, value, icon: Icon }: { label: string; value: string; icon: LucideIcon }) {
   return (
     <div className="border border-ink/8 bg-white p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
@@ -117,7 +118,7 @@ function Readiness({ label, value, icon: Icon }: { label: string; value: string;
   );
 }
 
-function SettingsCard({ icon: Icon, title, description, href, status }: { icon: any; title: string; description: string; href: string; status: string }) {
+function SettingsCard({ icon: Icon, title, description, href, status }: { icon: LucideIcon; title: string; description: string; href: string; status: string }) {
   return (
     <Link href={href} className="group block border border-ink/8 bg-[#f6f4ef] p-4 transition-colors hover:bg-white">
       <div className="flex items-start justify-between gap-3">

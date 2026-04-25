@@ -50,7 +50,7 @@ export default async function AdminInventory({ searchParams }: { searchParams: P
             Stock control.
           </h1>
           <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-ink/55">
-            Track on-hand units, low-stock thresholds, and retail value before the 300-product catalogue arrives.
+            Track on-hand units, low-stock thresholds, and retail value before the full catalogue arrives.
           </p>
         </div>
 

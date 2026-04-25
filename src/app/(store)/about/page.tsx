@@ -40,7 +40,7 @@ export default function AboutPage() {
                  size/care guidance, image-led browsing, and a smooth path to checkout.
               </p>
               <p>
-                 The launch system is built for a 300-product catalogue, insured fulfilment,
+                 The launch system is built for a complete fine-jewellery catalogue, insured fulfilment,
                  Razorpay payments, Shiprocket or Delhivery logistics, reviews, wishlist,
                  and concierge-style support once the final catalogue photography is ready.
               </p>
@@ -60,7 +60,7 @@ export default function AboutPage() {
                  <img src="https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1200&q=88" className="w-full h-full object-cover" alt="" />
               </div>
               <h3 className="font-display text-2xl font-medium text-ink mt-8">The Product Archive</h3>
-              <p className="font-mono text-[12px] text-ink/40 uppercase tracking-widest mt-2">Built for 300 detailed pieces.</p>
+              <p className="font-mono text-[12px] text-ink/40 uppercase tracking-widest mt-2">Built for detailed product storytelling.</p>
            </ScrollReveal>
            <ScrollReveal delay={0.2}>
               <div className="aspect-[4/5] overflow-hidden border border-ink/5 md:translate-y-12">

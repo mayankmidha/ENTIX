@@ -1,79 +1,93 @@
-import {
-  Save, ChevronLeft
-} from 'lucide-react';
-import Link from 'next/link';
+import { Building2, Contact, MapPin, Store } from 'lucide-react';
+import { getSiteSettings, saveGeneralSettings } from '../actions';
+import { Field, SelectInput, SettingsFrame, SettingsPanel, SubmitBar, TextArea, TextInput } from '../SettingsUi';
 
 export const dynamic = 'force-dynamic';
 
-export default async function GeneralSettingsPage() {
+export default async function GeneralSettingsPage({ searchParams }: { searchParams: Promise<{ saved?: string }> }) {
+  const [{ saved }, settings] = await Promise.all([searchParams, getSiteSettings()]);
+
   return (
-    <div className="max-w-4xl mx-auto pb-24">
-      <Link href="/admin/settings" className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-ink/40 hover:text-ink transition-colors mb-8">
-        <ChevronLeft size={12} /> Back to Preferences
-      </Link>
-
-      <header className="mb-12">
-        <div className="eyebrow">— Identity Archives</div>
-        <h1 className="font-display mt-4 text-[42px] font-light leading-tight tracking-display text-ink">
-          General <span className="font-display-italic text-champagne-600">Selection.</span>
-        </h1>
-        <p className="mt-2 font-mono text-[11px] uppercase tracking-caps text-ink/30">Define your boutique brand identity</p>
-      </header>
-
-      <div className="space-y-8">
-        <section className="rounded-[40px] border border-ink/5 bg-white p-10 shadow-sm">
-          <h2 className="font-display text-[22px] font-medium text-ink mb-10 pb-6 border-b border-ink/5">Boutique Profile</h2>
-          
-          <div className="grid gap-8">
-            <div className="space-y-2">
-              <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">Legal Boutique Name</label>
-              <input className="w-full bg-ivory-2/40 border-none rounded-full px-6 py-4 font-display text-[20px] focus:ring-1 focus:ring-ink/10 outline-none" defaultValue="Entix Jewellery" />
+    <SettingsFrame
+      eyebrow="Store setup"
+      title="General settings"
+      description="Control the identity, legal details, contact routes, and fulfilment address that the storefront and checkout rely on."
+      saved={saved === '1'}
+    >
+      <form action={saveGeneralSettings} className="grid gap-5">
+        <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+          <SettingsPanel icon={Store} title="Store identity" description="The customer-facing brand details used across checkout, emails, and invoices.">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Store name">
+                <TextInput name="store.name" defaultValue={settings['store.name']} required />
+              </Field>
+              <Field label="Legal business name">
+                <TextInput name="store.legalName" defaultValue={settings['store.legalName']} required />
+              </Field>
+              <Field label="Country">
+                <TextInput name="store.country" defaultValue={settings['store.country']} />
+              </Field>
+              <Field label="Currency">
+                <SelectInput
+                  name="store.currency"
+                  defaultValue={settings['store.currency']}
+                  options={[
+                    { label: 'INR', value: 'INR' },
+                    { label: 'USD', value: 'USD' },
+                    { label: 'AED', value: 'AED' },
+                  ]}
+                />
+              </Field>
+              <Field label="Order prefix">
+                <TextInput name="store.orderPrefix" defaultValue={settings['store.orderPrefix']} />
+              </Field>
+              <Field label="Business profile" className="sm:col-span-2">
+                <TextArea name="store.businessProfile" rows={4} defaultValue={settings['store.businessProfile']} />
+              </Field>
             </div>
-            
-            <div className="grid sm:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">Contact Email</label>
-                <input className="w-full bg-ivory-2/40 border-none rounded-full px-6 py-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none" defaultValue="care@entix.jewellery" />
-              </div>
-              <div className="space-y-2">
-                <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">Contact Phone</label>
-                <input className="w-full bg-ivory-2/40 border-none rounded-full px-6 py-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none" defaultValue="+91 98765 43210" />
-              </div>
-            </div>
-          </div>
-        </section>
+          </SettingsPanel>
 
-        <section className="rounded-[40px] border border-ink/5 bg-white p-10 shadow-sm">
-          <h2 className="font-display text-[22px] font-medium text-ink mb-10 pb-6 border-b border-ink/5">Primary Fulfilment Address</h2>
-          
-          <div className="grid gap-8">
-            <div className="space-y-2">
-              <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">Street Address</label>
-              <input className="w-full bg-ivory-2/40 border-none rounded-[24px] px-6 py-4 font-mono text-[13px] focus:ring-1 focus:ring-ink/10 outline-none italic" defaultValue="Sector 52" />
+          <SettingsPanel icon={Contact} title="Contact channels" description="Keep these accurate before customer support and transactional emails go live.">
+            <div className="grid gap-4">
+              <Field label="Support email">
+                <TextInput name="store.email" type="email" defaultValue={settings['store.email']} required />
+              </Field>
+              <Field label="Support phone">
+                <TextInput name="store.phone" type="tel" defaultValue={settings['store.phone']} placeholder="+91..." />
+              </Field>
             </div>
-            <div className="grid sm:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">City</label>
-                <input className="w-full bg-ivory-2/40 border-none rounded-full px-6 py-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none" defaultValue="To be confirmed" />
-              </div>
-              <div className="space-y-2">
-                <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">State</label>
-                <input className="w-full bg-ivory-2/40 border-none rounded-full px-6 py-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none" defaultValue="Haryana" />
-              </div>
-              <div className="space-y-2">
-                <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">Postal Code</label>
-                <input className="w-full bg-ivory-2/40 border-none rounded-full px-6 py-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none" defaultValue="302022" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <div className="flex justify-end">
-           <button className="flex items-center gap-3 px-10 py-5 rounded-full bg-ink text-ivory font-mono text-[11px] uppercase tracking-[0.2em] hover:bg-ink-2 transition-all shadow-xl active:scale-95">
-              <Save size={16} /> Update Archives
-           </button>
+          </SettingsPanel>
         </div>
-      </div>
-    </div>
+
+        <SettingsPanel icon={MapPin} title="Primary fulfilment address" description="Used for invoice details, tax defaults, courier pickup assumptions, and launch QA.">
+          <div className="grid gap-4">
+            <Field label="Street address">
+              <TextInput name="store.address" defaultValue={settings['store.address']} placeholder="Add confirmed fulfilment address" />
+            </Field>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Field label="City">
+                <TextInput name="store.city" defaultValue={settings['store.city']} />
+              </Field>
+              <Field label="State">
+                <TextInput name="store.state" defaultValue={settings['store.state']} />
+              </Field>
+              <Field label="Postal code">
+                <TextInput name="store.postalCode" defaultValue={settings['store.postalCode']} />
+              </Field>
+            </div>
+          </div>
+        </SettingsPanel>
+
+        <SettingsPanel icon={Building2} title="Launch notes" description="These values are saved immediately, but legal identity, tax number, and support contacts should be checked again with the client before launch.">
+          <div className="grid gap-3 text-[13px] leading-relaxed text-ink/55 sm:grid-cols-3">
+            <div className="border border-ink/8 bg-[#f6f4ef] p-4">Legal name should match invoices and payment gateway onboarding.</div>
+            <div className="border border-ink/8 bg-[#f6f4ef] p-4">Support email should use the final branded domain before checkout opens.</div>
+            <div className="border border-ink/8 bg-[#f6f4ef] p-4">Fulfilment address should match the courier pickup location.</div>
+          </div>
+        </SettingsPanel>
+
+        <SubmitBar />
+      </form>
+    </SettingsFrame>
   );
 }

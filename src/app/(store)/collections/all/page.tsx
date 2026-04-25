@@ -75,7 +75,7 @@ export default async function AllCollectionsPage({ searchParams }: Props) {
           <div>
             <div className="eyebrow">Complete Catalogue</div>
             <div className="mt-8 grid gap-px bg-ink/10 sm:grid-cols-3 lg:block lg:bg-transparent">
-              <Stat value={products.length > 0 ? products.length.toString() : '300'} label="Catalogue depth" />
+              <Stat value={products.length > 0 ? products.length.toString() : 'Curated'} label="Live pieces" />
               <Stat value={filteredProducts.length.toString()} label="Visible pieces" />
               <Stat value="4" label="Core rooms" />
             </div>

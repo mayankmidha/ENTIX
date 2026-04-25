@@ -24,7 +24,7 @@ export default async function CollectionsLandingPage() {
              <div className="eyebrow">Collection Rooms</div>
              <div className="mt-8 grid gap-px bg-ink/10 sm:grid-cols-2 lg:block lg:bg-transparent">
                <Stat value={rooms.length.toString()} label="Rooms" />
-               <Stat value={productCount > 0 ? productCount.toString() : '300'} label="Catalogue target" />
+               <Stat value={productCount > 0 ? productCount.toString() : 'Curated'} label="Live pieces" />
              </div>
            </div>
            <div>
