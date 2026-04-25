@@ -129,7 +129,7 @@ export const AbandonedCartEmail = ({
             <Hr className="border-[#eee] my-[20px]" />
             <Section className="text-center">
               <Text className="text-[#999] text-[11px] tracking-[0.1em] uppercase">
-                Gurgaon · India · Global
+                Entix Jewellery · India
               </Text>
               <Link href={baseUrl} className="text-[#999] text-[11px] underline">
                 entix.jewellery

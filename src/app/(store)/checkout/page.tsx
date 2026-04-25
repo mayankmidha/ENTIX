@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
   ChevronLeft, ShoppingBag, ShieldCheck, 
-  Truck, CreditCard, Ticket, Info, Loader2, AlertCircle
+  Truck, Ticket, Info, Loader2, AlertCircle
 } from 'lucide-react';
 import { formatInr, cn } from '@/lib/utils';
 import { useCart } from '@/stores/cart-store';
@@ -60,8 +60,8 @@ export default function CheckoutPage() {
   const baseShipping = discountedSubtotal > 10000 ? 0 : 500;
   const shipping = appliedDiscount?.type === 'free_shipping' ? 0 : baseShipping;
   
-  // Jewellery GST is displayed as inclusive in this checkout.
-  const tax = Math.round(discountedSubtotal * 0.03);
+  // GST 18% breakdown (assuming inclusive for luxury positioning, but calculating for display)
+  const tax = Math.round(discountedSubtotal * 0.18); 
   const total = discountedSubtotal + shipping;
   const canUseRazorpay = hasPublicRazorpayKey && razorpayStatus === 'ready';
 
@@ -91,12 +91,12 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-[80vh] flex flex-col items-center justify-center bg-ivory p-6">
-         <div className="h-20 w-20 rounded-full bg-ink/5 flex items-center justify-center text-ink/10 mb-8">
+         <div className="mb-8 flex h-20 w-20 items-center justify-center border border-ink/8 bg-white text-ink/12">
             <ShoppingBag size={40} />
          </div>
          <h1 className="font-display text-4xl text-ink text-center">Your bag is empty.</h1>
-         <p className="mt-4 text-ink/40 font-mono text-[11px] uppercase tracking-widest">Acquisitions begin in the atelier</p>
-         <Link href="/collections/all" className="mt-10 rounded-full bg-ink text-ivory px-10 py-5 font-mono text-[11px] uppercase tracking-widest hover:bg-ink-2 transition-all shadow-xl">Explore Collection</Link>
+         <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-ink/40">Choose a piece before checkout</p>
+         <Link href="/collections/all" className="mt-10 bg-ink px-10 py-5 font-mono text-[11px] uppercase tracking-widest text-ivory shadow-xl transition-all hover:bg-ink-2">Explore Collection</Link>
       </div>
     );
   }
@@ -185,8 +185,8 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-ivory py-20 px-6 lg:px-12">
-      <div className="max-w-[1500px] mx-auto grid lg:grid-cols-[1fr_450px] gap-20">
+    <div className="min-h-screen bg-ivory px-6 py-20 lg:px-12">
+      <div className="max-w-[1440px] mx-auto grid lg:grid-cols-[1fr_450px] gap-20">
         
         {/* Left Column: Customer Details & Payment */}
         <div>
@@ -198,8 +198,8 @@ export default function CheckoutPage() {
             {/* Step 1: Shipping */}
             <section className={cn("transition-all duration-500", step > 1 && "opacity-50 pointer-events-none")}>
               <div className="flex items-center justify-between mb-8">
-                <h2 className="font-display text-[38px] font-light text-ink">Dispatch details</h2>
-                <div className="h-8 w-8 rounded-full bg-ink text-ivory flex items-center justify-center font-mono text-[12px]">1</div>
+                <h2 className="font-display text-[32px] font-medium tracking-normal text-ink">Shipping Information</h2>
+                <div className="flex h-8 w-8 items-center justify-center bg-ink font-mono text-[12px] text-ivory">1</div>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-5">
@@ -209,7 +209,7 @@ export default function CheckoutPage() {
                     required
                     value={customerInfo.email}
                     onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
-                    className="w-full bg-white border border-ink/10 rounded-full px-6 py-4 font-mono text-[13px] focus:outline-none focus:border-ink transition-all" placeholder="concierge@entix.jewellery" 
+                    className="w-full border border-ink/10 bg-white px-6 py-4 font-mono text-[13px] transition-all focus:border-ink focus:outline-none" placeholder="name@example.com" 
                   />
                 </div>
                 <div>
@@ -218,7 +218,7 @@ export default function CheckoutPage() {
                     required
                     value={customerInfo.firstName}
                     onChange={(e) => setCustomerInfo({...customerInfo, firstName: e.target.value})}
-                    className="w-full bg-white border border-ink/10 rounded-full px-6 py-4 font-mono text-[13px] focus:outline-none focus:border-ink transition-all" 
+                    className="w-full border border-ink/10 bg-white px-6 py-4 font-mono text-[13px] transition-all focus:border-ink focus:outline-none" 
                   />
                 </div>
                 <div>
@@ -227,7 +227,7 @@ export default function CheckoutPage() {
                     required
                     value={customerInfo.lastName}
                     onChange={(e) => setCustomerInfo({...customerInfo, lastName: e.target.value})}
-                    className="w-full bg-white border border-ink/10 rounded-full px-6 py-4 font-mono text-[13px] focus:outline-none focus:border-ink transition-all" 
+                    className="w-full border border-ink/10 bg-white px-6 py-4 font-mono text-[13px] transition-all focus:border-ink focus:outline-none" 
                   />
                 </div>
                 <div className="sm:col-span-2">
@@ -236,7 +236,7 @@ export default function CheckoutPage() {
                     required
                     value={customerInfo.address}
                     onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
-                    className="w-full bg-white border border-ink/10 rounded-[24px] px-6 py-4 font-mono text-[13px] focus:outline-none focus:border-ink transition-all" placeholder="House/Flat No., Building Name, Street" 
+                    className="w-full border border-ink/10 bg-white px-6 py-4 font-mono text-[13px] transition-all focus:border-ink focus:outline-none" placeholder="House/Flat No., Building Name, Street" 
                   />
                 </div>
                 <div>
@@ -245,7 +245,7 @@ export default function CheckoutPage() {
                     required
                     value={customerInfo.city}
                     onChange={(e) => setCustomerInfo({...customerInfo, city: e.target.value})}
-                    className="w-full bg-white border border-ink/10 rounded-full px-6 py-4 font-mono text-[13px] focus:outline-none focus:border-ink transition-all" 
+                    className="w-full border border-ink/10 bg-white px-6 py-4 font-mono text-[13px] transition-all focus:border-ink focus:outline-none" 
                   />
                 </div>
                 <div>
@@ -254,7 +254,7 @@ export default function CheckoutPage() {
                     required
                     value={customerInfo.state}
                     onChange={(e) => setCustomerInfo({...customerInfo, state: e.target.value})}
-                    className="w-full bg-white border border-ink/10 rounded-full px-6 py-4 font-mono text-[13px] focus:outline-none focus:border-ink transition-all" 
+                    className="w-full border border-ink/10 bg-white px-6 py-4 font-mono text-[13px] transition-all focus:border-ink focus:outline-none" 
                     placeholder="e.g. Haryana"
                   />
                 </div>
@@ -264,7 +264,7 @@ export default function CheckoutPage() {
                     required
                     value={customerInfo.postalCode}
                     onChange={(e) => setCustomerInfo({...customerInfo, postalCode: e.target.value})}
-                    className="w-full bg-white border border-ink/10 rounded-full px-6 py-4 font-mono text-[13px] focus:outline-none focus:border-ink transition-all" 
+                    className="w-full border border-ink/10 bg-white px-6 py-4 font-mono text-[13px] transition-all focus:border-ink focus:outline-none" 
                   />
                 </div>
                 <div>
@@ -273,7 +273,7 @@ export default function CheckoutPage() {
                     required
                     value={customerInfo.phone}
                     onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
-                    className="w-full bg-white border border-ink/10 rounded-full px-6 py-4 font-mono text-[13px] focus:outline-none focus:border-ink transition-all" 
+                    className="w-full border border-ink/10 bg-white px-6 py-4 font-mono text-[13px] transition-all focus:border-ink focus:outline-none" 
                     placeholder="+91"
                   />
                 </div>
@@ -287,9 +287,9 @@ export default function CheckoutPage() {
                     }
                     setStep(2);
                   }}
-                  className="mt-10 w-full rounded-full bg-ink text-ivory py-5 font-mono text-[11px] uppercase tracking-[0.2em] shadow-xl hover:bg-ink-2 transition-all active:scale-[0.98]"
+                  className="mt-10 w-full bg-ink py-5 font-mono text-[11px] uppercase tracking-[0.2em] text-ivory shadow-xl transition-all hover:bg-ink-2 active:scale-[0.98]"
                 >
-                  Continue to Selection Dispatch
+                  Continue to payment
                 </button>
               )}
             </section>
@@ -297,8 +297,8 @@ export default function CheckoutPage() {
             {/* Step 2: Payment */}
             <section className={cn("transition-all duration-500", step < 2 && "opacity-20 pointer-events-none")}>
                <div className="flex items-center justify-between mb-8">
-                <h2 className="font-display text-[38px] font-light text-ink">Payment method</h2>
-                <div className={cn("h-8 w-8 rounded-full flex items-center justify-center font-mono text-[12px]", step === 2 ? "bg-ink text-ivory" : "bg-ink/5 text-ink/20")}>2</div>
+                <h2 className="font-display text-[32px] font-medium tracking-normal text-ink">Payment Method</h2>
+                <div className={cn("flex h-8 w-8 items-center justify-center font-mono text-[12px]", step === 2 ? "bg-ink text-ivory" : "bg-ink/5 text-ink/20")}>2</div>
               </div>
 
               <div className="space-y-4">
@@ -307,14 +307,14 @@ export default function CheckoutPage() {
                     if (hasPublicRazorpayKey) setPaymentMethod('razorpay');
                   }}
                   className={cn(
-                    "group cursor-pointer rounded-[32px] border p-8 transition-all flex items-center justify-between",
+                    "group flex cursor-pointer items-center justify-between border p-8 transition-all",
                     paymentMethod === 'razorpay' ? "border-ink bg-white shadow-luxe" : "border-ink/5 bg-transparent opacity-60 grayscale hover:opacity-100 hover:grayscale-0",
                     !hasPublicRazorpayKey && "cursor-not-allowed opacity-40 grayscale"
                   )}
                 >
                   <div className="flex items-center gap-5">
-                    <div className="h-6 w-6 rounded-full border-2 border-ink flex items-center justify-center">
-                       {paymentMethod === 'razorpay' && <div className="h-3 w-3 rounded-full bg-ink animate-in zoom-in" />}
+                    <div className="flex h-6 w-6 items-center justify-center border-2 border-ink">
+                       {paymentMethod === 'razorpay' && <div className="h-3 w-3 bg-ink animate-in zoom-in" />}
                     </div>
                     <div>
                        <div className="font-display text-[20px] font-medium text-ink">Secure Gateway</div>
@@ -331,13 +331,13 @@ export default function CheckoutPage() {
                 <div 
                   onClick={() => setPaymentMethod('cod')}
                   className={cn(
-                    "group cursor-pointer rounded-[32px] border p-8 transition-all flex items-center justify-between",
+                    "group flex cursor-pointer items-center justify-between border p-8 transition-all",
                     paymentMethod === 'cod' ? "border-ink bg-white shadow-luxe" : "border-ink/5 bg-transparent opacity-60 grayscale hover:opacity-100 hover:grayscale-0"
                   )}
                 >
                   <div className="flex items-center gap-5">
-                    <div className="h-6 w-6 rounded-full border-2 border-ink flex items-center justify-center">
-                       {paymentMethod === 'cod' && <div className="h-3 w-3 rounded-full bg-ink animate-in zoom-in" />}
+                    <div className="flex h-6 w-6 items-center justify-center border-2 border-ink">
+                       {paymentMethod === 'cod' && <div className="h-3 w-3 bg-ink animate-in zoom-in" />}
                     </div>
                     <div>
                        <div className="font-display text-[20px] font-medium text-ink">Cash on Delivery</div>
@@ -352,10 +352,10 @@ export default function CheckoutPage() {
                 <button 
                   disabled={isProcessing || (paymentMethod === 'razorpay' && !canUseRazorpay)}
                   onClick={handleCheckout}
-                  className="mt-10 w-full rounded-full bg-ink text-ivory py-5 font-mono text-[11px] uppercase tracking-[0.2em] shadow-xl hover:bg-ink-2 transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50"
+                  className="mt-10 flex w-full items-center justify-center gap-3 bg-ink py-5 font-mono text-[11px] uppercase tracking-[0.2em] text-ivory shadow-xl transition-all hover:bg-ink-2 active:scale-[0.98] disabled:opacity-50"
                 >
                   {isProcessing ? <Loader2 size={16} className="animate-spin" /> : (
-                    <>Confirm Acquisition · {formatInr(total)}</>
+                    <>Place order · {formatInr(total)}</>
                   )}
                 </button>
               )}
@@ -371,19 +371,19 @@ export default function CheckoutPage() {
 
         {/* Right Column: Order Summary */}
         <aside className="relative lg:sticky lg:top-32 h-fit">
-          <div className="rounded-[40px] border border-ink/5 bg-white p-10 shadow-luxe">
-            <h2 className="font-display text-[24px] font-medium tracking-display text-ink mb-8">Selection Summary</h2>
+          <div className="border border-ink/8 bg-white p-8 shadow-luxe lg:p-10">
+            <h2 className="mb-8 font-display text-[24px] font-medium tracking-normal text-ink">Selection Summary</h2>
             
             <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
               {items.map((item) => (
                 <div key={item.productId} className="flex items-center gap-5 group">
-                  <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-[14px] bg-ivory-2">
+                  <div className="relative h-20 w-16 shrink-0 overflow-hidden border border-ink/5 bg-ivory-2">
                     <img src={item.imageUrl || ''} className="h-full w-full object-cover grayscale transition-all group-hover:grayscale-0" alt="" />
-                    <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-ink text-ivory text-[10px] flex items-center justify-center font-mono">{item.quantity}</span>
+                    <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center bg-ink font-mono text-[10px] text-ivory">{item.quantity}</span>
                   </div>
                   <div>
                     <h3 className="font-display text-[16px] font-medium text-ink">{item.title}</h3>
-                    <div className="font-mono text-[9px] uppercase tracking-widest text-ink/40 mt-1">Acquisition Piece</div>
+                    <div className="font-mono text-[9px] uppercase tracking-widest text-ink/40 mt-1">Entix Piece</div>
                   </div>
                   <div className="ml-auto font-mono text-[13px] text-ink">{formatInr(item.priceInr * item.quantity)}</div>
                 </div>
@@ -397,8 +397,8 @@ export default function CheckoutPage() {
                   onClick={() => setGiftWrap(!giftWrap)}
                   className="flex items-center gap-3 cursor-pointer group"
                 >
-                   <div className={cn("h-5 w-5 rounded-md border border-ink/10 flex items-center justify-center transition-colors", giftWrap ? "bg-ink border-ink" : "bg-white")}>
-                      {giftWrap && <div className="h-2 w-2 rounded-full bg-ivory" />}
+                   <div className={cn("flex h-5 w-5 items-center justify-center border border-ink/10 transition-colors", giftWrap ? "bg-ink border-ink" : "bg-white")}>
+                      {giftWrap && <div className="h-2 w-2 bg-ivory" />}
                    </div>
                    <span className="font-mono text-[10px] uppercase tracking-widest text-ink/60 group-hover:text-ink transition-colors">Request Gift Wrapping (Complimentary)</span>
                 </div>
@@ -408,7 +408,7 @@ export default function CheckoutPage() {
                     <textarea 
                       value={giftMessage}
                       onChange={(e) => setGiftMessage(e.target.value)}
-                      className="w-full bg-ivory-2 border border-ink/5 rounded-[20px] p-4 font-mono text-[11px] h-24 focus:outline-none focus:border-ink transition-all placeholder:text-ink/20 italic" 
+                      className="h-24 w-full border border-ink/5 bg-ivory-2 p-4 font-mono text-[11px] italic transition-all placeholder:text-ink/20 focus:border-ink focus:outline-none" 
                       placeholder="Write a note for the recipient..."
                     />
                   </div>
@@ -421,13 +421,13 @@ export default function CheckoutPage() {
                 <input 
                   value={discountCode}
                   onChange={(e) => setDiscountCode(e.target.value)}
-                  placeholder="Atelier Promo Code"
-                  className="w-full bg-ivory-2 border border-ink/5 rounded-full pl-12 pr-24 py-4 font-mono text-[11px] uppercase tracking-widest focus:outline-none focus:border-ink transition-all" 
+                  placeholder="Promo code"
+                  className="w-full border border-ink/5 bg-ivory-2 py-4 pl-12 pr-24 font-mono text-[11px] uppercase tracking-widest transition-all focus:border-ink focus:outline-none" 
                 />
                 <button 
                   onClick={handleApplyDiscount}
                   disabled={isValidatingDiscount || !discountCode}
-                  className="absolute right-2 top-1.5 bottom-2 px-6 rounded-full bg-ink/5 hover:bg-ink hover:text-ivory transition-all font-mono text-[10px] uppercase tracking-widest disabled:opacity-50"
+                  className="absolute bottom-2 right-2 top-1.5 bg-ink/5 px-6 font-mono text-[10px] uppercase tracking-widest transition-all hover:bg-ink hover:text-ivory disabled:opacity-50"
                 >
                   {isValidatingDiscount ? <Loader2 size={12} className="animate-spin" /> : 'Apply'}
                 </button>
@@ -435,7 +435,7 @@ export default function CheckoutPage() {
 
               <div className="space-y-3">
                 <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40">
-                  <span>Acquisition Subtotal</span>
+                  <span>Subtotal</span>
                   <span>{formatInr(subtotal)}</span>
                 </div>
                 {appliedDiscount && (
@@ -445,11 +445,11 @@ export default function CheckoutPage() {
                   </div>
                 )}
                 <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40">
-                  <span>Insured Shipping</span>
+                  <span>Shipping</span>
                   <span className={cn(shipping === 0 && "text-jade")}>{shipping === 0 ? 'Complimentary' : formatInr(shipping)}</span>
                 </div>
                 <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40">
-                  <span>GST (3% breakdown)</span>
+                  <span>GST (18% breakdown)</span>
                   <span>{formatInr(tax)}</span>
                 </div>
               </div>
@@ -457,15 +457,15 @@ export default function CheckoutPage() {
               <div className="pt-6 border-t border-ink/10 flex justify-between items-end">
                 <div>
                   <div className="font-display text-[26px] font-medium text-ink">Total</div>
-                  <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-ink/30">Gurgaon · India · Global</div>
+                  <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-ink/30">India · secure checkout</div>
                 </div>
-                <div className="font-display text-[32px] font-medium text-ink tracking-display">{formatInr(total)}</div>
+                <div className="font-display text-[32px] font-medium tracking-normal text-ink">{formatInr(total)}</div>
               </div>
             </div>
 
-            <div className="mt-10 flex items-center gap-3 p-4 rounded-[20px] bg-jade/5 text-jade/70 italic">
+            <div className="mt-10 flex items-center gap-3 bg-jade/5 p-4 text-jade/70 italic">
                <Info size={14} />
-               <p className="text-[12px] leading-snug">Every Entix acquisition carries a complimentary lifetime re-polish service.</p>
+               <p className="text-[12px] leading-snug">Every Entix order includes complimentary lifetime re-polish service.</p>
             </div>
           </div>
         </aside>

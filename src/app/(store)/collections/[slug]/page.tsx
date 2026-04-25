@@ -5,6 +5,7 @@ import { CollectionToolbar } from '@/components/collection/CollectionToolbar';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,25 +20,25 @@ const TAXONOMY_COLLECTIONS: Record<
 > = {
   necklaces: {
     title: 'Necklaces',
-    eyebrow: '— The Necklace Atelier',
+    eyebrow: 'The Necklace Room',
     description: 'Layered heirlooms, bridal statements, and occasion pendants curated for the Entix collector.',
     terms: ['necklace', 'necklaces', 'pendant', 'pendants', 'mangalsutra', 'choker', 'layered'],
   },
   bangles: {
     title: 'Bangles',
-    eyebrow: '— The Bangle Atelier',
+    eyebrow: 'The Bangle Room',
     description: 'Stacks, cuffs, and festive silhouettes that carry the warmth of hand-finished metalwork.',
     terms: ['bangle', 'bangles', 'bracelet', 'bracelets', 'cuff', 'stack'],
   },
   rings: {
     title: 'Rings',
-    eyebrow: '— The Ring Atelier',
+    eyebrow: 'The Ring Room',
     description: 'Cocktail signatures, bridal bands, and everyday rings made to feel like future heirlooms.',
     terms: ['ring', 'rings', 'band', 'bands', 'midi'],
   },
   earrings: {
     title: 'Earrings',
-    eyebrow: '— The Earring Atelier',
+    eyebrow: 'The Earring Room',
     description: 'Studs, hoops, drops, and dramatic evening silhouettes shaped for modern ritual dressing.',
     terms: ['earring', 'earrings', 'stud', 'studs', 'hoop', 'hoops', 'jhumka', 'drops'],
   },
@@ -67,7 +68,7 @@ async function resolveCollection(slug: string) {
       description:
         collection.description || `Explore our ${collection.title} collection at Entix Jewellery.`,
       heroImage: collection.heroImage,
-      eyebrow: '— The Atelier Selection',
+      eyebrow: 'Entix Selection',
       products: collection.products.map((cp) => cp.product),
     };
   }
@@ -101,7 +102,7 @@ async function resolveCollection(slug: string) {
 }
 
 function applyCollectionFilters(
-  products: Awaited<ReturnType<typeof resolveCollection>> extends { products: infer T } ? T : never,
+  products: any[],
   filters: { sort?: string; priceMin?: string; priceMax?: string; material?: string }
 ) {
   let filteredProducts = [...products];
@@ -175,38 +176,40 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   const filteredProducts = applyCollectionFilters(collection.products, filters);
 
   return (
-    <div className="bg-ivory min-h-screen pb-32">
-      <header className="relative flex min-h-[68svh] items-end overflow-hidden">
+    <div className="min-h-screen bg-ivory pb-32">
+      <header className="relative flex min-h-[68vh] items-end overflow-hidden px-6 pb-12 lg:px-12 lg:pb-16">
         <div className="absolute inset-0 z-0">
            {collection.heroImage ? (
              <img src={collection.heroImage} className="h-full w-full object-cover" alt={collection.title} />
            ) : (
              <div className="h-full w-full bg-ink" />
            )}
-           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,15,13,0.2),rgba(18,15,13,0.86)),linear-gradient(90deg,rgba(18,15,13,0.72),rgba(18,15,13,0.2))]" />
+           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,15,13,0.82),rgba(18,15,13,0.22)),linear-gradient(0deg,rgba(18,15,13,0.72),rgba(18,15,13,0)_48%)]" />
         </div>
         
-        <div className="relative z-10 mx-auto w-full max-w-[1500px] px-6 pb-12 lg:px-12">
+        <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
            <ScrollReveal>
-              <div className="font-mono text-[10px] uppercase text-champagne-300 mb-6">{collection.eyebrow}</div>
-              <h1 className="font-display text-[76px] md:text-[132px] font-light leading-[0.86] text-ivory">
-                {collection.title}
+              <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-champagne-200">{collection.eyebrow}</div>
+            </ScrollReveal>
+            <ScrollReveal delay={0.08}>
+              <h1 className="font-display text-[19vw] font-light leading-[0.82] tracking-normal text-ivory md:text-[9rem]">
+                {collection.title.split(' ')[0]} <span className="font-display-italic text-champagne-400">{collection.title.split(' ').slice(1).join(' ')}</span>
               </h1>
               {collection.description && (
-                <p className="mt-8 max-w-xl text-[18px] text-ivory/64 leading-relaxed">{collection.description}</p>
+                <p className="mt-7 max-w-xl text-[17px] leading-relaxed text-ivory/68">{collection.description}</p>
               )}
            </ScrollReveal>
         </div>
       </header>
 
-      <div className="max-w-[1500px] mx-auto px-6 lg:px-12 mt-20">
-        <div className="mb-8 flex items-center justify-between gap-4 border-b border-ink/8 pb-6">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-24">
+        <div className="mb-8 flex items-center justify-between gap-4 border-b border-ink/10 pb-5">
           <span className="font-mono text-[11px] uppercase tracking-widest text-ink/40">
             {filteredProducts.length} Piece{filteredProducts.length !== 1 ? 's' : ''}
           </span>
-          <span className="hidden font-mono text-[11px] uppercase tracking-widest text-ink/32 sm:inline">
-            Gurgaon / insured dispatch
-          </span>
+          <Link href="/collections" className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink/45 underline-draw hover:text-ink">
+            All collections
+          </Link>
         </div>
 
         <Suspense fallback={null}>

@@ -96,7 +96,7 @@ export default async function TrackOrderPage({
               Order Not Found
             </h2>
             <p className="font-mono text-[11px] uppercase tracking-widest text-ink/40 max-w-sm mx-auto">
-              Please verify your order number and try again. Contact our concierge if you need assistance.
+              Please verify your order number and try again. Contact support if you need assistance.
             </p>
           </div>
         )}
@@ -306,9 +306,9 @@ export default async function TrackOrderPage({
               </p>
               <Link 
                 href="/contact"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-ink/10 bg-white font-mono text-[11px] uppercase tracking-widest text-ink hover:bg-ink hover:text-ivory transition-all"
+                className="inline-flex items-center gap-2 border border-ink/10 bg-white px-8 py-4 font-mono text-[11px] uppercase tracking-widest text-ink transition-all hover:bg-ink hover:text-ivory"
               >
-                Contact Concierge
+                Contact Support
               </Link>
             </div>
           </div>

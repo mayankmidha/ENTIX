@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     // For now, we'll just log or send a simple one if Resend is configured
     try {
       await resend.emails.send({
-        from: 'Entix Jewellery <concierge@entix.jewellery>',
+        from: 'Entix Jewellery <care@entix.jewellery>',
         to: email,
         subject: 'Welcome to the Entix Circle',
         html: `

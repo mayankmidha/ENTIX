@@ -20,8 +20,8 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
 
   if (images.length === 0) {
     return (
-      <div className="aspect-square bg-ivory-2 rounded-[32px] flex items-center justify-center text-ink/5 italic font-display text-2xl">
-        No atelier photos found
+      <div className="flex aspect-square items-center justify-center border border-ink/8 bg-ivory-2 font-display text-2xl italic text-ink/10">
+        Imagery coming soon
       </div>
     );
   }
@@ -33,7 +33,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
   return (
     <div className="space-y-4">
       {/* Main image */}
-      <div className="relative aspect-[4/5] rounded-[32px] overflow-hidden border border-ink/5 bg-ivory-2 group">
+      <div className="group relative aspect-[4/5] overflow-hidden border border-ink/8 bg-ivory-2">
         <img
           src={current.url}
           alt={current.alt || title}
@@ -45,7 +45,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
           type="button"
           onClick={() => setLightbox(true)}
           aria-label="Open lightbox"
-          className="absolute top-4 right-4 h-10 w-10 rounded-full bg-ivory/90 backdrop-blur flex items-center justify-center text-ink/60 hover:text-ink opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center border border-ink/8 bg-ivory/90 text-ink/60 opacity-0 backdrop-blur transition-opacity hover:text-ink group-hover:opacity-100"
         >
           <Expand size={16} />
         </button>
@@ -57,7 +57,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
               type="button"
               onClick={prev}
               aria-label="Previous image"
-              className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-ivory/90 backdrop-blur flex items-center justify-center text-ink/60 hover:text-ink opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-ink/8 bg-ivory/90 text-ink/60 opacity-0 backdrop-blur transition-opacity hover:text-ink group-hover:opacity-100"
             >
               <ChevronLeft size={16} />
             </button>
@@ -65,13 +65,13 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
               type="button"
               onClick={next}
               aria-label="Next image"
-              className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-ivory/90 backdrop-blur flex items-center justify-center text-ink/60 hover:text-ink opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-ink/8 bg-ivory/90 text-ink/60 opacity-0 backdrop-blur transition-opacity hover:text-ink group-hover:opacity-100"
             >
               <ChevronRight size={16} />
             </button>
 
             {/* Index pill */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-ink/70 backdrop-blur font-mono text-[10px] uppercase tracking-widest text-ivory">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-ink/70 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-ivory backdrop-blur">
               {active + 1} / {images.length}
             </div>
           </>
@@ -88,7 +88,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
               onClick={() => setActive(i)}
               aria-label={`View image ${i + 1}`}
               className={cn(
-                'relative aspect-square rounded-2xl overflow-hidden border transition-all',
+                'relative aspect-square overflow-hidden border transition-all',
                 active === i
                   ? 'border-ink ring-2 ring-ink/20'
                   : 'border-ink/5 hover:border-ink/30 opacity-60 hover:opacity-100',
@@ -115,7 +115,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
           <img
             src={current.url}
             alt={current.alt || title}
-            className="max-h-full max-w-full object-contain rounded-2xl"
+          className="max-h-full max-w-full object-contain"
           />
           {images.length > 1 && (
             <>
@@ -126,7 +126,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
                   prev();
                 }}
                 aria-label="Previous image"
-                className="absolute left-8 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-ivory/20 backdrop-blur flex items-center justify-center text-ivory hover:bg-ivory/30"
+                className="absolute left-8 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center border border-ivory/16 bg-ivory/20 text-ivory backdrop-blur hover:bg-ivory/30"
               >
                 <ChevronLeft size={20} />
               </button>
@@ -137,7 +137,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
                   next();
                 }}
                 aria-label="Next image"
-                className="absolute right-8 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-ivory/20 backdrop-blur flex items-center justify-center text-ivory hover:bg-ivory/30"
+                className="absolute right-8 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center border border-ivory/16 bg-ivory/20 text-ivory backdrop-blur hover:bg-ivory/30"
               >
                 <ChevronRight size={20} />
               </button>

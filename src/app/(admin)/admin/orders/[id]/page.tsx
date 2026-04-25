@@ -121,7 +121,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               />
               <TimelineEvent 
                 icon={Truck} 
-                title="Insured Global Dispatch" 
+                title="Secure Dispatch" 
                 description={order.trackingNumber ? `Courier: Delhivery · Tracking: ${order.trackingNumber}` : 'Tracking number will appear upon dispatch.'}
                 active={order.status === 'shipped'}
               />

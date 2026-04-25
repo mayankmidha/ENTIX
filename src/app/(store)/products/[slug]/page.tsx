@@ -1,8 +1,7 @@
 import { prisma } from '@/lib/prisma';
-import { formatInr, cn } from '@/lib/utils';
 import { 
-  ShieldCheck, Truck, Sparkles, 
-  ChevronRight, Heart, Share2, Gem
+  ShieldCheck, Sparkles, 
+  ChevronRight, Gem
 } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -105,21 +104,21 @@ export default async function ProductPage({ params }: Props) {
   };
 
   return (
-    <div className="bg-ivory pb-32">
+    <div className="bg-ivory px-6 pb-32 pt-10 lg:px-12">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mx-auto max-w-[1500px] px-6 pt-10 lg:px-12">
-        <nav className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-12">
+      <div className="max-w-[1440px] mx-auto">
+        <nav className="mb-12 flex items-center gap-2 font-mono text-[9px] uppercase tracking-widest text-ink/40">
            <Link href="/" className="hover:text-ink">Home</Link>
            <ChevronRight size={10} />
-           <Link href="/collections/all" className="hover:text-ink">Atelier</Link>
+           <Link href="/collections/all" className="hover:text-ink">Catalogue</Link>
            <ChevronRight size={10} />
            <span className="text-ink">{product.title}</span>
         </nav>
 
-        <div className="grid lg:grid-cols-[1.08fr_0.92fr] gap-20 items-start">
+        <div className="grid items-start gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
           {/* Visual Showcase */}
           <ProductGallery images={product.images} title={product.title} />
 
@@ -129,7 +128,7 @@ export default async function ProductPage({ params }: Props) {
                 <div className="flex items-start justify-between gap-6">
                    <div>
                       <div className="eyebrow mb-4">{product.material || 'Heirloom Piece'}</div>
-                      <h1 className="font-display text-[54px] font-light leading-[0.92] text-ink">{product.title}</h1>
+                      <h1 className="font-display text-[52px] font-medium leading-[0.98] tracking-normal text-ink">{product.title}</h1>
                       <p className="mt-4 font-display text-[22px] italic text-champagne-600">{product.subtitle}</p>
                    </div>
                    <WishlistButton
@@ -151,41 +150,41 @@ export default async function ProductPage({ params }: Props) {
              <ScrollReveal delay={0.1}>
                 <div className="space-y-8">
                    <div>
-                      <h3 className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/30 border-b border-ink/5 pb-3 mb-6">Atelier Narrative</h3>
+                      <h3 className="mb-6 border-b border-ink/5 pb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-ink/30">Product Narrative</h3>
                       <div className="prose prose-ink prose-sm max-w-none font-mono text-[13px] leading-relaxed text-ink/60 italic">
                          {product.description}
                       </div>
                    </div>
 
                    <div className="grid grid-cols-2 gap-4">
-                      <div className="p-6 border border-ink/5 bg-white/40">
+                      <div className="border border-ink/5 bg-white/40 p-6">
                          <Gem size={18} className="text-champagne-600 mb-4" />
                          <div className="font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-1">Craftmanship</div>
                          <div className="font-display text-[15px] font-medium text-ink">Studio-finished Polki Detail</div>
                       </div>
-                      <div className="p-6 border border-ink/5 bg-white/40">
+                      <div className="border border-ink/5 bg-white/40 p-6">
                          <Sparkles size={18} className="text-champagne-600 mb-4" />
                          <div className="font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-1">Assurance</div>
-                         <div className="font-display text-[15px] font-medium text-ink">Lifetime Atelier Care</div>
+                         <div className="font-display text-[15px] font-medium text-ink">Lifetime Care</div>
                       </div>
                    </div>
 
                    {/* Luxury Badges */}
                    <div className="pt-8 border-t border-ink/5 grid grid-cols-3 gap-4">
                       <div className="flex flex-col items-center text-center space-y-2">
-                         <div className="h-12 w-12 rounded-full bg-ivory border border-ink/5 flex items-center justify-center text-ink/60">
+                         <div className="flex h-12 w-12 items-center justify-center border border-ink/5 bg-ivory text-ink/60">
                             <ShieldCheck size={20} />
                          </div>
                          <span className="font-mono text-[9px] uppercase tracking-widest text-ink/40">18K Hallmark</span>
                       </div>
                       <div className="flex flex-col items-center text-center space-y-2">
-                         <div className="h-12 w-12 rounded-full bg-ivory border border-ink/5 flex items-center justify-center text-ink/60">
+                         <div className="flex h-12 w-12 items-center justify-center border border-ink/5 bg-ivory text-ink/60">
                             <Gem size={20} />
                          </div>
                          <span className="font-mono text-[9px] uppercase tracking-widest text-ink/40">Certified Emerald</span>
                       </div>
                       <div className="flex flex-col items-center text-center space-y-2">
-                         <div className="h-12 w-12 rounded-full bg-ivory border border-ink/5 flex items-center justify-center text-ink/60">
+                         <div className="flex h-12 w-12 items-center justify-center border border-ink/5 bg-ivory text-ink/60">
                             <Sparkles size={20} />
                          </div>
                          <span className="font-mono text-[9px] uppercase tracking-widest text-ink/40">Lifetime Re-polish</span>

@@ -1,4 +1,5 @@
 import Razorpay from 'razorpay';
+import type { Orders } from 'razorpay/dist/types/orders';
 import crypto from 'crypto';
 
 let razorpayClient: Razorpay | null = null;
@@ -20,10 +21,10 @@ export function getRazorpayClient() {
   return razorpayClient;
 }
 
-export async function createRazorpayOrder(options: Razorpay.Orders.CreateOrderRequestBody) {
+export async function createRazorpayOrder(options: Orders.RazorpayOrderCreateRequestBody) {
   const client = getRazorpayClient();
   if (!client) throw new Error('Razorpay is not configured');
-  return client.orders.create(options);
+  return client.orders.create(options) as unknown as Promise<Orders.RazorpayOrder>;
 }
 
 export async function verifyRazorpaySignature(orderId: string, paymentId: string, signature: string) {

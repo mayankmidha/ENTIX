@@ -35,7 +35,7 @@ export default async function GeneralSettingsPage() {
             <div className="grid sm:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">Contact Email</label>
-                <input className="w-full bg-ivory-2/40 border-none rounded-full px-6 py-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none" defaultValue="concierge@entix.jewellery" />
+                <input className="w-full bg-ivory-2/40 border-none rounded-full px-6 py-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none" defaultValue="care@entix.jewellery" />
               </div>
               <div className="space-y-2">
                 <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">Contact Phone</label>

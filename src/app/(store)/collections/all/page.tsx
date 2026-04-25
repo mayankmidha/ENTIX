@@ -20,17 +20,19 @@ export default async function AllCollectionsPage() {
   });
 
   return (
-    <div className="bg-ivory min-h-screen py-24 px-6 lg:px-12">
+    <div className="min-h-screen bg-ivory px-6 pb-28 pt-16 lg:px-12">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-20">
-          <div className="eyebrow">— The Complete Atelier</div>
-          <h1 className="font-display mt-6 text-[56px] font-light leading-tight tracking-display text-ink">
+        <header className="mb-16 grid gap-8 border-b border-ink/10 pb-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
+          <div className="eyebrow">Complete Catalogue</div>
+          <div>
+          <h1 className="font-display text-[18vw] font-light leading-[0.84] tracking-normal text-ink md:text-[8rem]">
             Shop <span className="font-display-italic text-champagne-600">All Pieces.</span>
           </h1>
-          <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-ink/50 italic">
+            <p className="mt-6 max-w-2xl text-[17px] leading-relaxed text-ink/55">
             The full Entix catalogue, curated in one place for discovery across bridal, gifting,
             festive, and everyday jewellery.
           </p>
+          </div>
         </header>
 
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

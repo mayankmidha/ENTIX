@@ -6,7 +6,7 @@ import { AbandonedCartEmail } from '@/emails/AbandonedCart';
 import { formatInr } from '@/lib/utils';
 
 const resend = new Resend(process.env.RESEND_API_KEY ?? 'placeholder');
-const FROM_EMAIL = 'Entix Jewellery <concierge@entix.jewellery>';
+const FROM_EMAIL = 'Entix Jewellery <care@entix.jewellery>';
 
 function canSendEmail(): boolean {
   if (!process.env.RESEND_API_KEY) {

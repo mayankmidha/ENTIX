@@ -24,9 +24,9 @@ export default async function MenusPage() {
     { label: 'Bangles', href: '/collections/bangles' },
     { label: 'Rings', href: '/collections/rings' },
     { label: 'Earrings', href: '/collections/earrings' },
-    { label: 'About Atelier', href: '/about' },
+    { label: 'About Entix', href: '/about' },
     { label: 'Shipping Guide', href: '/shipping-policy' },
-    { label: 'Contact Concierge', href: '/contact' },
+    { label: 'Contact', href: '/contact' },
     { label: 'Archive Terms', href: '/terms' },
   ];
 

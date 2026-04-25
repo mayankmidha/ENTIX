@@ -45,7 +45,7 @@ async function getAnalyticsData() {
   try {
     const capturedOrders = await prisma.order.findMany({
       where: {
-        paymentStatus: { in: ['captured', 'paid'] },
+        paymentStatus: 'captured',
         createdAt: { gte: last30Days }
       }
     });
@@ -64,7 +64,7 @@ async function getAnalyticsData() {
 
     const recentOrders = await prisma.order.findMany({
       where: {
-        paymentStatus: { in: ['captured', 'paid'] },
+        paymentStatus: 'captured',
         createdAt: { gte: sevenDaysAgo }
       },
       select: {
@@ -86,18 +86,18 @@ async function getAnalyticsData() {
 
     const orderItems = await prisma.orderItem.findMany({
       where: {
-        order: { paymentStatus: { in: ['captured', 'paid'] } }
+        order: { paymentStatus: 'captured' }
       },
       select: {
         priceInr: true,
         quantity: true,
-        product: { select: { material: true } }
+        title: true
       }
     });
 
     const materialSales: Record<string, number> = {};
     orderItems.forEach((item) => {
-      const mat = item.product.material || 'Unspecified';
+      const mat = item.title.split(' ').slice(-1)[0] || 'Jewellery';
       materialSales[mat] = (materialSales[mat] || 0) + (item.priceInr * item.quantity);
     });
 
@@ -117,7 +117,7 @@ async function getAnalyticsData() {
     const topPieces = await prisma.orderItem.groupBy({
       by: ['productId', 'title'],
       where: {
-        order: { paymentStatus: { in: ['captured', 'paid'] } }
+        order: { paymentStatus: 'captured' }
       },
       _sum: {
         quantity: true,
@@ -230,8 +230,8 @@ export default async function AnalyticsPage() {
                   {analytics.topPieces.map((p, i) => (
                     <tr key={i} className="group hover:bg-ivory/40 transition-colors">
                        <td className="py-6 font-display text-[17px] font-medium text-ink">{p.title}</td>
-                       <td className="py-6 font-mono text-[13px] text-ink/40">{p._sum.quantity}</td>
-                       <td className="py-6 text-right font-mono text-[14px] font-medium text-ink">{formatInr(p._sum.priceInr || 0)}</td>
+                       <td className="py-6 font-mono text-[13px] text-ink/40">{p._sum?.quantity || 0}</td>
+                       <td className="py-6 text-right font-mono text-[14px] font-medium text-ink">{formatInr(p._sum?.priceInr || 0)}</td>
                     </tr>
                   ))}
                   {analytics.topPieces.length === 0 && (

@@ -1,10 +1,10 @@
 'use client';
 
 import { useCart } from '@/stores/cart-store';
-import { formatInr, cn } from '@/lib/utils';
+import { formatInr } from '@/lib/utils';
 import { 
   ShoppingBag, Trash2, Plus, Minus, 
-  ArrowRight, ChevronLeft, ShieldCheck, Truck 
+  ArrowRight, ChevronLeft, ShieldCheck, Sparkles 
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -14,28 +14,30 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-[80vh] flex flex-col items-center justify-center bg-ivory px-6 text-center">
-         <div className="mb-10 flex h-24 w-24 items-center justify-center border border-ink/8 text-ink/16">
+      <div className="min-h-[80vh] flex flex-col items-center justify-center bg-ivory px-6">
+         <div className="mb-10 flex h-24 w-24 items-center justify-center border border-ink/10 bg-white text-ink/14">
             <ShoppingBag size={48} />
          </div>
-         <h1 className="font-display text-[54px] font-light leading-none text-ink">Your bag is empty.</h1>
-         <p className="mt-4 text-ink/40 font-mono text-[11px] uppercase tracking-widest italic">Acquisitions begin in the atelier</p>
-         <Link href="/collections/all" className="mt-12 rounded-full bg-ink text-ivory px-12 py-5 font-mono text-[11px] uppercase tracking-[0.2em] hover:bg-ink-2 transition-all shadow-xl active:scale-95">Explore Collection</Link>
+         <h1 className="font-display text-4xl text-ink">Your bag is empty.</h1>
+         <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-ink/40">Start with one impossible-to-ignore piece</p>
+         <Link href="/collections/all" className="mt-12 bg-ink px-12 py-5 font-mono text-[11px] uppercase tracking-[0.18em] text-ivory shadow-xl transition-all hover:bg-ink-2 active:scale-95">Explore Collection</Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-ivory py-24 px-6 lg:px-12">
-      <div className="max-w-[1500px] mx-auto">
-        <header className="mb-16">
-           <Link href="/collections/all" className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-ink/40 hover:text-ink transition-colors mb-8">
-              <ChevronLeft size={12} /> Return to Atelier
+    <div className="min-h-screen bg-ivory px-6 py-20 lg:px-12 lg:py-24">
+      <div className="max-w-7xl mx-auto">
+        <header className="mb-14 grid gap-8 border-b border-ink/10 pb-10 lg:grid-cols-[0.74fr_1.26fr] lg:items-end">
+           <Link href="/collections/all" className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-ink/40 transition-colors hover:text-ink">
+              <ChevronLeft size={12} /> Continue collecting
            </Link>
-           <h1 className="font-display text-[76px] font-light leading-[0.9] text-ink">
+           <div>
+           <h1 className="font-display text-[56px] font-light leading-tight tracking-display text-ink">
              Your <span className="font-display-italic text-champagne-600">Selection.</span>
            </h1>
-           <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-ink/40">{totalItems()} Pieces Prepared for Acquisition</p>
+             <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-ink/40">{totalItems()} piece{totalItems() !== 1 ? 's' : ''} in composition</p>
+           </div>
         </header>
 
         <div className="grid lg:grid-cols-[1fr_400px] gap-20">
@@ -43,7 +45,7 @@ export default function CartPage() {
              <div className="divide-y divide-ink/5">
                 {items.map((item) => (
                    <div key={`${item.productId}:${item.variantId || 'base'}:${item.engraving || 'plain'}`} className="py-10 first:pt-0 group flex flex-col sm:flex-row gap-10 items-start">
-                      <div className="relative h-44 w-32 shrink-0 overflow-hidden bg-ivory-2 border border-ink/5">
+                      <div className="relative h-44 w-32 shrink-0 overflow-hidden border border-ink/8 bg-ivory-2 sm:w-36">
                          {item.imageUrl ? (
                            <Image 
                              src={item.imageUrl} 
@@ -66,14 +68,14 @@ export default function CartPage() {
                             </div>
                             <button 
                               onClick={() => remove(item.productId, item.variantId, item.engraving)}
-                              className="h-10 w-10 rounded-full border border-ink/5 flex items-center justify-center text-ink/20 hover:text-oxblood hover:border-oxblood/20 transition-all active:scale-90"
+                              className="flex h-10 w-10 items-center justify-center border border-ink/5 text-ink/20 transition-all hover:border-oxblood/20 hover:text-oxblood active:scale-90"
                             >
                                <Trash2 size={16} />
                             </button>
                          </div>
 
                          <div className="flex items-end justify-between">
-                            <div className="flex items-center gap-4 bg-white rounded-full border border-ink/5 px-4 py-2">
+                            <div className="flex items-center gap-4 border border-ink/5 bg-white px-4 py-2">
                                <button 
                                  onClick={() => updateQty(item.productId, item.quantity - 1, item.variantId, item.engraving)}
                                  className="p-1 text-ink/30 hover:text-ink transition-colors"
@@ -99,17 +101,17 @@ export default function CartPage() {
              </div>
 
              <div className="grid sm:grid-cols-2 gap-8 pt-10 border-t border-ink/5">
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 border-l border-ink/10 pl-5">
                    <ShieldCheck size={20} className="text-jade mt-1" />
                    <div>
                       <h4 className="font-mono text-[11px] uppercase tracking-widest text-ink font-bold">Secure Acquisition</h4>
-                      <p className="text-[13px] text-ink/50 mt-1 leading-relaxed italic">Fully encrypted checkout with insured global fulfillment.</p>
+                      <p className="mt-1 text-[13px] leading-relaxed text-ink/50 italic">Encrypted checkout, clear totals, and order tracking after purchase.</p>
                    </div>
                 </div>
-                <div className="flex items-start gap-4">
-                   <Truck size={20} className="text-champagne-600 mt-1" />
+                <div className="flex items-start gap-4 border-l border-ink/10 pl-5">
+                   <Sparkles size={20} className="text-champagne-600 mt-1" />
                    <div>
-                      <h4 className="font-mono text-[11px] uppercase tracking-widest text-ink font-bold">Atelier Care</h4>
+                      <h4 className="font-mono text-[11px] uppercase tracking-widest text-ink font-bold">Lifetime Care</h4>
                       <p className="text-[13px] text-ink/50 mt-1 leading-relaxed italic">Complimentary lifetime re-polish and evaluation included.</p>
                    </div>
                 </div>
@@ -117,8 +119,8 @@ export default function CartPage() {
           </div>
 
           <aside>
-             <div className="sticky top-32 border border-ink/5 bg-white p-10 shadow-luxe">
-                <h2 className="font-display text-[32px] font-light text-ink mb-10">Selection summary</h2>
+             <div className="sticky top-32 border border-ink/8 bg-white p-8 shadow-luxe lg:p-10">
+                <h2 className="mb-10 font-display text-[28px] font-medium tracking-normal text-ink">Summary</h2>
                 
                 <div className="space-y-5">
                    <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40">
@@ -130,7 +132,7 @@ export default function CartPage() {
                       <span className="text-jade">{subtotal() > 10000 ? 'Complimentary' : formatInr(500)}</span>
                    </div>
                    <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40 border-b border-ink/5 pb-5">
-                      <span>GST (3%)</span>
+                      <span>GST (18%)</span>
                       <span className="text-ink">Included</span>
                    </div>
                 </div>
@@ -142,13 +144,13 @@ export default function CartPage() {
 
                 <Link 
                   href="/checkout"
-                  className="w-full rounded-full bg-ink text-ivory py-6 font-mono text-[11px] uppercase tracking-[0.25em] flex items-center justify-center gap-3 shadow-2xl hover:bg-ink-2 transition-all active:scale-[0.98]"
+                  className="flex w-full items-center justify-center gap-3 bg-ink py-6 font-mono text-[11px] uppercase tracking-[0.2em] text-ivory shadow-2xl transition-all hover:bg-ink-2 active:scale-[0.98]"
                 >
-                   Finalize Acquisition <ArrowRight size={16} />
+                   Continue to checkout <ArrowRight size={16} />
                 </Link>
 
-                <p className="mt-8 text-center font-mono text-[9px] uppercase tracking-widest text-ink/30 italic">
-                  Gurgaon · India · Global Dispatch
+                <p className="mt-8 text-center font-mono text-[9px] uppercase tracking-widest text-ink/30">
+                  India · secure checkout
                 </p>
              </div>
           </aside>
