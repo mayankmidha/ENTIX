@@ -5,18 +5,7 @@ import { hashPassword } from '@/lib/auth';
 import { ShippingRateKind } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { defaultSiteSettings, settingKeys, type SettingKey } from './settingsDefaults';
-
-export async function getSiteSettings(keys: SettingKey[] = settingKeys) {
-  const rows = await prisma.siteSetting.findMany({
-    where: { key: { in: keys } },
-  });
-  const values = { ...defaultSiteSettings };
-  for (const row of rows) {
-    if (row.key in values) values[row.key as SettingKey] = row.value;
-  }
-  return values;
-}
+import { defaultSiteSettings, type SettingKey } from '@/lib/settings';
 
 async function saveSetting(key: string, value: string, description?: string) {
   await prisma.siteSetting.upsert({
@@ -200,6 +189,7 @@ export async function saveTaxSettings(formData: FormData) {
     'tax.defaultHsn',
     'tax.defaultPercent',
   ]);
+  await saveSetting('tax.chargeShipping', formData.get('tax.chargeShipping') === 'on' ? 'enabled' : 'disabled');
 
   const percent = numberValue(formData, 'tax.defaultPercent', 3);
   const existing = await prisma.taxRate.findFirst({ where: { name: 'GST jewellery' } });

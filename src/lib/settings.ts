@@ -1,3 +1,5 @@
+import { prisma } from '@/lib/prisma';
+
 export const defaultSiteSettings = {
   'store.name': 'Entix Jewellery',
   'store.legalName': 'Entix Jewellery',
@@ -39,6 +41,7 @@ export const defaultSiteSettings = {
   'tax.displayMode': 'inclusive',
   'tax.defaultHsn': '7113',
   'tax.defaultPercent': '3',
+  'tax.chargeShipping': 'disabled',
   'notifications.fromName': 'Entix Jewellery',
   'notifications.fromEmail': 'concierge@entix.jewellery',
   'notifications.staffEmail': '',
@@ -50,5 +53,56 @@ export const defaultSiteSettings = {
 };
 
 export type SettingKey = keyof typeof defaultSiteSettings;
+export type SiteSettings = Record<SettingKey, string>;
 
 export const settingKeys = Object.keys(defaultSiteSettings) as SettingKey[];
+
+export function hasDatabaseUrl() {
+  return Boolean(process.env.DATABASE_URL);
+}
+
+export function enabled(value: string | null | undefined) {
+  return ['enabled', 'on', 'true', 'yes', '1'].includes(String(value || '').toLowerCase());
+}
+
+export function numberSetting(settings: SiteSettings, key: SettingKey, fallback = 0) {
+  const parsed = Number(settings[key]);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+export async function getSiteSettings(keys: SettingKey[] = settingKeys): Promise<SiteSettings> {
+  const values = { ...defaultSiteSettings } as SiteSettings;
+
+  if (!hasDatabaseUrl()) return values;
+
+  try {
+    const rows = await prisma.siteSetting.findMany({
+      where: { key: { in: keys } },
+    });
+
+    for (const row of rows) {
+      if (row.key in values) values[row.key as SettingKey] = row.value;
+    }
+  } catch (error) {
+    console.warn('Site settings unavailable, using defaults.', error);
+  }
+
+  return values;
+}
+
+export async function getEmailTemplate(key: string) {
+  if (!hasDatabaseUrl()) return null;
+
+  try {
+    return await prisma.emailTemplate.findUnique({ where: { key } });
+  } catch (error) {
+    console.warn(`Email template ${key} unavailable, using component defaults.`, error);
+    return null;
+  }
+}
+
+export function formatSender(name: string, email: string) {
+  const safeName = name.trim() || defaultSiteSettings['notifications.fromName'];
+  const safeEmail = email.trim() || defaultSiteSettings['notifications.fromEmail'];
+  return `${safeName} <${safeEmail}>`;
+}

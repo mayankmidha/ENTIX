@@ -1,7 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import { formatInr } from '@/lib/utils';
+import { getSiteSettings } from '@/lib/settings';
 import { MapPinned, PackageCheck, Route, Truck } from 'lucide-react';
-import { getSiteSettings, saveShippingSettings } from '../actions';
+import { saveShippingSettings } from '../actions';
 import { Field, SettingsFrame, SettingsPanel, StatusPill, SubmitBar, TextArea, TextInput } from '../SettingsUi';
 
 export const dynamic = 'force-dynamic';

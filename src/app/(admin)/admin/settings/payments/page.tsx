@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
+import { getSiteSettings } from '@/lib/settings';
 import { Banknote, CreditCard, IndianRupee, ShieldCheck } from 'lucide-react';
-import { getSiteSettings, savePaymentSettings } from '../actions';
+import { savePaymentSettings } from '../actions';
 import { Field, SelectInput, SettingsFrame, SettingsPanel, StatusPill, SubmitBar, TextInput, ToggleField } from '../SettingsUi';
 
 export const dynamic = 'force-dynamic';

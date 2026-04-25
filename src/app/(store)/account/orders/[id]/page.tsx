@@ -82,7 +82,7 @@ export default async function CustomerOrderDetailPage({ params }: { params: Prom
                       <span className="text-jade">{order.shippingInr === 0 ? 'Complimentary' : formatInr(order.shippingInr)}</span>
                    </div>
                    <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40">
-                      <span>GST (18% Included)</span>
+                      <span>Tax</span>
                       <span>{formatInr(order.taxInr)}</span>
                    </div>
                    <div className="flex justify-between pt-6 border-t border-ink/10 items-end">

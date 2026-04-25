@@ -1,5 +1,6 @@
 import { FileCheck2, FileText, LockKeyhole, RotateCcw, Truck } from 'lucide-react';
-import { getSiteSettings, savePolicySettings } from '../actions';
+import { getSiteSettings } from '@/lib/settings';
+import { savePolicySettings } from '../actions';
 import { Field, SettingsFrame, SettingsPanel, SubmitBar, TextArea } from '../SettingsUi';
 
 export const dynamic = 'force-dynamic';

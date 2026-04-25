@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { createRazorpayOrder, hasRazorpayServerKeys } from '@/lib/razorpay';
 import { generateOrderNumber } from '@/lib/utils';
 import { getCustomerSession } from '@/lib/auth';
+import { calculateShippingRates, calculateTaxBreakdown, createRazorpayClient, getPaymentRuntime } from '@/lib/commerce-settings';
+import { sendOrderConfirmation } from '@/lib/mail';
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,6 +11,7 @@ export async function POST(req: NextRequest) {
       items, 
       customerInfo, 
       paymentMethod,
+      selectedShippingRateId,
       discountCode,
       giftWrap,
       giftMessage
@@ -124,11 +126,14 @@ export async function POST(req: NextRequest) {
     }
 
     const discountedSubtotal = Math.max(0, subtotal - discountAmount);
-    // Shipping logic matching frontend
-    const baseShipping = discountedSubtotal > 10000 ? 0 : 500;
+    const shippingRates = await calculateShippingRates(discountedSubtotal, {
+      state: customerInfo.state,
+      country: customerInfo.country || 'IN',
+    });
+    const selectedShippingRate = shippingRates.find((rate) => rate.id === selectedShippingRateId) || shippingRates[0];
     
     // Check for free shipping discount
-    let finalShipping = baseShipping;
+    let finalShipping = selectedShippingRate?.priceInr ?? 0;
     if (discountCode) {
         const discount = await prisma.discount.findFirst({
             where: { code: discountCode.toUpperCase(), status: 'active', type: 'free_shipping' }
@@ -136,25 +141,40 @@ export async function POST(req: NextRequest) {
         if (discount) finalShipping = 0;
     }
 
-    const tax = Math.round(discountedSubtotal * 0.18);
-    const total = discountedSubtotal + finalShipping;
+    const tax = await calculateTaxBreakdown(discountedSubtotal, finalShipping);
+    const total = discountedSubtotal + finalShipping + tax.taxAddedInr;
+    const paymentRuntime = await getPaymentRuntime();
 
     const orderNumber = generateOrderNumber();
 
     // 3. Handle Razorpay Order Creation
     let razorpayOrderId = null;
+    let razorpayKeyId = null;
     if (paymentMethod === 'razorpay') {
-      if (!hasRazorpayServerKeys()) {
-        return NextResponse.json({ message: 'Razorpay is not configured yet. Use cash on delivery or add live keys.' }, { status: 400 });
+      if (!paymentRuntime.razorpayEnabled || !paymentRuntime.razorpayConfig) {
+        return NextResponse.json({ message: 'Online payments are disabled or not configured yet. Use another available payment method.' }, { status: 400 });
       }
 
-      const options = {
+      const options: any = {
         amount: total * 100, // amount in the smallest currency unit
         currency: "INR",
         receipt: orderNumber,
       };
-      const razorOrder = await createRazorpayOrder(options);
+      if (paymentRuntime.settings['payment.captureMode'] === 'manual') {
+        options.payment_capture = 0;
+      }
+      const razorOrder = await createRazorpayClient(paymentRuntime.razorpayConfig).orders.create(options);
       razorpayOrderId = razorOrder.id;
+      razorpayKeyId = paymentRuntime.razorpayConfig.keyId;
+    }
+
+    if (paymentMethod === 'cod') {
+      if (!paymentRuntime.codEnabled) {
+        return NextResponse.json({ message: 'Cash on delivery is currently disabled.' }, { status: 400 });
+      }
+      if (total > paymentRuntime.codLimit) {
+        return NextResponse.json({ message: `Cash on delivery is available up to ₹${paymentRuntime.codLimit.toLocaleString('en-IN')}.` }, { status: 400 });
+      }
     }
 
     // 4. Create Internal Order
@@ -170,9 +190,10 @@ export async function POST(req: NextRequest) {
         shippingCity: customerInfo.city,
         shippingState: customerInfo.state,
         shippingPostal: customerInfo.postalCode,
+        shippingCountry: customerInfo.country || 'India',
         subtotalInr: discountedSubtotal,
         shippingInr: finalShipping,
-        taxInr: tax,
+        taxInr: tax.taxInr,
         totalInr: total,
         razorpayOrderId,
         giftWrap,
@@ -183,18 +204,28 @@ export async function POST(req: NextRequest) {
           create: orderItemsData,
         }
       },
+      include: { items: true },
     });
+
+    if (paymentMethod === 'cod') {
+      await sendOrderConfirmation(order).catch((error) => {
+        console.error('Order confirmation email failed:', error);
+      });
+    }
 
     return NextResponse.json({ 
       orderId: order.id, 
       orderNumber: order.orderNumber,
       razorpayOrderId,
+      razorpayKeyId,
+      shippingRate: selectedShippingRate,
+      tax,
       total,
       currency: "INR"
     });
 
   } catch (error: any) {
     console.error('Checkout Error:', error);
-    return NextResponse.json({ message: 'Atelier encountered an error during acquisition', error: error.message }, { status: 500 });
+    return NextResponse.json({ message: 'Checkout could not be completed', error: error.message }, { status: 500 });
   }
 }

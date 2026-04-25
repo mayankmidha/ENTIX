@@ -2,22 +2,49 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { formatInr } from './utils';
 
-export async function generateGSTInvoice(order: any) {
+export type InvoiceSettings = {
+  storeName: string;
+  legalName: string;
+  gstin: string;
+  invoicePrefix: string;
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  taxPercent: number;
+  returnPolicy: string;
+};
+
+const fallbackInvoiceSettings: InvoiceSettings = {
+  storeName: 'Entix Jewellery',
+  legalName: 'Entix Jewellery',
+  gstin: '',
+  invoicePrefix: 'ENT',
+  address: 'India',
+  city: '',
+  state: '',
+  postalCode: '',
+  taxPercent: 3,
+  returnPolicy: 'Returns and exchanges are reviewed within 7 days of delivery.',
+};
+
+export async function generateGSTInvoice(order: any, settings: Partial<InvoiceSettings> = {}) {
+  const invoiceSettings = { ...fallbackInvoiceSettings, ...settings };
   const doc = new jsPDF();
   
   // Header
   doc.setFontSize(22);
-  doc.text('ENTIX JEWELLERY', 14, 20);
+  doc.text(invoiceSettings.legalName.toUpperCase(), 14, 20);
   
   doc.setFontSize(10);
-  doc.text('GSTIN: 08ABCDE1234F1Z5', 14, 28);
-  doc.text('Studio: India', 14, 33);
+  doc.text(`GSTIN: ${invoiceSettings.gstin || 'Not provided'}`, 14, 28);
+  doc.text(`Address: ${[invoiceSettings.address, invoiceSettings.city, invoiceSettings.state, invoiceSettings.postalCode].filter(Boolean).join(', ') || 'India'}`, 14, 33);
   
   // Invoice Details
   doc.setFontSize(12);
   doc.text('TAX INVOICE', 140, 20);
   doc.setFontSize(10);
-  doc.text(`Invoice No: INV-${order.orderNumber}`, 140, 28);
+  doc.text(`Invoice No: ${invoiceSettings.invoicePrefix}-${order.orderNumber}`, 140, 28);
   doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, 140, 33);
   
   // Billing/Shipping
@@ -51,7 +78,7 @@ export async function generateGSTInvoice(order: any) {
   
   doc.text(`Subtotal: ${formatInr(order.subtotalInr)}`, 140, finalY);
   doc.text(`Shipping: ${order.shippingInr === 0 ? 'Complimentary' : formatInr(order.shippingInr)}`, 140, finalY + 5);
-  doc.text(`GST (18%): ${formatInr(order.taxInr)}`, 140, finalY + 10);
+  doc.text(`GST (${invoiceSettings.taxPercent}%): ${formatInr(order.taxInr)}`, 140, finalY + 10);
   
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
@@ -61,7 +88,7 @@ export async function generateGSTInvoice(order: any) {
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
   doc.text('Thank you for your patronage. This is a computer generated invoice.', 14, finalY + 40);
-  doc.text('Return Policy: 7 days from delivery. Lifetime re-polish complimentary.', 14, finalY + 45);
+  doc.text(`Return Policy: ${invoiceSettings.returnPolicy.slice(0, 110)}`, 14, finalY + 45);
 
   return doc;
 }

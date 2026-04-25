@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
+import { getSiteSettings } from '@/lib/settings';
 import { KeyRound, ShieldCheck, UserPlus, Users } from 'lucide-react';
-import { createAdminUser, getSiteSettings, saveUserSecuritySettings } from '../actions';
+import { createAdminUser, saveUserSecuritySettings } from '../actions';
 import { Field, SelectInput, SettingsFrame, SettingsPanel, StatusPill, SubmitBar, TextInput } from '../SettingsUi';
 
 export const dynamic = 'force-dynamic';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -18,18 +18,61 @@ declare global {
   }
 }
 
+type ShippingRateOption = {
+  id: string;
+  label: string;
+  description: string;
+  priceInr: number;
+  etaDays: number;
+};
+
+type CheckoutConfig = {
+  store: { name: string; currency: string };
+  payments: {
+    razorpayEnabled: boolean;
+    codEnabled: boolean;
+    codLimit: number;
+    captureMode: string;
+  };
+  tax: {
+    percent: number;
+    displayMode: string;
+    chargeShipping: boolean;
+  };
+  shipping: { freeAbove: number };
+};
+
+const fallbackCheckoutConfig: CheckoutConfig = {
+  store: { name: 'Entix Jewellery', currency: 'INR' },
+  payments: {
+    razorpayEnabled: Boolean(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID),
+    codEnabled: true,
+    codLimit: 100000,
+    captureMode: 'automatic',
+  },
+  tax: {
+    percent: 3,
+    displayMode: 'inclusive',
+    chargeShipping: false,
+  },
+  shipping: { freeAbove: 10000 },
+};
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, subtotal: getSubtotal, clear } = useCart();
   const razorpayStatus = useScript('https://checkout.razorpay.com/v1/checkout.js');
-  const hasPublicRazorpayKey = Boolean(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
   
   const [step, setStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>(hasPublicRazorpayKey ? 'razorpay' : 'cod');
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>(fallbackCheckoutConfig.payments.razorpayEnabled ? 'razorpay' : 'cod');
   const [discountCode, setDiscountCode] = useState('');
   const [giftWrap, setGiftWrap] = useState(false);
   const [giftMessage, setGiftMessage] = useState('');
+  const [checkoutConfig, setCheckoutConfig] = useState<CheckoutConfig>(fallbackCheckoutConfig);
+  const [shippingRates, setShippingRates] = useState<ShippingRateOption[]>([]);
+  const [selectedShippingRateId, setSelectedShippingRateId] = useState('');
+  const [isLoadingRates, setIsLoadingRates] = useState(false);
   
   const [appliedDiscount, setAppliedDiscount] = useState<any>(null);
   const [isValidatingDiscount, setIsValidatingDiscount] = useState(false);
@@ -57,13 +100,76 @@ export default function CheckoutPage() {
   }
 
   const discountedSubtotal = Math.max(0, subtotal - discountAmount);
-  const baseShipping = discountedSubtotal > 10000 ? 0 : 500;
-  const shipping = appliedDiscount?.type === 'free_shipping' ? 0 : baseShipping;
+  const selectedShippingRate = shippingRates.find((rate) => rate.id === selectedShippingRateId) || shippingRates[0];
+  const configuredShipping = selectedShippingRate?.priceInr ?? (discountedSubtotal >= checkoutConfig.shipping.freeAbove ? 0 : 0);
+  const shipping = appliedDiscount?.type === 'free_shipping' ? 0 : configuredShipping;
   
-  // GST 18% breakdown (assuming inclusive for luxury positioning, but calculating for display)
-  const tax = Math.round(discountedSubtotal * 0.18); 
-  const total = discountedSubtotal + shipping;
-  const canUseRazorpay = hasPublicRazorpayKey && razorpayStatus === 'ready';
+  const taxableBase = discountedSubtotal + (checkoutConfig.tax.chargeShipping ? shipping : 0);
+  const tax = checkoutConfig.tax.displayMode === 'exclusive'
+    ? Math.round((taxableBase * checkoutConfig.tax.percent) / 100)
+    : Math.round(taxableBase - taxableBase / (1 + checkoutConfig.tax.percent / 100));
+  const total = discountedSubtotal + shipping + (checkoutConfig.tax.displayMode === 'exclusive' ? tax : 0);
+  const canUseRazorpay = checkoutConfig.payments.razorpayEnabled && razorpayStatus === 'ready';
+  const canUseCod = checkoutConfig.payments.codEnabled && total <= checkoutConfig.payments.codLimit;
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadConfig() {
+      try {
+        const response = await fetch('/api/checkout/config');
+        if (!response.ok) return;
+        const data = await response.json();
+        if (!alive) return;
+        setCheckoutConfig(data);
+        setPaymentMethod(data.payments.razorpayEnabled ? 'razorpay' : 'cod');
+      } catch {
+        // Keep the local fallback so checkout remains usable if the config endpoint is temporarily unavailable.
+      }
+    }
+
+    loadConfig();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadRates() {
+      setIsLoadingRates(true);
+      try {
+        const response = await fetch('/api/shipping/rates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
+          body: JSON.stringify({
+            subtotalInr: discountedSubtotal,
+            postalCode: customerInfo.postalCode,
+            state: customerInfo.state,
+            country: 'IN',
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Could not load shipping rates');
+        setShippingRates(data.rates || []);
+        setSelectedShippingRateId((current) => {
+          if (current && data.rates?.some((rate: ShippingRateOption) => rate.id === current)) return current;
+          return data.rates?.[0]?.id || '';
+        });
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          setShippingRates([]);
+        }
+      } finally {
+        setIsLoadingRates(false);
+      }
+    }
+
+    loadRates();
+    return () => controller.abort();
+  }, [discountedSubtotal, customerInfo.postalCode, customerInfo.state]);
 
   const handleApplyDiscount = async () => {
     if (!discountCode) return;
@@ -116,6 +222,7 @@ export default function CheckoutPage() {
           items,
           customerInfo,
           paymentMethod,
+          selectedShippingRateId,
           discountCode,
           giftWrap,
           giftMessage
@@ -134,10 +241,10 @@ export default function CheckoutPage() {
 
       // Razorpay Flow
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key: data.razorpayKeyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: data.total * 100,
         currency: data.currency,
-        name: "Entix Jewellery",
+        name: checkoutConfig.store.name,
         description: `Order ${data.orderNumber}`,
         order_id: data.razorpayOrderId,
         handler: async function (response: any) {
@@ -304,12 +411,12 @@ export default function CheckoutPage() {
               <div className="space-y-4">
                 <div 
                   onClick={() => {
-                    if (hasPublicRazorpayKey) setPaymentMethod('razorpay');
+                    if (checkoutConfig.payments.razorpayEnabled) setPaymentMethod('razorpay');
                   }}
                   className={cn(
                     "group flex cursor-pointer items-center justify-between border p-8 transition-all",
                     paymentMethod === 'razorpay' ? "border-ink bg-white shadow-luxe" : "border-ink/5 bg-transparent opacity-60 grayscale hover:opacity-100 hover:grayscale-0",
-                    !hasPublicRazorpayKey && "cursor-not-allowed opacity-40 grayscale"
+                    !checkoutConfig.payments.razorpayEnabled && "cursor-not-allowed opacity-40 grayscale"
                   )}
                 >
                   <div className="flex items-center gap-5">
@@ -319,7 +426,7 @@ export default function CheckoutPage() {
                     <div>
                        <div className="font-display text-[20px] font-medium text-ink">Secure Gateway</div>
                        <div className="font-mono text-[10px] uppercase tracking-widest text-ink/40 mt-1">
-                         {hasPublicRazorpayKey ? 'Cards · UPI · Netbanking · EMI' : 'Add Razorpay keys to enable online payments'}
+                         {checkoutConfig.payments.razorpayEnabled ? 'Cards · UPI · Netbanking · EMI' : 'Online payments are disabled in settings'}
                        </div>
                     </div>
                   </div>
@@ -329,10 +436,13 @@ export default function CheckoutPage() {
                 </div>
 
                 <div 
-                  onClick={() => setPaymentMethod('cod')}
+                  onClick={() => {
+                    if (canUseCod) setPaymentMethod('cod');
+                  }}
                   className={cn(
                     "group flex cursor-pointer items-center justify-between border p-8 transition-all",
-                    paymentMethod === 'cod' ? "border-ink bg-white shadow-luxe" : "border-ink/5 bg-transparent opacity-60 grayscale hover:opacity-100 hover:grayscale-0"
+                    paymentMethod === 'cod' ? "border-ink bg-white shadow-luxe" : "border-ink/5 bg-transparent opacity-60 grayscale hover:opacity-100 hover:grayscale-0",
+                    !canUseCod && "cursor-not-allowed opacity-40 grayscale"
                   )}
                 >
                   <div className="flex items-center gap-5">
@@ -341,16 +451,46 @@ export default function CheckoutPage() {
                     </div>
                     <div>
                        <div className="font-display text-[20px] font-medium text-ink">Cash on Delivery</div>
-                       <div className="font-mono text-[10px] uppercase tracking-widest text-ink/40 mt-1">Available for selections under ₹1,00,000</div>
+                       <div className="font-mono text-[10px] uppercase tracking-widest text-ink/40 mt-1">
+                         {checkoutConfig.payments.codEnabled ? `Available up to ${formatInr(checkoutConfig.payments.codLimit)}` : 'Disabled in payment settings'}
+                       </div>
                     </div>
                   </div>
                   <Truck size={20} className="text-ink/20" />
                 </div>
               </div>
 
+              <div className="mt-6 space-y-3">
+                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink/40">Shipping method</div>
+                {isLoadingRates && (
+                  <div className="flex items-center gap-3 border border-ink/5 bg-white p-5 font-mono text-[10px] uppercase tracking-widest text-ink/35">
+                    <Loader2 size={14} className="animate-spin" /> Loading available rates
+                  </div>
+                )}
+                {!isLoadingRates && shippingRates.map((rate) => (
+                  <button
+                    key={rate.id}
+                    type="button"
+                    onClick={() => setSelectedShippingRateId(rate.id)}
+                    className={cn(
+                      "flex w-full items-center justify-between gap-5 border p-5 text-left transition-all",
+                      selectedShippingRateId === rate.id ? "border-ink bg-white shadow-luxe" : "border-ink/5 bg-transparent hover:border-ink/20 hover:bg-white"
+                    )}
+                  >
+                    <span>
+                      <span className="block font-display text-[18px] font-medium text-ink">{rate.label}</span>
+                      <span className="mt-1 block font-mono text-[10px] uppercase tracking-widest text-ink/40">{rate.description}</span>
+                    </span>
+                    <span className={cn("font-mono text-[12px] text-ink", rate.priceInr === 0 && "text-jade")}>
+                      {rate.priceInr === 0 ? 'Complimentary' : formatInr(rate.priceInr)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
               {step === 2 && (
                 <button 
-                  disabled={isProcessing || (paymentMethod === 'razorpay' && !canUseRazorpay)}
+                  disabled={isProcessing || isLoadingRates || (paymentMethod === 'razorpay' && !canUseRazorpay) || (paymentMethod === 'cod' && !canUseCod)}
                   onClick={handleCheckout}
                   className="mt-10 flex w-full items-center justify-center gap-3 bg-ink py-5 font-mono text-[11px] uppercase tracking-[0.2em] text-ivory shadow-xl transition-all hover:bg-ink-2 active:scale-[0.98] disabled:opacity-50"
                 >
@@ -445,11 +585,11 @@ export default function CheckoutPage() {
                   </div>
                 )}
                 <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40">
-                  <span>Shipping</span>
+                  <span>{selectedShippingRate?.label || 'Shipping'}</span>
                   <span className={cn(shipping === 0 && "text-jade")}>{shipping === 0 ? 'Complimentary' : formatInr(shipping)}</span>
                 </div>
                 <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40">
-                  <span>GST (18% breakdown)</span>
+                  <span>GST ({checkoutConfig.tax.percent}% {checkoutConfig.tax.displayMode === 'exclusive' ? 'added' : 'included'})</span>
                   <span>{formatInr(tax)}</span>
                 </div>
               </div>

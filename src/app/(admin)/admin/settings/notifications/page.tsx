@@ -1,5 +1,6 @@
 import { Bell, MailCheck, MessageSquareText, Send } from 'lucide-react';
-import { getEmailTemplates, getSiteSettings, saveNotificationSettings } from '../actions';
+import { getSiteSettings } from '@/lib/settings';
+import { getEmailTemplates, saveNotificationSettings } from '../actions';
 import { Field, SettingsFrame, SettingsPanel, StatusPill, SubmitBar, TextArea, TextInput, ToggleField } from '../SettingsUi';
 
 export const dynamic = 'force-dynamic';

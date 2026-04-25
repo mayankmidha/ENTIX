@@ -3,6 +3,7 @@ import { Fraunces, Inter_Tight, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'sonner';
 import { getBaseUrl } from '@/lib/site-url';
+import { enabled, getSiteSettings } from '@/lib/settings';
 
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -24,14 +25,37 @@ const jbMono = JetBrains_Mono({
   weight: ['400', '500'],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(getBaseUrl()),
-  title: {
-    default: 'Entix — Fine Jewellery for Modern Rituals',
-    template: '%s · Entix',
-  },
-  description: 'Entix is an atelier of fine jewellery — heirloom-grade pieces, hand-finished in India.',
-};
+function safeUrl(url: string) {
+  try {
+    return new URL(url);
+  } catch {
+    return new URL(getBaseUrl());
+  }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const title = settings['seo.homeTitle'] || settings['store.name'];
+  const description = settings['seo.homeDescription'] || settings['store.businessProfile'];
+  const metadataBase = safeUrl(settings['domain.canonical'] || settings['domain.primary'] || getBaseUrl());
+  const indexed = enabled(settings['seo.indexing']);
+
+  return {
+    metadataBase,
+    title: {
+      default: title,
+      template: `%s · ${settings['store.name']}`,
+    },
+    description,
+    openGraph: {
+      title,
+      description,
+      siteName: settings['store.name'],
+      images: settings['seo.ogImage'] ? [{ url: settings['seo.ogImage'] }] : undefined,
+    },
+    robots: indexed ? undefined : { index: false, follow: false },
+  };
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

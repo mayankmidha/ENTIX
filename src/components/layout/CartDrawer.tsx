@@ -95,12 +95,12 @@ export function CartDrawer({ children }: { children: React.ReactNode }) {
                 </div>
                 <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40">
                   <span>Shipping</span>
-                  <span className="text-jade">{subtotal() > 10000 ? 'Complimentary' : formatInr(500)}</span>
+                  <span className="text-ink/45">Checkout</span>
                 </div>
               </div>
               <div className="pt-4 border-t border-ink/10 flex justify-between items-end mb-6">
                 <span className="font-display text-2xl font-medium text-ink italic">Total</span>
-                <span className="font-display text-3xl font-medium text-ink">{formatInr(subtotal() > 10000 ? subtotal() : subtotal() + 500)}</span>
+                <span className="font-display text-3xl font-medium text-ink">{formatInr(subtotal())}</span>
               </div>
               <Link 
                 href="/checkout" 

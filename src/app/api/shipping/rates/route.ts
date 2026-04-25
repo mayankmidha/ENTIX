@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { calculateShippingRates } from '@/lib/commerce-settings';
 
 const schema = z.object({
   subtotalInr: z.number().min(0),
   postalCode: z.string().optional(),
   state: z.string().optional(),
+  country: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -16,28 +18,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Invalid shipping request' }, { status: 400 });
     }
 
-    const { subtotalInr } = parsed.data;
-    const standard = subtotalInr > 10000 ? 0 : 500;
-    const express = subtotalInr > 10000 ? 350 : 850;
+    const { subtotalInr, state, country } = parsed.data;
+    const rates = await calculateShippingRates(subtotalInr, { state, country: country || 'IN' });
 
     return NextResponse.json({
-      complimentary: standard === 0,
-      rates: [
-        {
-          id: 'standard',
-          label: 'Standard Insured Dispatch',
-          description: 'Pan-India delivery in 3–5 business days',
-          priceInr: standard,
-          etaDays: 5,
-        },
-        {
-          id: 'express',
-          label: 'Priority Atelier Dispatch',
-          description: 'Faster insured delivery for urgent gifting',
-          priceInr: express,
-          etaDays: 2,
-        },
-      ],
+      complimentary: rates.some((rate) => rate.priceInr === 0),
+      rates,
     });
   } catch (error) {
     console.error('Shipping rates error:', error);

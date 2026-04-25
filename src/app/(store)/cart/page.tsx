@@ -129,17 +129,17 @@ export default function CartPage() {
                    </div>
                    <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40">
                       <span>Dispatch</span>
-                      <span className="text-jade">{subtotal() > 10000 ? 'Complimentary' : formatInr(500)}</span>
+                      <span className="text-ink/45">Calculated at checkout</span>
                    </div>
                    <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40 border-b border-ink/5 pb-5">
-                      <span>GST (18%)</span>
-                      <span className="text-ink">Included</span>
+                      <span>Tax</span>
+                      <span className="text-ink">Finalized at checkout</span>
                    </div>
                 </div>
 
                 <div className="mt-10 mb-12 flex justify-between items-end">
                    <span className="font-display text-[32px] font-medium text-ink italic">Total</span>
-                   <span className="font-display text-[40px] font-medium text-ink">{formatInr(subtotal() > 10000 ? subtotal() : subtotal() + 500)}</span>
+                   <span className="font-display text-[40px] font-medium text-ink">{formatInr(subtotal())}</span>
                 </div>
 
                 <Link 

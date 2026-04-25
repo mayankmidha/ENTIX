@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
+import { enabled, getSiteSettings } from '@/lib/settings';
 import { FileDigit, Landmark, Percent, ReceiptText } from 'lucide-react';
-import { getSiteSettings, saveTaxSettings } from '../actions';
+import { saveTaxSettings } from '../actions';
 import { Field, SelectInput, SettingsFrame, SettingsPanel, StatusPill, SubmitBar, TextInput, ToggleField } from '../SettingsUi';
 
 export const dynamic = 'force-dynamic';
@@ -39,6 +40,12 @@ export default async function TaxSettingsPage({ searchParams }: { searchParams: 
                   ]}
                 />
               </Field>
+              <ToggleField
+                name="tax.chargeShipping"
+                label="Charge tax on shipping rates"
+                description="When enabled, checkout includes shipping in the taxable base for exclusive tax mode."
+                defaultChecked={enabled(settings['tax.chargeShipping'])}
+              />
             </div>
           </SettingsPanel>
 

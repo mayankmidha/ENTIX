@@ -1,10 +1,19 @@
 import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
 import { getBaseUrl } from '@/lib/site-url';
+import { getSiteSettings, hasDatabaseUrl } from '@/lib/settings';
 
-const BASE_URL = getBaseUrl();
+function normalizeBaseUrl(value?: string | null) {
+  if (!value) return getBaseUrl();
+  const trimmed = value.trim();
+  if (!trimmed) return getBaseUrl();
+  const withProtocol = trimmed.startsWith('http') ? trimmed : `https://${trimmed}`;
+  return withProtocol.replace(/\/$/, '');
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const settings = await getSiteSettings();
+  const BASE_URL = normalizeBaseUrl(settings['domain.canonical'] || settings['domain.primary']);
   const staticPages = [
     { url: BASE_URL, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 1 },
     { url: `${BASE_URL}/collections/all`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.9 },
@@ -13,6 +22,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/track`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/cart`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.3 },
   ];
+
+  if (!hasDatabaseUrl()) return staticPages;
 
   try {
     const [products, collections, blogPosts] = await Promise.all([

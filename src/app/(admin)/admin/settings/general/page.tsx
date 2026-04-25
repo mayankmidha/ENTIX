@@ -1,5 +1,6 @@
 import { Building2, Contact, MapPin, Store } from 'lucide-react';
-import { getSiteSettings, saveGeneralSettings } from '../actions';
+import { getSiteSettings } from '@/lib/settings';
+import { saveGeneralSettings } from '../actions';
 import { Field, SelectInput, SettingsFrame, SettingsPanel, SubmitBar, TextArea, TextInput } from '../SettingsUi';
 
 export const dynamic = 'force-dynamic';

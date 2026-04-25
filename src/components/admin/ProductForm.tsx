@@ -320,7 +320,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                 </div>
               </div>
               <div className="pt-4 border-t border-ink/5 flex items-center justify-between text-jade/60 italic font-mono text-[10px] uppercase tracking-widest">
-                <ShieldCheck size={14} /> 18% GST Included
+                <ShieldCheck size={14} /> Tax follows checkout settings
               </div>
             </div>
           </section>

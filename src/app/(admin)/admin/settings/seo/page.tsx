@@ -1,5 +1,6 @@
 import { Image, Search, Share2, Sparkles } from 'lucide-react';
-import { getSiteSettings, saveSeoSettings } from '../actions';
+import { getSiteSettings } from '@/lib/settings';
+import { saveSeoSettings } from '../actions';
 import { Field, SelectInput, SettingsFrame, SettingsPanel, StatusPill, SubmitBar, TextArea, TextInput } from '../SettingsUi';
 
 export const dynamic = 'force-dynamic';

@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { formatInr } from '@/lib/utils';
+import { getPaymentRuntime } from '@/lib/commerce-settings';
 import {
   AlertTriangle,
   ArrowUpRight,
@@ -123,6 +124,7 @@ async function getMetrics() {
 
     const totalRevenue = revenueResult._sum.totalInr || 0;
     const aov = ordersCount > 0 ? Math.round(totalRevenue / ordersCount) : 0;
+    const paymentRuntime = await getPaymentRuntime();
 
     return {
       ordersCount,
@@ -140,7 +142,7 @@ async function getMetrics() {
       processingOrders,
       shippedOrders,
       activeDiscounts,
-      razorpayReady: Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET),
+      razorpayReady: paymentRuntime.razorpayEnabled,
       resendReady: Boolean(process.env.RESEND_API_KEY),
       baseUrlReady: Boolean(process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL),
       isPreview: false,

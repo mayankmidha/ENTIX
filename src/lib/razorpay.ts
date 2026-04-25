@@ -29,9 +29,12 @@ export async function createRazorpayOrder(options: Orders.RazorpayOrderCreateReq
 
 export async function verifyRazorpaySignature(orderId: string, paymentId: string, signature: string) {
   if (!process.env.RAZORPAY_KEY_SECRET) return false;
+  return verifyRazorpaySignatureWithSecret(orderId, paymentId, signature, process.env.RAZORPAY_KEY_SECRET);
+}
 
+export function verifyRazorpaySignatureWithSecret(orderId: string, paymentId: string, signature: string, keySecret: string) {
   const expected = crypto
-    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+    .createHmac('sha256', keySecret)
     .update(`${orderId}|${paymentId}`)
     .digest('hex');
 

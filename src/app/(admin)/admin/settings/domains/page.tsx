@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
+import { getSiteSettings } from '@/lib/settings';
 import { Globe2, Link2, Router, ShieldCheck } from 'lucide-react';
-import { getSiteSettings, saveDomainSettings } from '../actions';
+import { saveDomainSettings } from '../actions';
 import { Field, SelectInput, SettingsFrame, SettingsPanel, StatusPill, SubmitBar, TextArea, TextInput } from '../SettingsUi';
 
 export const dynamic = 'force-dynamic';

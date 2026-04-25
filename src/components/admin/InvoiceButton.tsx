@@ -6,9 +6,11 @@ import { toast } from 'sonner';
 export function InvoiceButton({ order }: { order: any }) {
   const handleDownload = async () => {
     try {
-      const doc = await generateGSTInvoice(order);
+      const settingsResponse = await fetch('/api/admin/invoice-settings');
+      const settings = settingsResponse.ok ? await settingsResponse.json() : {};
+      const doc = await generateGSTInvoice(order, settings);
       doc.save(`INV-${order.orderNumber}.pdf`);
-      toast.success('Atelier Invoice Generated');
+      toast.success('Invoice generated');
     } catch (error) {
       toast.error('Failed to generate invoice');
     }
