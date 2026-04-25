@@ -3,8 +3,8 @@
 import { useState, useTransition } from 'react';
 import { updateCollectionProducts } from '../actions';
 import { toast } from 'sonner';
-import { Search, Plus, X, Loader2, GripVertical } from 'lucide-react';
-import { cn, formatInr } from '@/lib/utils';
+import { Search, Plus, X, Loader2, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
+import { formatInr } from '@/lib/utils';
 
 interface Product {
   id: string;
@@ -35,6 +35,13 @@ export function ProductAssigner({ collectionId, assignedProductIds, allProducts 
 
   const addProduct = (id: string) => setSelected([...selected, id]);
   const removeProduct = (id: string) => setSelected(selected.filter((s) => s !== id));
+  const moveProduct = (index: number, direction: -1 | 1) => {
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= selected.length) return;
+    const next = [...selected];
+    [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
+    setSelected(next);
+  };
 
   const handleSave = () => {
     startTransition(async () => {
@@ -60,7 +67,7 @@ export function ProductAssigner({ collectionId, assignedProductIds, allProducts 
           className="flex items-center gap-2 px-8 py-3 rounded-full bg-ink text-ivory font-mono text-[10px] uppercase tracking-widest hover:bg-ink-2 transition-all shadow-lg disabled:opacity-50"
         >
           {isPending ? <Loader2 size={14} className="animate-spin" /> : null}
-          Save Product Order
+          Save Merchandising
         </button>
       </div>
 
@@ -84,7 +91,28 @@ export function ProductAssigner({ collectionId, assignedProductIds, allProducts 
               <p className="font-mono text-[10px] text-ink/40">{formatInr(product.priceInr)}</p>
             </div>
             <span className="font-mono text-[9px] text-ink/30 shrink-0">#{idx + 1}</span>
+            <div className="flex shrink-0 items-center gap-1">
+              <button
+                type="button"
+                aria-label={`Move ${product.title} up`}
+                onClick={() => moveProduct(idx, -1)}
+                disabled={idx === 0}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-ink/10 bg-white text-ink/45 transition-all hover:text-ink disabled:cursor-not-allowed disabled:opacity-25"
+              >
+                <ChevronUp size={14} />
+              </button>
+              <button
+                type="button"
+                aria-label={`Move ${product.title} down`}
+                onClick={() => moveProduct(idx, 1)}
+                disabled={idx === assignedProducts.length - 1}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-ink/10 bg-white text-ink/45 transition-all hover:text-ink disabled:cursor-not-allowed disabled:opacity-25"
+              >
+                <ChevronDown size={14} />
+              </button>
+            </div>
             <button
+              type="button"
               onClick={() => removeProduct(product.id)}
               className="h-8 w-8 rounded-full bg-oxblood/5 flex items-center justify-center text-oxblood/60 hover:text-oxblood hover:bg-oxblood/10 transition-all shrink-0"
             >
@@ -115,6 +143,7 @@ export function ProductAssigner({ collectionId, assignedProductIds, allProducts 
         <div className="max-h-64 overflow-y-auto space-y-1 custom-scrollbar">
           {available.slice(0, 20).map((product) => (
             <button
+              type="button"
               key={product.id}
               onClick={() => addProduct(product.id)}
               className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-ink/5 transition-colors text-left"

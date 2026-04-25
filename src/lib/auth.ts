@@ -35,6 +35,12 @@ export async function requireAdminSession() {
   return session;
 }
 
+export async function requireAdminRole(roles: string[]) {
+  const session = await requireAdminSession();
+  if (!roles.includes(session.role || 'admin')) redirect('/admin?error=forbidden');
+  return session;
+}
+
 export async function requireCustomerSession() {
   const session = await getCustomerSession();
   if (!session) redirect('/account/login');

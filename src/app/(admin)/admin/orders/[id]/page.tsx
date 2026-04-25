@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { formatInr, cn } from '@/lib/utils';
 import { 
-  Package, Truck, CreditCard, User, 
+  Package, Truck, CreditCard,
   MapPin, Clock, CheckCircle2, ChevronLeft
 } from 'lucide-react';
 import Link from 'next/link';
@@ -45,7 +45,9 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         </div>
         <div className="flex gap-3">
           <InvoiceButton order={order} />
-          <button className="rounded-full bg-ink px-6 py-3 font-mono text-[10px] uppercase tracking-widest text-ivory hover:bg-ink-2 transition-all shadow-lg shadow-ink/10">Fulfill Items</button>
+          <Link href="#fulfillment" className="rounded-full bg-ink px-6 py-3 font-mono text-[10px] uppercase tracking-widest text-ivory hover:bg-ink-2 transition-all shadow-lg shadow-ink/10">
+            Fulfillment
+          </Link>
         </div>
       </div>
 
@@ -54,7 +56,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           {/* Items Section */}
           <section className="rounded-[32px] border border-ink/5 bg-white overflow-hidden shadow-sm">
             <div className="px-8 py-6 border-b border-ink/5 flex items-center justify-between">
-              <h2 className="font-display text-[22px] font-medium tracking-display text-ink">Aquired Pieces</h2>
+              <h2 className="font-display text-[22px] font-medium tracking-display text-ink">Acquired Pieces</h2>
               <span className="font-mono text-[11px] text-ink/40 uppercase tracking-widest">{order.items.length} Items</span>
             </div>
             <div className="divide-y divide-ink/5">
@@ -159,13 +161,14 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             </div>
           </section>
 
-          {/* Fulfillment Controls */}
-          <OrderStatusForm
-            orderId={order.id}
-            initialStatus={order.status}
-            initialPaymentStatus={order.paymentStatus}
-            initialTracking={order.trackingNumber}
-          />
+          <div id="fulfillment">
+            <OrderStatusForm
+              orderId={order.id}
+              initialStatus={order.status}
+              initialPaymentStatus={order.paymentStatus}
+              initialTracking={order.trackingNumber}
+            />
+          </div>
 
           {/* Operational Notes */}
           <OrderNotes orderId={order.id} initialNotes={order.notes || ''} />

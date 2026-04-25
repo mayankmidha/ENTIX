@@ -3,13 +3,13 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  ChevronLeft, Save, Trash2, ImagePlus, 
-  Sparkles, Info, Globe, ShieldCheck 
+  ChevronLeft, Save, Trash2,
+  Sparkles, Info, ShieldCheck
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { ImageUpload } from './ImageUpload';
-import { cn, slugify } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { createProduct, updateProduct, deleteProduct } from '@/app/(admin)/admin/products/actions';
 
 export function ProductForm({ initialData }: { initialData?: any }) {
@@ -25,12 +25,19 @@ export function ProductForm({ initialData }: { initialData?: any }) {
     title: initialData?.title || '',
     subtitle: initialData?.subtitle || '',
     description: initialData?.description || '',
+    story: initialData?.story || '',
     priceInr: initialData?.priceInr || 0,
     compareAtInr: initialData?.compareAtInr || 0,
     sku: initialData?.sku || '',
     material: initialData?.material || '',
+    finish: initialData?.finish || '',
+    gemstone: initialData?.gemstone || '',
+    weightGrams: initialData?.weightGrams || 0,
+    dimensions: initialData?.dimensions || '',
+    careInstructions: initialData?.careInstructions || '',
     occasion: initialData?.occasion || '',
     isActive: initialData?.isActive ?? true,
+    isFeatured: initialData?.isFeatured ?? false,
     isBestseller: initialData?.isBestseller ?? false,
     isNewArrival: initialData?.isNewArrival ?? false,
   });
@@ -79,7 +86,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
         }
         router.push('/admin/products');
         router.refresh();
-      } catch (error) {
+      } catch {
         toast.error('An error occurred in the atelier');
       }
     });
@@ -113,7 +120,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
               }}
               className="px-6 py-3 rounded-full border border-oxblood/10 text-oxblood font-mono text-[10px] uppercase tracking-widest hover:bg-oxblood/5 transition-all"
             >
-              Exhaust
+              Delete Piece
             </button>
           )}
           <button 
@@ -162,6 +169,91 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                   className="w-full bg-ivory-2/40 border-none rounded-[24px] p-6 font-mono text-[13px] leading-relaxed focus:ring-1 focus:ring-ink/10 outline-none transition-all"
                 />
               </div>
+              <div className="group">
+                <label className="block font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-2 group-focus-within:text-ink transition-colors">Emotional Story</label>
+                <textarea
+                  rows={5}
+                  value={formData.story}
+                  onChange={(e) => setFormData({ ...formData, story: e.target.value })}
+                  placeholder="Where this piece lives: bridal ritual, heirloom gifting, everyday shine, or a founder-led craft note."
+                  className="w-full bg-ivory-2/40 border-none rounded-[24px] p-6 font-mono text-[13px] leading-relaxed focus:ring-1 focus:ring-ink/10 outline-none transition-all"
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Jewellery Specifications */}
+          <section className="rounded-[32px] border border-ink/5 bg-white p-8 shadow-sm">
+            <div className="mb-8">
+              <h2 className="font-display text-[22px] font-medium tracking-display text-ink">Jewellery Specifications</h2>
+              <p className="font-mono text-[10px] uppercase tracking-widest text-ink/30">Material, stone, sizing, care, and eligibility metadata</p>
+            </div>
+            <div className="grid gap-5 md:grid-cols-2">
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-2">Core Material</label>
+                <input
+                  value={formData.material}
+                  onChange={(e) => setFormData({ ...formData, material: e.target.value })}
+                  placeholder="18k gold vermeil, sterling silver"
+                  className="w-full bg-ivory-2/40 border-none rounded-[20px] p-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-2">Finish / Plating</label>
+                <input
+                  value={formData.finish}
+                  onChange={(e) => setFormData({ ...formData, finish: e.target.value })}
+                  placeholder="Champagne gold, antique polish"
+                  className="w-full bg-ivory-2/40 border-none rounded-[20px] p-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-2">Stone / Gemstone</label>
+                <input
+                  value={formData.gemstone}
+                  onChange={(e) => setFormData({ ...formData, gemstone: e.target.value })}
+                  placeholder="Pearl, kundan, polki, cubic zirconia"
+                  className="w-full bg-ivory-2/40 border-none rounded-[20px] p-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-2">Occasion / Tag</label>
+                <input
+                  value={formData.occasion}
+                  onChange={(e) => setFormData({ ...formData, occasion: e.target.value })}
+                  placeholder="Bridal, festive, everyday, gifting"
+                  className="w-full bg-ivory-2/40 border-none rounded-[20px] p-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-2">Weight (grams)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.weightGrams}
+                  onChange={(e) => setFormData({ ...formData, weightGrams: parseFloat(e.target.value) || 0 })}
+                  className="w-full bg-ivory-2/40 border-none rounded-[20px] p-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-2">Dimensions / Size</label>
+                <input
+                  value={formData.dimensions}
+                  onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })}
+                  placeholder="Length, diameter, chain drop, ring size"
+                  className="w-full bg-ivory-2/40 border-none rounded-[20px] p-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none transition-all"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-2">Care, Warranty, Certification, Dispatch</label>
+                <textarea
+                  rows={4}
+                  value={formData.careInstructions}
+                  onChange={(e) => setFormData({ ...formData, careInstructions: e.target.value })}
+                  placeholder="Care instructions, warranty note, certification, dispatch timing, and return eligibility."
+                  className="w-full bg-ivory-2/40 border-none rounded-[24px] p-6 font-mono text-[13px] leading-relaxed focus:ring-1 focus:ring-ink/10 outline-none transition-all"
+                />
+              </div>
             </div>
           </section>
 
@@ -190,8 +282,8 @@ export function ProductForm({ initialData }: { initialData?: any }) {
               ) : (
                 <div className="space-y-6">
                   {variants.map((variant, index) => (
-                    <div key={index} className="grid grid-cols-12 gap-4 p-6 bg-ivory-2/40 rounded-[24px] relative group">
-                      <div className="col-span-3">
+                    <div key={index} className="grid grid-cols-1 gap-4 p-6 bg-ivory-2/40 rounded-[24px] relative group sm:grid-cols-12">
+                      <div className="sm:col-span-3">
                         <label className="block font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-1">Title</label>
                         <input 
                           value={variant.title}
@@ -200,7 +292,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                           className="w-full bg-white border-none rounded-[12px] p-3 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none"
                         />
                       </div>
-                      <div className="col-span-3">
+                      <div className="sm:col-span-3">
                         <label className="block font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-1">SKU</label>
                         <input 
                           value={variant.sku}
@@ -209,7 +301,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                           className="w-full bg-white border-none rounded-[12px] p-3 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none uppercase"
                         />
                       </div>
-                      <div className="col-span-2">
+                      <div className="sm:col-span-2">
                         <label className="block font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-1">Price (INR)</label>
                         <input 
                           type="number"
@@ -218,7 +310,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                           className="w-full bg-white border-none rounded-[12px] p-3 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none"
                         />
                       </div>
-                      <div className="col-span-2">
+                      <div className="sm:col-span-2">
                         <label className="block font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-1">Compare At</label>
                         <input 
                           type="number"
@@ -227,7 +319,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                           className="w-full bg-white border-none rounded-[12px] p-3 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none"
                         />
                       </div>
-                      <div className="col-span-2">
+                      <div className="sm:col-span-2">
                         <label className="block font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-1">Stock Qty</label>
                         <input 
                           type="number"
@@ -236,7 +328,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                           className="w-full bg-white border-none rounded-[12px] p-3 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none"
                         />
                       </div>
-                      <div className="col-span-3">
+                      <div className="sm:col-span-3">
                         <label className="block font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-1">Barcode</label>
                         <input 
                           value={variant.barcode}
@@ -245,7 +337,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                           className="w-full bg-white border-none rounded-[12px] p-3 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none uppercase"
                         />
                       </div>
-                      <div className="col-span-3">
+                      <div className="sm:col-span-3">
                         <label className="block font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-1">Weight (gm)</label>
                         <input 
                           type="number"
@@ -254,7 +346,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                           className="w-full bg-white border-none rounded-[12px] p-3 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none"
                         />
                       </div>
-                      <div className="col-span-6">
+                      <div className="sm:col-span-6">
                         <label className="block font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-1">Dimensions (cm)</label>
                         <input 
                           value={variant.dimensions}
@@ -339,22 +431,13 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                   className="w-full bg-ivory-2/40 border-none rounded-[20px] p-4 font-mono text-[14px] focus:ring-1 focus:ring-ink/10 outline-none transition-all uppercase"
                 />
               </div>
-              <div>
-                <label className="block font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-2">Core Material</label>
-                <select 
-                  value={formData.material}
-                  onChange={(e) => setFormData({ ...formData, material: e.target.value })}
-                  className="w-full bg-ivory-2/40 border-none rounded-[20px] p-4 font-mono text-[12px] uppercase tracking-widest focus:ring-1 focus:ring-ink/10 outline-none transition-all appearance-none cursor-pointer"
-                >
-                  <option value="">Select Material</option>
-                  <option value="Gold Vermeil">Gold Vermeil</option>
-                  <option value="Sterling Silver">Sterling Silver</option>
-                  <option value="Rose Gold">Rose Gold</option>
-                  <option value="Platinum">Platinum</option>
-                </select>
-              </div>
-              
               <div className="space-y-4 pt-4 border-t border-ink/5">
+                <Toggle
+                  label="Featured Editorial"
+                  description="Use in homepage and curated surfaces"
+                  active={formData.isFeatured}
+                  onChange={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}
+                />
                 <Toggle 
                   label="Visible in Boutique" 
                   description="Product will be shoppable live"

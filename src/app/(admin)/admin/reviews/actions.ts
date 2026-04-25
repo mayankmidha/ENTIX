@@ -3,15 +3,21 @@
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { requireAdminSession } from '@/lib/auth';
+import { writeAuditLog } from '@/lib/audit';
 
 type Status = 'pending' | 'approved' | 'rejected' | 'spam';
 
 async function setReviewStatus(id: string, status: Status) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
   const review = await prisma.review.update({
     where: { id },
     data: { status },
-    include: { product: { select: { slug: true } } },
+    include: { product: { select: { slug: true, title: true } } },
+  });
+  await writeAuditLog(session, `review.${status}`, id, {
+    product: review.product?.title ?? null,
+    rating: review.rating,
+    authorName: review.authorName,
   });
   revalidatePath('/admin/reviews');
   if (review.product?.slug) {
@@ -33,10 +39,15 @@ export async function markReviewSpam(id: string) {
 }
 
 export async function deleteReview(id: string) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
   const review = await prisma.review.delete({
     where: { id },
-    include: { product: { select: { slug: true } } },
+    include: { product: { select: { slug: true, title: true } } },
+  });
+  await writeAuditLog(session, 'review.delete', id, {
+    product: review.product?.title ?? null,
+    rating: review.rating,
+    authorName: review.authorName,
   });
   revalidatePath('/admin/reviews');
   if (review.product?.slug) {

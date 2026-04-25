@@ -9,6 +9,7 @@ const CUSTOMER_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 export interface AdminSession {
   type: 'admin';
   email: string;
+  role?: string;
 }
 
 export interface CustomerSession {
@@ -54,11 +55,12 @@ async function verifySessionToken<T extends JWTPayload>(token?: string | null): 
   }
 }
 
-export async function createAdminSessionToken(email: string) {
+export async function createAdminSessionToken(email: string, role = 'admin') {
   return signSessionToken(
     {
       type: 'admin',
       email,
+      role,
     },
     '1d'
   );
@@ -91,6 +93,7 @@ export async function verifyAdminSessionToken(token?: string | null): Promise<Ad
   return {
     type: 'admin',
     email: payload.email,
+    role: typeof payload.role === 'string' ? payload.role : 'admin',
   };
 }
 

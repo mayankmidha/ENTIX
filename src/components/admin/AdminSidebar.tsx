@@ -6,6 +6,7 @@ import {
   Home, ShoppingBag, Package, LayoutGrid, Boxes, Users, 
   BarChart3, BadgePercent,
   Settings, LogOut, Link2, Menu, X, Search, PanelLeft,
+  RotateCcw, Star, MailWarning, Gift, Megaphone, FileClock, ShieldCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -21,22 +22,40 @@ const groups = [
     ],
   },
   {
+    label: 'Operations',
+    items: [
+      { label: 'Returns',           href: '/admin/returns',           icon: RotateCcw },
+      { label: 'Reviews',           href: '/admin/reviews',           icon: Star },
+      { label: 'Abandoned',         href: '/admin/abandoned',         icon: MailWarning },
+    ],
+  },
+  {
     label: 'Sales Channels',
     items: [
       { label: 'Online Store',      href: '/',                        icon: Link2 },
       { label: 'Discounts',         href: '/admin/discounts',         icon: BadgePercent },
+      { label: 'Gift Cards',        href: '/admin/gift-cards',        icon: Gift },
+    ],
+  },
+  {
+    label: 'Content',
+    items: [
+      { label: 'Marketing',         href: '/admin/marketing',         icon: Megaphone },
+      { label: 'Blog',              href: '/admin/blog',              icon: FileClock },
     ],
   },
   {
     label: 'Insights',
     items: [
       { label: 'Analytics',         href: '/admin/analytics',         icon: BarChart3 },
+      { label: 'Audit Trail',       href: '/admin/audit',             icon: ShieldCheck },
     ],
   },
   {
     label: 'Settings',
     items: [
       { label: 'Settings',          href: '/admin/settings',          icon: Settings },
+      { label: 'Staff',             href: '/admin/settings/users',    icon: Users },
     ],
   },
 ];

@@ -3,15 +3,20 @@
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { requireAdminSession } from '@/lib/auth';
+import { writeAuditLog } from '@/lib/audit';
 import { ORDER_STATUSES, PAYMENT_STATUSES, type OrderStatus, type PaymentStatus } from './constants';
 
 export async function updateOrderNotes(id: string, notes: string) {
-  await requireAdminSession();
-  await prisma.order.update({
+  const session = await requireAdminSession();
+  const order = await prisma.order.update({
     where: { id },
     data: { notes },
   });
 
+  await writeAuditLog(session, 'order.notes_update', order.orderNumber, {
+    orderId: id,
+    hasNotes: notes.trim().length > 0,
+  });
   revalidatePath(`/admin/orders/${id}`);
   return { success: true };
 }
@@ -24,7 +29,7 @@ export async function updateOrderStatus(
     trackingNumber?: string;
   },
 ) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
 
   const patch: Record<string, unknown> = {};
   if (data.status && ORDER_STATUSES.includes(data.status)) {
@@ -41,7 +46,22 @@ export async function updateOrderStatus(
     throw new Error('No changes provided');
   }
 
-  await prisma.order.update({ where: { id }, data: patch });
+  const previous = await prisma.order.findUnique({
+    where: { id },
+    select: { orderNumber: true, status: true, paymentStatus: true, trackingNumber: true },
+  });
+
+  const order = await prisma.order.update({ where: { id }, data: patch });
+
+  await writeAuditLog(session, 'order.status_update', order.orderNumber, {
+    orderId: id,
+    before: previous,
+    after: {
+      status: order.status,
+      paymentStatus: order.paymentStatus,
+      trackingNumber: order.trackingNumber,
+    },
+  });
 
   revalidatePath('/admin/orders');
   revalidatePath(`/admin/orders/${id}`);

@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
     const { email, password } = parsed.data;
     const normalizedEmail = email.toLowerCase();
     let authenticatedEmail: string | null = null;
+    let authenticatedRole = 'admin';
 
     if (
       process.env.ADMIN_EMAIL &&
@@ -29,6 +30,7 @@ export async function POST(req: NextRequest) {
       password === process.env.ADMIN_PASSWORD
     ) {
       authenticatedEmail = process.env.ADMIN_EMAIL;
+      authenticatedRole = 'owner';
     }
 
     if (!authenticatedEmail) {
@@ -37,6 +39,7 @@ export async function POST(req: NextRequest) {
 
       if (adminUser && dbPasswordOk) {
         authenticatedEmail = adminUser.email;
+        authenticatedRole = adminUser.role;
         await prisma.adminUser.update({
           where: { id: adminUser.id },
           data: { lastLoginAt: new Date() },
@@ -45,7 +48,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (authenticatedEmail) {
-      const token = await createAdminSessionToken(authenticatedEmail);
+      const token = await createAdminSessionToken(authenticatedEmail, authenticatedRole);
       const response = NextResponse.json({ message: 'Admin access granted' });
       response.cookies.set(buildAdminSessionCookie(token));
       return response;

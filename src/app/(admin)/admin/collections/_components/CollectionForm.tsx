@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { createCollection, updateCollection, deleteCollection } from '../actions';
 import { toast } from 'sonner';
 import { Loader2, Trash2, Save } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface CollectionFormProps {
   collection?: {
@@ -15,6 +14,8 @@ interface CollectionFormProps {
     subtitle: string | null;
     description: string | null;
     heroImage: string | null;
+    accentImage: string | null;
+    theme: string | null;
     isActive: boolean;
     position: number;
   };
@@ -119,6 +120,36 @@ export function CollectionForm({ collection }: CollectionFormProps) {
                 <img src={collection.heroImage} alt="" className="h-full w-full object-cover" />
               </div>
             )}
+          </div>
+
+          <div>
+            <label className="block font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-2">Editorial Accent Image URL</label>
+            <input
+              name="accentImage"
+              defaultValue={collection?.accentImage ?? ''}
+              placeholder="https://..."
+              className="w-full bg-white border border-ink/10 rounded-2xl px-5 py-3.5 font-mono text-[13px] focus:outline-none focus:border-ink transition-all"
+            />
+            {collection?.accentImage && (
+              <div className="mt-3 aspect-[4/3] rounded-2xl overflow-hidden border border-ink/5">
+                <img src={collection.accentImage} alt="" className="h-full w-full object-cover" />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-2">Storefront Mood</label>
+            <select
+              name="theme"
+              defaultValue={collection?.theme ?? ''}
+              className="w-full bg-white border border-ink/10 rounded-2xl px-5 py-3.5 font-mono text-[13px] uppercase tracking-widest focus:outline-none focus:border-ink transition-all"
+            >
+              <option value="">Editorial neutral</option>
+              <option value="bridal">Bridal ceremony</option>
+              <option value="gifting">Gift concierge</option>
+              <option value="everyday">Everyday luxury</option>
+              <option value="statement">Statement evening</option>
+            </select>
           </div>
 
           <div>

@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { requireAdminSession } from '@/lib/auth';
+import { writeAuditLog } from '@/lib/audit';
 
 const discountSchema = z.object({
   code: z.string().min(3).max(32),
@@ -32,7 +33,7 @@ function buildTitle(code: string, type: 'percentage' | 'fixed_amount') {
 }
 
 export async function createDiscount(input: unknown) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
   const parsed = discountSchema.parse(input);
   const code = parsed.code.trim().toUpperCase();
   const startsAt = toDate(parsed.startsAt) || new Date();
@@ -51,11 +52,16 @@ export async function createDiscount(input: unknown) {
   });
 
   revalidatePath('/admin/discounts');
+  await writeAuditLog(session, 'discount.create', discount.id, {
+    code: discount.code,
+    type: discount.type,
+    status: discount.status,
+  });
   return discount;
 }
 
 export async function updateDiscount(id: string, input: unknown) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
   const parsed = discountSchema.parse(input);
   const code = parsed.code.trim().toUpperCase();
   const startsAt = toDate(parsed.startsAt) || new Date();
@@ -76,11 +82,20 @@ export async function updateDiscount(id: string, input: unknown) {
 
   revalidatePath('/admin/discounts');
   revalidatePath(`/admin/discounts/${id}`);
+  await writeAuditLog(session, 'discount.update', discount.id, {
+    code: discount.code,
+    type: discount.type,
+    status: discount.status,
+  });
   return discount;
 }
 
 export async function deleteDiscount(id: string) {
-  await requireAdminSession();
-  await prisma.discount.delete({ where: { id } });
+  const session = await requireAdminSession();
+  const discount = await prisma.discount.delete({ where: { id } });
+  await writeAuditLog(session, 'discount.delete', id, {
+    code: discount.code,
+    type: discount.type,
+  });
   revalidatePath('/admin/discounts');
 }

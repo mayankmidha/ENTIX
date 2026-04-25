@@ -4,24 +4,39 @@ import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { slugify } from '@/lib/utils';
 import { requireAdminSession } from '@/lib/auth';
+import { writeAuditLog } from '@/lib/audit';
 import { parseBoolean, parseCsv, parseMoney, parseNumber, splitList } from '@/lib/csv';
 
+function nullableNumber(value: unknown) {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? number : null;
+}
+
 export async function createProduct(data: any) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
   const product = await prisma.product.create({
     data: {
       title: data.title,
       slug: slugify(data.title),
       subtitle: data.subtitle,
       description: data.description,
+      story: data.story || null,
       priceInr: data.priceInr,
       compareAtInr: data.compareAtInr,
       sku: data.sku,
       material: data.material,
+      finish: data.finish || null,
+      gemstone: data.gemstone || null,
+      weightGrams: nullableNumber(data.weightGrams),
+      dimensions: data.dimensions || null,
+      careInstructions: data.careInstructions || null,
       occasion: data.occasion,
       isActive: data.isActive,
+      isFeatured: data.isFeatured,
       isBestseller: data.isBestseller,
       isNewArrival: data.isNewArrival,
+      metaTitle: data.seoTitle || data.title,
+      metaDescription: data.seoDescription || data.subtitle,
       seoTitle: data.seoTitle || data.title,
       seoDescription: data.seoDescription || data.subtitle,
       relatedProducts: data.relatedProducts || [],
@@ -51,13 +66,18 @@ export async function createProduct(data: any) {
     },
   });
 
+  await writeAuditLog(session, 'product.create', product.id, {
+    title: product.title,
+    sku: product.sku,
+    active: product.isActive,
+  });
   revalidatePath('/admin/products');
   revalidatePath('/');
   return product;
 }
 
 export async function updateProduct(id: string, data: any) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
   // Clear old images and create new ones for simplicity in this flow
   await prisma.productImage.deleteMany({ where: { productId: id } });
   
@@ -72,14 +92,23 @@ export async function updateProduct(id: string, data: any) {
       slug: slugify(data.title),
       subtitle: data.subtitle,
       description: data.description,
+      story: data.story || null,
       priceInr: data.priceInr,
       compareAtInr: data.compareAtInr,
       sku: data.sku,
       material: data.material,
+      finish: data.finish || null,
+      gemstone: data.gemstone || null,
+      weightGrams: nullableNumber(data.weightGrams),
+      dimensions: data.dimensions || null,
+      careInstructions: data.careInstructions || null,
       occasion: data.occasion,
       isActive: data.isActive,
+      isFeatured: data.isFeatured,
       isBestseller: data.isBestseller,
       isNewArrival: data.isNewArrival,
+      metaTitle: data.seoTitle || data.title,
+      metaDescription: data.seoDescription || data.subtitle,
       seoTitle: data.seoTitle || data.title,
       seoDescription: data.seoDescription || data.subtitle,
       relatedProducts: data.relatedProducts || [],
@@ -112,6 +141,12 @@ export async function updateProduct(id: string, data: any) {
     update: { stockQty: totalStock },
   });
 
+  await writeAuditLog(session, 'product.update', product.id, {
+    title: product.title,
+    sku: product.sku,
+    totalStock,
+    active: product.isActive,
+  });
   revalidatePath('/admin/products');
   revalidatePath(`/admin/products/${id}`);
   revalidatePath(`/products/${product.slug}`);
@@ -120,34 +155,43 @@ export async function updateProduct(id: string, data: any) {
 }
 
 export async function toggleProductStatus(id: string, current: boolean) {
-  await requireAdminSession();
-  await prisma.product.update({
+  const session = await requireAdminSession();
+  const product = await prisma.product.update({
     where: { id },
     data: { isActive: !current },
+  });
+  await writeAuditLog(session, 'product.status_toggle', product.id, {
+    title: product.title,
+    active: product.isActive,
   });
   revalidatePath('/admin/products');
 }
 
 export async function updateStockQuick(productId: string, qty: number) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
   await prisma.inventoryItem.upsert({
     where: { productId },
     create: { productId, stockQty: qty },
     update: { stockQty: qty },
   });
+  await writeAuditLog(session, 'product.stock_update', productId, { stockQty: qty });
   revalidatePath('/admin/products');
   revalidatePath('/admin/inventory');
 }
 
 export async function deleteProduct(id: string) {
-  await requireAdminSession();
-  await prisma.product.delete({ where: { id } });
+  const session = await requireAdminSession();
+  const product = await prisma.product.delete({ where: { id } });
+  await writeAuditLog(session, 'product.delete', id, {
+    title: product.title,
+    sku: product.sku,
+  });
   revalidatePath('/admin/products');
   revalidatePath('/');
 }
 
 export async function importProducts(csvData: string) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
   const rows = parseCsv(csvData);
   if (rows.length === 0) throw new Error('CSV is empty or missing headers');
 
@@ -347,5 +391,10 @@ export async function importProducts(csvData: string) {
   revalidatePath('/admin/inventory');
   revalidatePath('/collections/all');
   revalidatePath('/');
+  await writeAuditLog(session, 'product.import', 'csv-import', {
+    success: results.success,
+    failed: results.failed,
+    collections: results.collections,
+  });
   return results;
 }

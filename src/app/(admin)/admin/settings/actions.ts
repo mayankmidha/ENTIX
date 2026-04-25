@@ -1,7 +1,8 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { hashPassword } from '@/lib/auth';
+import { hashPassword, requireAdminRole } from '@/lib/auth';
+import { writeAuditLog } from '@/lib/audit';
 import { ShippingRateKind } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -43,6 +44,7 @@ function saved(path: string) {
 }
 
 export async function saveGeneralSettings(formData: FormData) {
+  const session = await requireAdminRole(['owner', 'admin']);
   await saveSiteSettings(formData, [
     'store.name',
     'store.legalName',
@@ -57,10 +59,12 @@ export async function saveGeneralSettings(formData: FormData) {
     'store.postalCode',
     'store.businessProfile',
   ]);
+  await writeAuditLog(session, 'settings.general_update', 'general');
   saved('/admin/settings/general');
 }
 
 export async function savePaymentSettings(formData: FormData) {
+  const session = await requireAdminRole(['owner', 'admin']);
   const keySecret = String(formData.get('razorpay.keySecret') || '');
   const existing = await prisma.paymentProviderSetting.findUnique({ where: { provider: 'razorpay' } });
 
@@ -100,10 +104,16 @@ export async function savePaymentSettings(formData: FormData) {
     saveSetting('payment.refundWindow', String(formData.get('payment.refundWindow') || '7')),
   ]);
 
+  await writeAuditLog(session, 'settings.payments_update', 'payments', {
+    razorpayEnabled: formData.get('razorpay.enabled') === 'on',
+    razorpayMode: String(formData.get('razorpay.mode') || 'test'),
+    codEnabled: formData.get('cod.enabled') === 'on',
+  });
   saved('/admin/settings/payments');
 }
 
 export async function saveShippingSettings(formData: FormData) {
+  const session = await requireAdminRole(['owner', 'admin', 'operator']);
   await saveSiteSettings(formData, [
     'shipping.origin',
     'shipping.courier',
@@ -178,10 +188,12 @@ export async function saveShippingSettings(formData: FormData) {
     }),
   ]);
 
+  await writeAuditLog(session, 'settings.shipping_update', 'shipping');
   saved('/admin/settings/shipping');
 }
 
 export async function saveTaxSettings(formData: FormData) {
+  const session = await requireAdminRole(['owner', 'admin']);
   await saveSiteSettings(formData, [
     'tax.gstin',
     'tax.invoicePrefix',
@@ -215,10 +227,16 @@ export async function saveTaxSettings(formData: FormData) {
     });
   }
 
+  await writeAuditLog(session, 'settings.tax_update', 'tax', {
+    gstin: String(formData.get('tax.gstin') || ''),
+    defaultHsn: String(formData.get('tax.defaultHsn') || '7113'),
+    defaultPercent: percent,
+  });
   saved('/admin/settings/taxes');
 }
 
 export async function saveDomainSettings(formData: FormData) {
+  const session = await requireAdminRole(['owner', 'admin']);
   await saveSiteSettings(formData, [
     'domain.primary',
     'domain.canonical',
@@ -236,10 +254,16 @@ export async function saveDomainSettings(formData: FormData) {
     });
   }
 
+  await writeAuditLog(session, 'settings.domains_update', 'domains', {
+    primary: String(formData.get('domain.primary') || ''),
+    canonical: String(formData.get('domain.canonical') || ''),
+    redirectAdded: Boolean(fromPath && toPath),
+  });
   saved('/admin/settings/domains');
 }
 
 export async function saveSeoSettings(formData: FormData) {
+  const session = await requireAdminRole(['owner', 'admin']);
   await saveSiteSettings(formData, [
     'seo.homeTitle',
     'seo.homeDescription',
@@ -248,6 +272,9 @@ export async function saveSeoSettings(formData: FormData) {
     'seo.defaultProductTitle',
   ]);
   revalidatePath('/');
+  await writeAuditLog(session, 'settings.seo_update', 'seo', {
+    indexing: String(formData.get('seo.indexing') || ''),
+  });
   saved('/admin/settings/seo');
 }
 
@@ -287,6 +314,7 @@ export async function getEmailTemplates() {
 }
 
 export async function saveNotificationSettings(formData: FormData) {
+  const session = await requireAdminRole(['owner', 'admin']);
   await saveSiteSettings(formData, [
     'notifications.fromName',
     'notifications.fromEmail',
@@ -323,10 +351,15 @@ export async function saveNotificationSettings(formData: FormData) {
     ),
   );
 
+  await writeAuditLog(session, 'settings.notifications_update', 'notifications', {
+    orderSummary: formData.get('notifications.orderSummary') === 'on',
+    abandonedCart: formData.get('notifications.abandonedCart') === 'on',
+  });
   saved('/admin/settings/notifications');
 }
 
 export async function savePolicySettings(formData: FormData) {
+  const session = await requireAdminRole(['owner', 'admin']);
   await saveSiteSettings(formData, [
     'policy.return',
     'policy.shipping',
@@ -337,19 +370,27 @@ export async function savePolicySettings(formData: FormData) {
   revalidatePath('/shipping-policy');
   revalidatePath('/privacy-policy');
   revalidatePath('/terms');
+  await writeAuditLog(session, 'settings.policies_update', 'policies');
   saved('/admin/settings/policies');
 }
 
 export async function saveUserSecuritySettings(formData: FormData) {
+  const session = await requireAdminRole(['owner', 'admin']);
   await saveSiteSettings(formData, [
     'users.sessionHours',
     'users.mfaStatus',
     'users.invitePolicy',
   ]);
+  await writeAuditLog(session, 'settings.users_update', 'users', {
+    sessionHours: String(formData.get('users.sessionHours') || ''),
+    mfaStatus: String(formData.get('users.mfaStatus') || ''),
+    invitePolicy: String(formData.get('users.invitePolicy') || ''),
+  });
   saved('/admin/settings/users');
 }
 
 export async function createAdminUser(formData: FormData) {
+  const session = await requireAdminRole(['owner', 'admin']);
   const email = String(formData.get('new.email') || '').trim().toLowerCase();
   const password = String(formData.get('new.password') || '');
   const name = String(formData.get('new.name') || '').trim();
@@ -374,6 +415,10 @@ export async function createAdminUser(formData: FormData) {
     },
   });
 
+  await writeAuditLog(session, 'staff.upsert', email, {
+    name: name || null,
+    role,
+  });
   revalidatePath('/admin/settings/users');
   redirect('/admin/settings/users?saved=1');
 }

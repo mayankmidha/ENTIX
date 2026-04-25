@@ -3,6 +3,7 @@ import { getSiteSettings } from '@/lib/settings';
 import { KeyRound, ShieldCheck, UserPlus, Users } from 'lucide-react';
 import { createAdminUser, saveUserSecuritySettings } from '../actions';
 import { Field, SelectInput, SettingsFrame, SettingsPanel, StatusPill, SubmitBar, TextInput } from '../SettingsUi';
+import type { AdminUser } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,12 +11,24 @@ const errorCopy: Record<string, string> = {
   'missing-user': 'Add an email and password before creating an admin user.',
 };
 
+const rolePermissions = [
+  { role: 'Owner', scope: 'Full commercial control, staff creation, payment, SEO, domain, policy, and tax settings.' },
+  { role: 'Admin', scope: 'Launch management, staff creation, settings, catalogue, orders, inventory, discounts, and analytics.' },
+  { role: 'Operator', scope: 'Order, fulfilment, inventory, collection, and shipping operations without sensitive commercial settings.' },
+  { role: 'Staff', scope: 'Support workflow account for customer service, reviews, and routine order visibility.' },
+];
+
 export default async function UserSettingsPage({ searchParams }: { searchParams: Promise<{ saved?: string; error?: string }> }) {
-  const [params, settings, users] = await Promise.all([
-    searchParams,
-    getSiteSettings(),
-    prisma.adminUser.findMany({ orderBy: { createdAt: 'desc' } }),
-  ]);
+  const [params, settings] = await Promise.all([searchParams, getSiteSettings()]);
+  let users: AdminUser[] = [];
+  let usersAvailable = true;
+
+  try {
+    users = await prisma.adminUser.findMany({ orderBy: { createdAt: 'desc' } });
+  } catch (error) {
+    console.error('Admin users unavailable:', error);
+    usersAvailable = false;
+  }
 
   return (
     <SettingsFrame
@@ -26,6 +39,15 @@ export default async function UserSettingsPage({ searchParams }: { searchParams:
       error={params.error ? errorCopy[params.error] || 'Something needs attention.' : undefined}
     >
       <div className="grid gap-5">
+        {!usersAvailable && (
+          <div className="border border-oxblood/15 bg-white p-5">
+            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-oxblood">Database unavailable</div>
+            <p className="mt-2 text-[13px] leading-relaxed text-ink/55">
+              Staff users could not be read from the database. The page is showing policy defaults instead of fake accounts.
+            </p>
+          </div>
+        )}
+
         <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
           <form action={createAdminUser}>
             <SettingsPanel icon={UserPlus} title="Create admin user" description="Users created here can sign in through the admin login screen after this update.">
@@ -124,11 +146,22 @@ export default async function UserSettingsPage({ searchParams }: { searchParams:
           </div>
         </SettingsPanel>
 
+        <SettingsPanel icon={ShieldCheck} title="Permission matrix" description="Sensitive settings writes are restricted to owner/admin roles; roles are stored on every database admin user and session.">
+          <div className="grid gap-3 md:grid-cols-2">
+            {rolePermissions.map((item) => (
+              <div key={item.role} className="border border-ink/8 bg-[#f6f4ef] p-4">
+                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink">{item.role}</div>
+                <p className="mt-2 text-[13px] leading-relaxed text-ink/55">{item.scope}</p>
+              </div>
+            ))}
+          </div>
+        </SettingsPanel>
+
         <SettingsPanel icon={ShieldCheck} title="Launch security checks" description="Use this before handing the dashboard to the paid client.">
           <div className="grid gap-3 text-[13px] leading-relaxed text-ink/55 md:grid-cols-3">
             <div className="border border-ink/8 bg-[#f6f4ef] p-4">Create separate named users for client owners and operators. Avoid shared credentials.</div>
             <div className="border border-ink/8 bg-[#f6f4ef] p-4">Rotate temporary passwords after handover and confirm the environment owner account.</div>
-            <div className="border border-ink/8 bg-[#f6f4ef] p-4">Add stricter role permissions before giving warehouse or support staff access.</div>
+            <div className="border border-ink/8 bg-[#f6f4ef] p-4">Review the audit trail after role changes and before client handover.</div>
           </div>
         </SettingsPanel>
       </div>
