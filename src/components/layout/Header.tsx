@@ -8,6 +8,7 @@ import { CartDrawer } from './CartDrawer';
 import { useCart } from '@/stores/cart-store';
 
 const PRIMARY_LINKS = [
+  { label: 'Collections', href: '/collections/all' },
   { label: 'New', href: '/collections/spring-26' },
   { label: 'Earrings', href: '/collections/earrings' },
   { label: 'Necklaces', href: '/collections/necklaces' },
@@ -21,6 +22,12 @@ const FEATURED_COLLECTIONS = [
   { label: 'Bridal', href: '/collections/bridal' },
   { label: 'Everyday', href: '/collections/everyday' },
   { label: 'Gifts', href: '/collections/gifts' },
+];
+
+const TOP_CATEGORY_LINKS = [
+  { label: 'Collections', href: '/collections/all' },
+  { label: 'New', href: '/collections/spring-26' },
+  { label: 'Earrings', href: '/collections/earrings' },
 ];
 
 const SERVICE_LINKS = [
@@ -49,8 +56,17 @@ export function Header() {
     <>
       <header className="sticky top-0 z-50 w-full border-b border-[#dbc8a4]/45 bg-[#fffdf8]/94 text-ink shadow-[0_18px_60px_rgba(18,15,13,0.05)] backdrop-blur-2xl">
         <div className="mx-auto hidden max-w-[1500px] items-center justify-between border-b border-ink/5 px-12 py-2.5 lg:flex">
-          <div className="font-mono text-[9px] uppercase tracking-[0.28em] text-ink/35">
-            Gurgaon atelier • insured shipping • private concierge
+          <div className="flex items-center gap-5">
+            <div className="font-mono text-[9px] uppercase tracking-[0.28em] text-ink/35">
+              Gurgaon atelier • insured shipping • private concierge
+            </div>
+            <div className="flex items-center gap-4">
+              {TOP_CATEGORY_LINKS.map((link) => (
+                <Link key={link.href} href={link.href} className={cn("font-mono text-[9px] uppercase tracking-[0.24em] transition-colors", pathname.startsWith(link.href) ? "text-ink" : "text-ink/40 hover:text-ink")}>
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
           <div className="flex items-center gap-7">
             {SERVICE_LINKS.map((link) => (
@@ -73,7 +89,7 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden items-center gap-7 lg:flex">
+          <nav className="hidden items-center gap-8 lg:flex">
             <div
               className="relative"
               onMouseEnter={() => setShopOpen(true)}
@@ -125,7 +141,7 @@ export function Header() {
                 </div>
               )}
             </div>
-            {PRIMARY_LINKS.map((link) => (
+            {PRIMARY_LINKS.slice(3).map((link) => (
               <Link key={link.href} href={link.href} className={cn("font-mono text-[10px] uppercase tracking-[0.2em] transition-colors", pathname.startsWith(link.href) ? "text-ink" : "text-ink/62 hover:text-ink")}>
                 {link.label}
               </Link>
