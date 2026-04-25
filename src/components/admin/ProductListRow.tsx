@@ -53,7 +53,7 @@ export function ProductListRow({ product: p }: ProductRowProps) {
 
   return (
     <tr className="group transition-colors hover:bg-ivory/40">
-      <td className="px-8 py-5">
+      <td className="px-6 py-5">
         <div className="relative h-20 w-16 overflow-hidden rounded-[14px] bg-ivory-2 border border-ink/5 group-hover:border-ink/10 transition-all">
           {p.images[0] ? (
             <Image
@@ -119,7 +119,7 @@ export function ProductListRow({ product: p }: ProductRowProps) {
             {isLowStock && <AlertCircle size={12} className="text-oxblood/40" />}
           </div>
         )}
-        <div className="font-mono text-[9px] uppercase tracking-widest text-ink/30 mt-1">Gurgaon Studio</div>
+        <div className="font-mono text-[9px] uppercase tracking-widest text-ink/30 mt-1">Available stock</div>
       </td>
       <td className="py-5">
         <div className="font-mono text-[15px] font-medium text-ink">
@@ -149,7 +149,7 @@ export function ProductListRow({ product: p }: ProductRowProps) {
           />
         </button>
       </td>
-      <td className="px-8 py-5 text-right">
+      <td className="px-6 py-5 text-right">
         <div className="flex items-center justify-end gap-2">
           <Link
             href={`/products/${p.slug}`}

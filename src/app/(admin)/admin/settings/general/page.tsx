@@ -1,7 +1,5 @@
-import { prisma } from '@/lib/prisma';
-import { 
-  Store, MapPin, Globe, Mail, 
-  Phone, Save, ChevronLeft 
+import {
+  Save, ChevronLeft
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -46,7 +44,7 @@ export default async function GeneralSettingsPage() {
         </section>
 
         <section className="rounded-[40px] border border-ink/5 bg-white p-10 shadow-sm">
-          <h2 className="font-display text-[22px] font-medium text-ink mb-10 pb-6 border-b border-ink/5">Head Atelier</h2>
+          <h2 className="font-display text-[22px] font-medium text-ink mb-10 pb-6 border-b border-ink/5">Primary Fulfilment Address</h2>
           
           <div className="grid gap-8">
             <div className="space-y-2">
@@ -56,7 +54,7 @@ export default async function GeneralSettingsPage() {
             <div className="grid sm:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">City</label>
-                <input className="w-full bg-ivory-2/40 border-none rounded-full px-6 py-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none" defaultValue="Gurgaon" />
+                <input className="w-full bg-ivory-2/40 border-none rounded-full px-6 py-4 font-mono text-[12px] focus:ring-1 focus:ring-ink/10 outline-none" defaultValue="To be confirmed" />
               </div>
               <div className="space-y-2">
                 <label className="font-mono text-[9px] uppercase tracking-widest text-ink/40 ml-4">State</label>

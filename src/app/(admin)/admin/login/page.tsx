@@ -42,65 +42,67 @@ function AdminLoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-ivory px-6 py-12 lg:px-8">
-      <div className="mx-auto flex min-h-[calc(100vh-6rem)] max-w-[1080px] flex-col justify-center lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+    <div className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+      <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-[1080px] flex-col justify-center lg:grid lg:min-h-[calc(100vh-5rem)] lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
         <div className="hidden lg:flex lg:flex-col lg:justify-center">
-          <div className="eyebrow">— Entix Admin</div>
-          <h1 className="mt-6 font-display text-[5.25rem] font-light leading-[0.92] tracking-display text-ink">
-            Merchant control,
+          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink/38">Entix Admin</div>
+          <h1 className="mt-6 font-display text-[72px] font-medium leading-[0.92] tracking-normal text-ink">
+            Commerce control,
             <br />
-            <span className="font-display-italic text-champagne-600">without the clutter.</span>
+            <span className="text-champagne-700">without clutter.</span>
           </h1>
-          <p className="mt-8 max-w-md text-[15px] leading-relaxed text-ink/55 italic">
-            Products, orders, collections, promotions, and fulfillment all live here. This login is
-            the operational entrypoint for the live Entix store.
+          <p className="mt-8 max-w-md text-[15px] leading-relaxed text-ink/55">
+            Orders, products, customers, inventory, and launch checks live in one secure operating surface.
           </p>
         </div>
 
         <div className="sm:mx-auto sm:w-full sm:max-w-[460px] lg:mx-0 lg:max-w-none">
-          <div className="rounded-[44px] border border-ink/5 bg-white px-10 py-12 shadow-luxe">
+          <div className="border border-ink/8 bg-white px-5 py-8 shadow-sm sm:px-8 sm:py-10 lg:px-10 lg:py-12">
             <div className="text-center">
               <Link href="/" className="font-display text-[32px] font-medium tracking-logo text-ink">
                 ENTIX
               </Link>
-              <h2 className="mt-8 font-display text-[36px] font-light leading-tight tracking-display text-ink italic">
-                Access the <span className="text-champagne-600">Atelier Command.</span>
+              <h2 className="mt-7 font-display text-[30px] font-medium leading-tight tracking-normal text-ink sm:text-[36px]">
+                Sign in to admin.
               </h2>
-              <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.3em] text-ink/40">
-                Secure merchant operations login
+              <p className="mx-auto mt-3 max-w-xs text-[13px] leading-relaxed text-ink/45">
+                Use the admin credentials configured in the project environment.
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-12 space-y-8">
+            <form onSubmit={handleSubmit} className="mt-9 space-y-6">
               <div className="space-y-2">
-                <label className="ml-4 block font-mono text-[9px] uppercase tracking-widest text-ink/40">
+                <label className="block font-mono text-[10px] uppercase tracking-[0.16em] text-ink/40">
                   Admin Email
                 </label>
                 <div className="relative">
-                  <Mail size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-ink/20" />
+                  <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/25" />
                   <input
                     required
                     type="email"
+                    inputMode="email"
+                    autoComplete="username"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    className="w-full rounded-full border border-ink/5 bg-ivory-2 pl-16 pr-8 py-5 font-mono text-[13px] shadow-sm transition-all focus:outline-none focus:border-ink"
+                    className="h-[52px] w-full border border-ink/10 bg-[#f6f4ef] pl-11 pr-4 font-mono text-[13px] text-ink outline-none transition-all placeholder:text-ink/26 focus:border-ink/35"
                     placeholder="admin@entix.jewellery"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="ml-4 block font-mono text-[9px] uppercase tracking-widest text-ink/40">
+                <label className="block font-mono text-[10px] uppercase tracking-[0.16em] text-ink/40">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-ink/20" />
+                  <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/25" />
                   <input
                     required
                     type="password"
+                    autoComplete="current-password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    className="w-full rounded-full border border-ink/5 bg-ivory-2 pl-16 pr-8 py-5 font-mono text-[13px] shadow-sm transition-all focus:outline-none focus:border-ink"
+                    className="h-[52px] w-full border border-ink/10 bg-[#f6f4ef] pl-11 pr-4 font-mono text-[13px] text-ink outline-none transition-all placeholder:text-ink/26 focus:border-ink/35"
                     placeholder="••••••••••••"
                   />
                 </div>
@@ -109,14 +111,14 @@ function AdminLoginForm() {
               <button
                 type="submit"
                 disabled={isPending}
-                className="flex w-full items-center justify-center gap-3 rounded-full bg-ink py-6 font-mono text-[11px] uppercase tracking-[0.25em] text-ivory shadow-2xl transition-all hover:bg-ink-2 active:scale-[0.98] disabled:opacity-50"
+                className="flex h-14 w-full items-center justify-center gap-3 bg-ink px-4 font-mono text-[11px] uppercase tracking-[0.18em] text-ivory shadow-lg shadow-ink/10 transition-all hover:bg-ink-2 active:scale-[0.99] disabled:opacity-50"
               >
-                {isPending ? 'Opening Studio...' : 'Enter Admin'} <ArrowRight size={16} />
+                {isPending ? 'Signing in...' : 'Enter Admin'} <ArrowRight size={16} />
               </button>
             </form>
 
-            <div className="mt-10 flex items-center justify-center gap-2 border-t border-ink/5 pt-8 font-mono text-[9px] uppercase tracking-widest text-ink/35">
-              <ShieldCheck size={14} className="text-jade" /> Secure session, access-controlled operations
+            <div className="mt-8 flex items-start justify-center gap-2 border-t border-ink/8 pt-6 font-mono text-[9px] uppercase leading-relaxed tracking-[0.14em] text-ink/35">
+              <ShieldCheck size={14} className="mt-0.5 shrink-0 text-jade" /> Secure session, access-controlled operations
             </div>
           </div>
         </div>

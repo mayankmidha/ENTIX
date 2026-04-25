@@ -115,7 +115,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               />
               <TimelineEvent 
                 icon={Package} 
-                title="Processing in Gurgaon" 
+                title="Processing"
                 description="Our artisans are preparing your heirloom pieces for dispatch." 
                 active={order.status === 'paid' || order.status === 'processing'}
               />

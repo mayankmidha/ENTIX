@@ -33,7 +33,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
           A modern heirloom, <span className="font-display-italic text-champagne-600">is yours.</span>
         </h1>
         <p className="text-[17px] text-ink/60 leading-relaxed max-w-xl mx-auto mb-12 italic">
-          Thank you for your patronage. Your selection is now being prepared by our Gurgaon studio
+          Thank you for your patronage. Your selection is now being prepared by our fulfilment team
           and will be dispatched via insured global delivery shortly.
         </p>
 

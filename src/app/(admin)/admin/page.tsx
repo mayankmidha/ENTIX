@@ -172,7 +172,7 @@ export default async function AdminDashboard() {
           </p>
         </div>
 
-        <form action="/admin/products" className="relative">
+        <form action="/admin/search" className="relative">
           <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/28" />
           <input
             name="q"
@@ -181,6 +181,13 @@ export default async function AdminDashboard() {
           />
         </form>
       </header>
+
+      <section className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:hidden">
+        <MobileShortcut label="Orders" href="/admin/orders" value={m.pendingOrders} />
+        <MobileShortcut label="Products" href="/admin/products" value={m.productsCount} />
+        <MobileShortcut label="Stock Risk" href="/admin/inventory" value={m.lowStockCount} />
+        <MobileShortcut label="Reviews" href="/admin/reviews" value={m.reviewQueue} />
+      </section>
 
       <section className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <Metric label="Revenue" value={formatInr(m.totalRevenue)} delta="+12%" icon={TrendingUp} />
@@ -198,9 +205,9 @@ export default async function AdminDashboard() {
           </div>
 
           <div className="mt-5 overflow-hidden border border-ink/8 bg-white">
-            <div className="grid grid-cols-[1fr_88px_104px] border-b border-ink/8 bg-[#f6f4ef] px-4 py-3 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38 sm:grid-cols-[1fr_120px_120px_112px]">
+            <div className="hidden border-b border-ink/8 bg-[#f6f4ef] px-4 py-3 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38 sm:grid sm:grid-cols-[1fr_120px_120px_112px]">
               <span>Order</span>
-              <span className="hidden sm:block">Status</span>
+              <span>Status</span>
               <span className="text-right">Value</span>
               <span className="text-right">Time</span>
             </div>
@@ -209,27 +216,36 @@ export default async function AdminDashboard() {
                 <Link
                   key={order.id}
                   href={`/admin/orders/${order.id}`}
-                  className="grid grid-cols-[1fr_88px_104px] items-center gap-3 border-b border-ink/6 px-4 py-3 transition-colors last:border-b-0 hover:bg-[#fbfaf7] sm:grid-cols-[1fr_120px_120px_112px]"
+                  className="flex flex-col gap-3 border-b border-ink/6 px-4 py-4 transition-colors last:border-b-0 hover:bg-[#fbfaf7] sm:grid sm:grid-cols-[1fr_120px_120px_112px] sm:items-center sm:gap-3 sm:py-3"
                 >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="relative h-11 w-9 shrink-0 overflow-hidden border border-ink/8 bg-[#eee8de]">
-                      {order.items?.[0]?.imageUrl ? (
-                        <img src={order.items[0].imageUrl} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        <Package size={15} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-ink/25" />
-                      )}
+                  <div className="flex min-w-0 items-center justify-between gap-3 sm:block">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="relative h-11 w-9 shrink-0 overflow-hidden border border-ink/8 bg-[#eee8de]">
+                        {order.items?.[0]?.imageUrl ? (
+                          <img src={order.items[0].imageUrl} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <Package size={15} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-ink/25" />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="truncate font-mono text-[12px] font-medium text-ink">{order.orderNumber}</div>
+                        <div className="truncate text-[12px] text-ink/45">{order.shippingName}</div>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <div className="truncate font-mono text-[12px] font-medium text-ink">{order.orderNumber}</div>
-                      <div className="truncate text-[12px] text-ink/45">{order.shippingName}</div>
+                    <div className="shrink-0 sm:hidden">
+                      <StatusBadge label={String(order.status || 'pending')} tone="neutral" />
                     </div>
                   </div>
                   <div className="hidden sm:block">
                     <StatusBadge label={String(order.status || 'pending')} tone="neutral" />
                   </div>
-                  <div className="text-right font-mono text-[12px] font-medium text-ink">{formatInr(order.totalInr)}</div>
-                  <div className="text-right font-mono text-[10px] uppercase tracking-[0.08em] text-ink/35">
-                    {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <div className="flex items-center justify-between gap-3 sm:block sm:text-right">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink/35 sm:hidden">Value</span>
+                    <span className="font-mono text-[12px] font-medium text-ink">{formatInr(order.totalInr)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.08em] text-ink/35 sm:block sm:text-right">
+                    <span className="sm:hidden">Time</span>
+                    <span>{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                 </Link>
               ))
@@ -306,6 +322,15 @@ function Panel({ title, action, href, children }: { title: string; action: strin
       </div>
       {children}
     </section>
+  );
+}
+
+function MobileShortcut({ label, href, value }: { label: string; href: string; value: number }) {
+  return (
+    <Link href={href} className="border border-ink/8 bg-white p-3 shadow-sm">
+      <div className="font-display text-[24px] leading-none text-ink">{value}</div>
+      <div className="mt-2 truncate font-mono text-[9px] uppercase tracking-[0.12em] text-ink/40">{label}</div>
+    </Link>
   );
 }
 

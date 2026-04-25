@@ -104,7 +104,7 @@ export default async function CustomerOrderDetailPage({ params }: { params: Prom
                    />
                    <TimelineStep 
                     icon={Package} 
-                    title="Preparation in Gurgaon" 
+                    title="Preparation"
                     description="Your heirloom pieces are being hand-finished and inspected."
                     active={order.status === 'paid' || order.status === 'processing'}
                    />

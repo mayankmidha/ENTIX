@@ -41,6 +41,13 @@ const groups = [
   },
 ];
 
+const mobilePrimary = [
+  { label: 'Home', href: '/admin', icon: Home },
+  { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
+  { label: 'Products', href: '/admin/products', icon: Package },
+  { label: 'Customers', href: '/admin/customers', icon: Users },
+];
+
 export function AdminSidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -53,7 +60,7 @@ export function AdminSidebar() {
             ENTIX
           </Link>
           <div className="flex items-center gap-2">
-            <Link href="/admin/products" aria-label="Search products" className="flex h-10 w-10 items-center justify-center border border-ink/10 bg-white text-ink/55">
+            <Link href="/admin/search" aria-label="Search admin" className="flex h-10 w-10 items-center justify-center border border-ink/10 bg-white text-ink/55">
               <Search size={17} />
             </Link>
             <button
@@ -93,6 +100,35 @@ export function AdminSidebar() {
         </div>
       )}
 
+      <nav className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-ink/10 bg-[#f6f4ef]/96 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 backdrop-blur-xl lg:hidden">
+        {mobilePrimary.map((item) => {
+          const active = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'flex min-h-12 flex-col items-center justify-center gap-1 font-mono text-[8px] uppercase tracking-[0.08em]',
+                active ? 'text-ink' : 'text-ink/42'
+              )}
+            >
+              <Icon size={17} className={active ? 'text-ink' : 'text-ink/34'} />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+        <button
+          type="button"
+          aria-label="Open admin navigation"
+          onClick={() => setMobileOpen(true)}
+          className="flex min-h-12 flex-col items-center justify-center gap-1 font-mono text-[8px] uppercase tracking-[0.08em] text-ink/42"
+        >
+          <Menu size={17} className="text-ink/34" />
+          <span>More</span>
+        </button>
+      </nav>
+
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[280px] border-r border-ink/10 bg-[#f6f4ef] lg:flex lg:flex-col">
         <div className="border-b border-ink/10 px-6 py-5">
           <Link href="/admin" className="flex items-center justify-between">
@@ -113,6 +149,15 @@ function SidebarNav({ pathname, onNavigate }: { pathname: string; onNavigate?: (
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5">
+        <form action="/admin/search" className="relative mb-4">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/28" />
+          <input
+            name="q"
+            placeholder="Search admin"
+            className="h-11 w-full border border-ink/10 bg-white pl-9 pr-3 font-mono text-[11px] uppercase tracking-[0.11em] text-ink outline-none placeholder:text-ink/28 focus:border-ink/35"
+          />
+        </form>
+
         <div className="mb-5 border border-ink/8 bg-white p-3">
           <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink/35">Today</div>
           <div className="mt-2 grid grid-cols-3 gap-2 text-center">

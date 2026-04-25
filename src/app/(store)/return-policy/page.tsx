@@ -21,7 +21,7 @@ export default function PolicyPage() {
               </section>
               <section>
                  <h2 className="text-ink font-bold uppercase tracking-widest text-[11px]">3. Refund Process</h2>
-                 <p className="mt-4">Once received and inspected by our Gurgaon studio, refunds are processed back to the original payment method within 5-10 business days.</p>
+                 <p className="mt-4">Once received and inspected by our fulfilment team, refunds are processed back to the original payment method within 5-10 business days.</p>
               </section>
            </div>
         </ScrollReveal>

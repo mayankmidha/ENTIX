@@ -52,6 +52,8 @@ async function getHomeData() {
 
 export default async function HomePage() {
   const { featured, newArrivals } = await getHomeData();
+  const hasFeatured = featured.length > 0;
+  const hasNewArrivals = newArrivals.length > 0;
 
   return (
     <>
@@ -72,6 +74,12 @@ export default async function HomePage() {
             </p>
             </div>
           </ScrollReveal>
+
+          <div className="mt-10 grid gap-px bg-ink/10 sm:grid-cols-3">
+            <LaunchStat value="300" label="Product catalogue target" />
+            <LaunchStat value={featured.length + newArrivals.length > 0 ? `${featured.length + newArrivals.length}` : 'Build'} label="Current sample feed" />
+            <LaunchStat value="Mobile" label="Checkout-first experience" />
+          </div>
 
           <div className="mt-14 grid gap-px bg-ink/10 lg:grid-cols-3">
             {collectionRooms.map((room, idx) => (
@@ -109,20 +117,24 @@ export default async function HomePage() {
             </Link>
           </ScrollReveal>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {featured.map((product, idx) => (
-              <ScrollReveal key={product.id} delay={idx * 0.08}>
-                <ProductCard
-                  product={{
-                    ...product,
-                    image: product.images[0]?.url || '',
-                    imageHover: product.images[1]?.url,
-                    tag: product.isBestseller ? 'Bestseller' : undefined,
-                  }}
-                />
-              </ScrollReveal>
-            ))}
-          </div>
+          {hasFeatured ? (
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              {featured.map((product, idx) => (
+                <ScrollReveal key={product.id} delay={idx * 0.08}>
+                  <ProductCard
+                    product={{
+                      ...product,
+                      image: product.images[0]?.url || '',
+                      imageHover: product.images[1]?.url,
+                      tag: product.isBestseller ? 'Bestseller' : undefined,
+                    }}
+                  />
+                </ScrollReveal>
+              ))}
+            </div>
+          ) : (
+            <EditorialPlaceholderGrid />
+          )}
         </div>
       </section>
 
@@ -153,20 +165,24 @@ export default async function HomePage() {
             </h2>
           </ScrollReveal>
 
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {newArrivals.map((product, idx) => (
-              <ScrollReveal key={product.id} delay={idx * 0.04}>
-                <ProductCard
-                  product={{
-                    ...product,
-                    image: product.images[0]?.url || '',
-                    imageHover: product.images[1]?.url,
-                    tag: 'New Piece',
-                  }}
-                />
-              </ScrollReveal>
-            ))}
-          </div>
+          {hasNewArrivals ? (
+            <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {newArrivals.map((product, idx) => (
+                <ScrollReveal key={product.id} delay={idx * 0.04}>
+                  <ProductCard
+                    product={{
+                      ...product,
+                      image: product.images[0]?.url || '',
+                      imageHover: product.images[1]?.url,
+                      tag: 'New Piece',
+                    }}
+                  />
+                </ScrollReveal>
+              ))}
+            </div>
+          ) : (
+            <EditorialPlaceholderGrid compact />
+          )}
         </div>
       </section>
     </>
@@ -184,5 +200,52 @@ function TrustCard({ icon: Icon, title, text }: { icon: any; title: string; text
         <p className="mt-4 text-[13px] leading-relaxed text-ivory/50 italic">{text}</p>
       </div>
     </ScrollReveal>
+  );
+}
+
+function LaunchStat({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="bg-ivory p-5">
+      <div className="font-display text-[34px] font-medium leading-none text-ink">{value}</div>
+      <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">{label}</div>
+    </div>
+  );
+}
+
+function EditorialPlaceholderGrid({ compact = false }: { compact?: boolean }) {
+  const items = [
+    {
+      title: 'Ceremonial Bangles',
+      image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=900&q=92',
+    },
+    {
+      title: 'Gold Necklines',
+      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=900&q=92',
+    },
+    {
+      title: 'Ring Objects',
+      image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=92',
+    },
+    {
+      title: 'Festive Drops',
+      image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=92',
+    },
+  ];
+
+  return (
+    <div className={`grid gap-8 sm:grid-cols-2 ${compact ? 'lg:grid-cols-4' : 'lg:grid-cols-4'}`}>
+      {items.map((item) => (
+        <div key={item.title}>
+          <div className="relative aspect-[4/5] overflow-hidden border border-ink/8 bg-[#eee8de]">
+            <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
+            <div className="absolute inset-x-3 top-3 border border-white/50 bg-white/50 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur">
+              Sample direction
+            </div>
+          </div>
+          <h3 className="mt-5 font-display text-[22px] font-medium leading-tight text-ink">{item.title}</h3>
+          <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">Awaiting final catalogue data</p>
+        </div>
+      ))}
+    </div>
   );
 }
