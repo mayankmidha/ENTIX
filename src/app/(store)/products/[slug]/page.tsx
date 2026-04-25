@@ -91,6 +91,14 @@ export default async function ProductPage({ params }: Props) {
   const totalReviews = ratingAgg._count._all;
   const baseUrl = getCanonicalBaseUrl(settings['domain.canonical'], settings['domain.primary']);
   const inStock = product.inventory?.trackStock === false || (product.inventory?.stockQty ?? 0) > 0;
+  const schemaProperties = [
+    { name: 'Material', value: product.material },
+    { name: 'Finish', value: product.finish },
+    { name: 'Gemstone', value: product.gemstone },
+    { name: 'Weight', value: product.weightGrams ? `${product.weightGrams} g` : null },
+    { name: 'Dimensions', value: product.dimensions },
+    { name: 'Occasion', value: product.occasion },
+  ].filter((item): item is { name: string; value: string } => Boolean(item.value));
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -99,12 +107,53 @@ export default async function ProductPage({ params }: Props) {
     description: product.description,
     image: product.images.map(img => img.url),
     sku: product.sku,
+    brand: {
+      '@type': 'Brand',
+      name: 'Entix Jewellery',
+    },
+    category: 'Jewellery',
+    material: product.material || undefined,
+    additionalProperty: schemaProperties.map((item) => ({
+      '@type': 'PropertyValue',
+      name: item.name,
+      value: item.value,
+    })),
     offers: {
       '@type': 'Offer',
       price: product.priceInr,
       priceCurrency: 'INR',
       availability: inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       url: `${baseUrl}/products/${product.slug}`,
+      shippingDetails: {
+        '@type': 'OfferShippingDetails',
+        shippingDestination: {
+          '@type': 'DefinedRegion',
+          addressCountry: 'IN',
+        },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          handlingTime: {
+            '@type': 'QuantitativeValue',
+            minValue: 1,
+            maxValue: 3,
+            unitCode: 'DAY',
+          },
+          transitTime: {
+            '@type': 'QuantitativeValue',
+            minValue: 2,
+            maxValue: 7,
+            unitCode: 'DAY',
+          },
+        },
+      },
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: 'IN',
+        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+        merchantReturnDays: 7,
+        returnMethod: 'https://schema.org/ReturnByMail',
+        returnFees: 'https://schema.org/FreeReturn',
+      },
     },
     ...(totalReviews > 0 && {
       aggregateRating: {
@@ -115,14 +164,7 @@ export default async function ProductPage({ params }: Props) {
     }),
   };
 
-  const specs = [
-    { label: 'Material', value: product.material },
-    { label: 'Finish', value: product.finish },
-    { label: 'Gemstone', value: product.gemstone },
-    { label: 'Weight', value: product.weightGrams ? `${product.weightGrams} g` : null },
-    { label: 'Dimensions', value: product.dimensions },
-    { label: 'Occasion', value: product.occasion },
-  ].filter((item): item is { label: string; value: string } => Boolean(item.value));
+  const specs = schemaProperties.map((item) => ({ label: item.name, value: item.value }));
   const narrative = product.story || product.description;
   const careText = product.careInstructions || 'Store separately, keep away from perfume and water, and wipe gently with a soft cloth after wear.';
   const primaryImage = product.images[0]?.url || null;
@@ -192,6 +234,12 @@ export default async function ProductPage({ params }: Props) {
                       <SpecRow label="Care" value="Store softly and wipe gently after wear" />
                     </>
                   )}
+                </div>
+                <div className="mt-6 flex flex-wrap gap-2">
+                  <GuideLink href="/size-guide" label="Size guide" />
+                  <GuideLink href="/materials-care" label="Materials & care" />
+                  <GuideLink href="/warranty-repairs" label="Warranty" />
+                  <GuideLink href="/authenticity" label="Authenticity" />
                 </div>
               </div>
             </ScrollReveal>
@@ -316,6 +364,14 @@ function SpecRow({ label, value }: { label: string; value: string }) {
       <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink/35">{label}</div>
       <div className="mt-2 font-display text-[17px] font-medium leading-snug text-ink">{value}</div>
     </div>
+  );
+}
+
+function GuideLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link href={href} className="border border-ink/10 bg-white px-3 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/45 transition-colors hover:border-ink/25 hover:text-ink">
+      {label}
+    </Link>
   );
 }
 

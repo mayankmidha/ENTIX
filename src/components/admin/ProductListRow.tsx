@@ -7,15 +7,18 @@ import { formatInr, cn } from '@/lib/utils';
 import { toggleProductStatus, updateStockQuick } from '@/app/(admin)/admin/products/actions';
 import { 
   Check, Edit2, Loader2, X, Eye, 
-  ExternalLink, MoreHorizontal, AlertCircle
+  ExternalLink, AlertCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Product, InventoryItem, ProductImage } from '@prisma/client';
+import type { Collection, CollectionProduct, InventoryItem, Product, ProductImage, ProductVariant } from '@prisma/client';
+import { getProductReadiness } from '@/lib/product-readiness';
 
 interface ProductRowProps {
   product: Product & { 
-    inventory: InventoryItem | null; 
-    images: ProductImage[] 
+    inventory: InventoryItem | null;
+    images: ProductImage[];
+    variants: ProductVariant[];
+    collections: Array<CollectionProduct & { collection: Pick<Collection, 'title' | 'slug'> }>;
   };
 }
 
@@ -31,7 +34,7 @@ export function ProductListRow({ product: p }: ProductRowProps) {
         toast.success(`${p.title} is now ${!p.isActive ? 'Active' : 'Draft'}`, {
           className: 'bg-ivory font-mono border-ink/10'
         });
-      } catch (error) {
+      } catch {
         toast.error('Failed to update visibility');
       }
     });
@@ -43,13 +46,20 @@ export function ProductListRow({ product: p }: ProductRowProps) {
         await updateStockQuick(p.id, tempStock);
         setIsEditingStock(false);
         toast.success('Inventory balance updated');
-      } catch (error) {
+      } catch {
         toast.error('Failed to update stock');
       }
     });
   };
 
   const isLowStock = (p.inventory?.stockQty || 0) <= (p.inventory?.lowStockAt || 3);
+  const readiness = getProductReadiness(p);
+  const readinessClass =
+    readiness.tone === 'good'
+      ? 'bg-jade/10 text-jade'
+      : readiness.tone === 'warn'
+        ? 'bg-champagne-100 text-champagne-900'
+        : 'bg-oxblood/10 text-oxblood';
 
   return (
     <tr className="group transition-colors hover:bg-ivory/40">
@@ -130,6 +140,19 @@ export function ProductListRow({ product: p }: ProductRowProps) {
             {formatInr(p.compareAtInr)}
           </div>
         )}
+      </td>
+      <td className="py-5 pr-4">
+        <div className="flex items-center gap-3">
+          <span className={`min-w-14 px-2.5 py-1 text-center font-mono text-[11px] font-medium ${readinessClass}`}>
+            {readiness.score}%
+          </span>
+          <div className="min-w-0">
+            <div className="truncate font-mono text-[10px] uppercase tracking-[0.14em] text-ink/45">{readiness.label}</div>
+            <div className="mt-1 truncate text-[12px] text-ink/38">
+              {readiness.issues[0] || `${readiness.imageCount} media / ${readiness.variantCount || 1} variant`}
+            </div>
+          </div>
+        </div>
       </td>
       <td className="py-5">
         <button

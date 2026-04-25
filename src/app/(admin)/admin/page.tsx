@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { formatInr } from '@/lib/utils';
 import { getPaymentRuntime } from '@/lib/commerce-settings';
+import { getProductReadiness, isSizeSensitive } from '@/lib/product-readiness';
 import {
   AlertTriangle,
   ArrowUpRight,
@@ -11,8 +12,10 @@ import {
   CheckCircle2,
   Clock,
   FileText,
+  Gem,
   Package,
   PackageCheck,
+  Ruler,
   Search,
   Settings,
   ShieldCheck,
@@ -42,6 +45,14 @@ function createUnavailableMetrics(error?: unknown) {
     processingOrders: 0,
     shippedOrders: 0,
     activeDiscounts: 0,
+    readinessAverage: 0,
+    productsMissingCare: 0,
+    productsMissingSeo: 0,
+    sizeGuideGaps: 0,
+    unmerchandisedProducts: 0,
+    highValueAbandonedCarts: 0,
+    highValueAbandonedValue: 0,
+    controlSignals: [],
     razorpayReady: Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET),
     resendReady: Boolean(process.env.RESEND_API_KEY),
     baseUrlReady: Boolean(process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL),
@@ -67,6 +78,8 @@ async function getMetrics() {
       processingOrders,
       shippedOrders,
       activeDiscounts,
+      readinessProducts,
+      abandonedCheckouts,
     ] = await Promise.all([
       prisma.order.count(),
       prisma.customer.count(),
@@ -91,11 +104,88 @@ async function getMetrics() {
       prisma.order.count({ where: { status: 'processing' } }),
       prisma.order.count({ where: { status: 'shipped' } }),
       prisma.discount.count({ where: { status: 'active' } }),
+      prisma.product.findMany({
+        where: { isActive: true },
+        include: {
+          images: { take: 2, orderBy: { position: 'asc' } },
+          inventory: true,
+          variants: true,
+          collections: { include: { collection: { select: { title: true, slug: true } } } },
+        },
+        take: 500,
+      }),
+      prisma.abandonedCheckout.findMany({
+        where: { recoveredAt: null },
+        select: { id: true, email: true, customerName: true, subtotalInr: true, createdAt: true },
+        orderBy: { createdAt: 'desc' },
+        take: 100,
+      }),
     ]);
 
     const totalRevenue = revenueResult._sum.totalInr || 0;
     const aov = ordersCount > 0 ? Math.round(totalRevenue / ordersCount) : 0;
     const paymentRuntime = await getPaymentRuntime();
+    const readinessReports = readinessProducts.map((product) => ({ product, report: getProductReadiness(product) }));
+    const readinessAverage = readinessReports.length
+      ? Math.round(readinessReports.reduce((sum, entry) => sum + entry.report.score, 0) / readinessReports.length)
+      : 0;
+    const productsMissingCare = readinessReports.filter((entry) => entry.report.missingCare || entry.report.missingMaterial).length;
+    const productsMissingSeo = readinessReports.filter((entry) => entry.report.missingSeo).length;
+    const sizeGuideGaps = readinessReports.filter((entry) => isSizeSensitive(entry.product) && entry.report.missingSize).length;
+    const unmerchandisedProducts = readinessReports.filter((entry) => entry.report.collectionCount === 0).length;
+    const highValueAbandoned = abandonedCheckouts.filter((checkout) => checkout.subtotalInr >= 25000);
+    const highValueAbandonedCarts = highValueAbandoned.length;
+    const highValueAbandonedValue = highValueAbandoned.reduce((sum, checkout) => sum + checkout.subtotalInr, 0);
+    const controlSignals = [
+      {
+        label: 'Products missing images',
+        value: productsMissingImages,
+        detail: productsMissingImages > 0 ? 'Add model, close-up, scale, and packaging shots.' : 'Catalogue media coverage is clean.',
+        href: '/admin/files',
+        tone: productsMissingImages > 0 ? 'bad' : 'good',
+        icon: Camera,
+      },
+      {
+        label: 'Size-guide risk',
+        value: sizeGuideGaps,
+        detail: sizeGuideGaps > 0 ? 'Rings, bangles, bracelets, necklaces, or bridal pieces need dimensions.' : 'Size-sensitive pieces have decision data.',
+        href: '/admin/products',
+        tone: sizeGuideGaps > 0 ? 'warn' : 'good',
+        icon: Ruler,
+      },
+      {
+        label: 'Material / care gaps',
+        value: productsMissingCare,
+        detail: productsMissingCare > 0 ? 'Complete jewellery-specific fields before launch.' : 'Material and care confidence is healthy.',
+        href: '/admin/products',
+        tone: productsMissingCare > 0 ? 'bad' : 'good',
+        icon: Gem,
+      },
+      {
+        label: 'High-value carts abandoned',
+        value: highValueAbandonedCarts,
+        detail: highValueAbandonedCarts > 0 ? `${formatInr(highValueAbandonedValue)} waiting for recovery.` : 'No premium carts currently stranded.',
+        href: '/admin/abandoned',
+        tone: highValueAbandonedCarts > 0 ? 'warn' : 'good',
+        icon: ShoppingBag,
+      },
+      {
+        label: 'Unmerchandised products',
+        value: unmerchandisedProducts,
+        detail: unmerchandisedProducts > 0 ? 'Assign pieces into rooms, edits, and gift paths.' : 'Active catalogue is assigned to collections.',
+        href: '/admin/collections',
+        tone: unmerchandisedProducts > 0 ? 'warn' : 'good',
+        icon: Sparkles,
+      },
+      {
+        label: 'SEO copy gaps',
+        value: productsMissingSeo,
+        detail: productsMissingSeo > 0 ? 'Meta titles and descriptions need editorial polish.' : 'Product SEO basics are covered.',
+        href: '/admin/settings/seo',
+        tone: productsMissingSeo > 0 ? 'warn' : 'good',
+        icon: Search,
+      },
+    ];
 
     return {
       ordersCount,
@@ -113,6 +203,14 @@ async function getMetrics() {
       processingOrders,
       shippedOrders,
       activeDiscounts,
+      readinessAverage,
+      productsMissingCare,
+      productsMissingSeo,
+      sizeGuideGaps,
+      unmerchandisedProducts,
+      highValueAbandonedCarts,
+      highValueAbandonedValue,
+      controlSignals,
       razorpayReady: paymentRuntime.razorpayEnabled,
       resendReady: Boolean(process.env.RESEND_API_KEY),
       baseUrlReady: Boolean(process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL),
@@ -128,7 +226,7 @@ async function getMetrics() {
 export default async function AdminDashboard() {
   const m = await getMetrics();
   const catalogueHealth = m.productsCount > 0 ? Math.max(Math.round(((m.productsCount - m.productsMissingImages) / m.productsCount) * 100), 0) : 0;
-  const issueCount = m.lowStockCount + m.productsMissingImages + m.reviewQueue;
+  const issueCount = m.lowStockCount + m.productsMissingImages + m.reviewQueue + m.productsMissingCare + m.sizeGuideGaps + m.highValueAbandonedCarts;
 
   return (
     <div className="mx-auto max-w-[1520px]">
@@ -168,6 +266,26 @@ export default async function AdminDashboard() {
         <Metric label="Orders" value={m.ordersCount.toString()} delta={`${m.pendingOrders} active`} icon={ShoppingBag} />
         <Metric label="AOV" value={formatInr(m.aov)} delta="30d" icon={BarChart3} />
         <Metric label="Customers" value={m.customerCount.toString()} delta="collector base" icon={Users} />
+      </section>
+
+      <section className="mt-5">
+        <Panel title="Jewellery Control Room" action="Products" href="/admin/products">
+          <div className="mb-5 grid gap-4 border border-ink/8 bg-[#120f0d] p-5 text-ivory lg:grid-cols-[220px_1fr] lg:items-center">
+            <div>
+              <div className="font-display text-[54px] leading-none">{m.readinessAverage}%</div>
+              <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ivory/45">Average readiness</div>
+            </div>
+            <p className="max-w-3xl text-[14px] leading-relaxed text-ivory/58">
+              Entix should behave like a jewellery control room: media depth, material proof, sizing, SEO, collection membership, abandoned carts,
+              and launch blockers visible before they become client embarrassment.
+            </p>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {m.controlSignals.map((signal: any) => (
+              <SignalCard key={signal.label} {...signal} />
+            ))}
+          </div>
+        </Panel>
       </section>
 
       <section className="mt-5 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
@@ -331,6 +449,45 @@ function Pipeline({ label, value, href }: { label: string; value: number; href: 
     <Link href={href} className="border border-ink/8 bg-[#f6f4ef] p-4 transition-colors hover:bg-champagne-50">
       <div className="font-display text-[30px] font-medium leading-none text-ink">{value}</div>
       <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/40">{label}</div>
+    </Link>
+  );
+}
+
+function SignalCard({
+  icon: Icon,
+  label,
+  value,
+  detail,
+  href,
+  tone,
+}: {
+  icon: any;
+  label: string;
+  value: number;
+  detail: string;
+  href: string;
+  tone: 'good' | 'warn' | 'bad';
+}) {
+  const toneClass =
+    tone === 'good'
+      ? 'bg-jade/10 text-jade'
+      : tone === 'warn'
+        ? 'bg-champagne-100 text-champagne-900'
+        : 'bg-oxblood/10 text-oxblood';
+
+  return (
+    <Link href={href} className="group border border-ink/8 bg-white p-4 transition-colors hover:border-ink/18 hover:bg-[#fbfaf7]">
+      <div className="flex items-start justify-between gap-4">
+        <span className="flex h-10 w-10 items-center justify-center border border-ink/8 bg-[#f6f4ef] text-ink/48">
+          <Icon size={17} />
+        </span>
+        <span className={`min-w-12 px-2 py-1 text-center font-mono text-[12px] font-medium ${toneClass}`}>{value}</span>
+      </div>
+      <h3 className="mt-5 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/48">{label}</h3>
+      <p className="mt-3 min-h-10 text-[13px] leading-relaxed text-ink/55">{detail}</p>
+      <div className="mt-4 inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/35 transition-colors group-hover:text-ink">
+        Resolve <ArrowUpRight size={12} />
+      </div>
     </Link>
   );
 }

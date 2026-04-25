@@ -5,6 +5,13 @@ import Link from 'next/link';
 import { ArrowRight, Gem, Sparkles } from 'lucide-react';
 import { editorialCollections, editorialRooms, trustLayer } from '@/lib/storefront-world';
 
+const trustLinks = [
+  { href: '/shipping-policy', title: trustLayer[0].title },
+  { href: '/authenticity', title: trustLayer[1].title },
+  { href: '/materials-care', title: 'Materials & Care' },
+  { href: '/size-guide', title: 'Size Guide' },
+];
+
 export function MegaMenu({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
@@ -77,11 +84,11 @@ export function MegaMenu({ onNavigate }: { onNavigate?: () => void }) {
         ))}
 
         <div className="grid grid-cols-2 gap-px bg-ink/10">
-          {trustLayer.slice(0, 2).map((item) => (
-            <div key={item.title} className="bg-white/65 p-4">
+          {trustLinks.map((item) => (
+            <Link key={item.href} href={item.href} onClick={onNavigate} className="bg-white/65 p-4 transition-colors hover:bg-ink hover:text-ivory">
               <Gem size={14} className="text-champagne-700" />
-              <div className="mt-4 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/45">{item.title}</div>
-            </div>
+              <div className="mt-4 font-mono text-[9px] uppercase tracking-[0.14em] text-current/45">{item.title}</div>
+            </Link>
           ))}
         </div>
       </div>

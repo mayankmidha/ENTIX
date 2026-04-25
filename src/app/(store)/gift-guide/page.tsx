@@ -4,6 +4,7 @@ import { ArrowRight, Gift, HeartHandshake, MessageCircle, ShieldCheck, Sparkles 
 import { Metadata } from 'next';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { GiftFinder } from '@/components/gift/GiftFinder';
 import { prisma } from '@/lib/prisma';
 import { hasDatabaseUrl } from '@/lib/settings';
 import { editorialCollections, giftEdits, trustLayer } from '@/lib/storefront-world';
@@ -68,6 +69,8 @@ export default async function GiftGuidePage() {
           </ScrollReveal>
         </div>
       </section>
+
+      <GiftFinder />
 
       <section className="px-6 py-20 lg:px-12 lg:py-24">
         <div className="mx-auto max-w-7xl">

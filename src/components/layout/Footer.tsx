@@ -66,6 +66,8 @@ export function Footer() {
             <nav className="flex flex-col gap-4">
               <Link href="/lookbook" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Lookbook</Link>
               <Link href="/gift-guide" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Gift Guide</Link>
+              <Link href="/authenticity" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Authenticity</Link>
+              <Link href="/packaging-gifting" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Packaging</Link>
               <Link href="/about" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">About Entix</Link>
               <Link href="/blog" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Journal</Link>
             </nav>
@@ -75,6 +77,9 @@ export function Footer() {
             <h4 className="font-mono text-[10px] uppercase tracking-widest text-ivory/30 mb-8">— Assistance</h4>
             <nav className="flex flex-col gap-4">
               <Link href="/shipping-policy" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Shipping Guide</Link>
+              <Link href="/size-guide" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Size Guide</Link>
+              <Link href="/materials-care" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Materials & Care</Link>
+              <Link href="/warranty-repairs" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Warranty</Link>
               <Link href="/contact" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Contact</Link>
               <Link href="/track" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Track Order</Link>
               <Link href="/return-policy" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Returns</Link>

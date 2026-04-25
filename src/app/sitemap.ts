@@ -17,6 +17,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages = [
     { url: BASE_URL, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 1 },
     { url: `${BASE_URL}/collections/all`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.9 },
+    { url: `${BASE_URL}/gift-guide`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/lookbook`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/authenticity`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/materials-care`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/size-guide`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/warranty-repairs`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/packaging-gifting`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/search`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.5 },
     { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/track`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.3 },

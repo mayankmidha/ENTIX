@@ -1,9 +1,11 @@
 import { prisma } from '@/lib/prisma';
 import { formatInr, cn } from '@/lib/utils';
-import { AlertTriangle, ImageOff, Package, Plus, Search } from 'lucide-react';
+import { AlertTriangle, Gem, ImageOff, Package, Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 import { ProductListRow } from '@/components/admin/ProductListRow';
 import type { Prisma } from '@prisma/client';
+import { getProductReadiness } from '@/lib/product-readiness';
+import { hasDatabaseUrl } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,14 +38,21 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
 
   const where: Prisma.ProductWhereInput | undefined = filters.length ? { AND: filters } : undefined;
 
-  const products = await prisma.product.findMany({
-    where,
-    include: {
-      images: { take: 1, orderBy: { position: 'asc' } },
-      inventory: true,
-    },
-    orderBy: { updatedAt: 'desc' },
-  });
+  const products = hasDatabaseUrl()
+    ? await prisma.product.findMany({
+        where,
+        include: {
+          images: { take: 2, orderBy: { position: 'asc' } },
+          inventory: true,
+          variants: true,
+          collections: { include: { collection: { select: { title: true, slug: true } } } },
+        },
+        orderBy: { updatedAt: 'desc' },
+      }).catch((error) => {
+        console.error('Admin products query failed:', error);
+        return [];
+      })
+    : [];
 
   const makeHref = (nextStatus: string) => {
     const params = new URLSearchParams();
@@ -56,6 +65,10 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
   const activeCount = products.filter((product) => product.isActive).length;
   const lowStockCount = products.filter((product) => (product.inventory?.stockQty || 0) <= (product.inventory?.lowStockAt ?? 3)).length;
   const missingImages = products.filter((product) => product.images.length === 0).length;
+  const readiness = products.map((product) => getProductReadiness(product));
+  const averageReadiness = readiness.length ? Math.round(readiness.reduce((sum, item) => sum + item.score, 0) / readiness.length) : 0;
+  const blockedCount = readiness.filter((item) => item.tone === 'bad').length;
+  const missingCareCount = readiness.filter((item) => item.missingCare || item.missingMaterial).length;
 
   return (
     <div className="mx-auto max-w-[1440px]">
@@ -87,10 +100,11 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
         </div>
       </header>
 
-      <section className="mt-5 grid gap-3 sm:grid-cols-3">
+      <section className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <MiniStat label="Visible products" value={products.length.toString()} />
         <MiniStat label="Active listings" value={activeCount.toString()} />
-        <MiniStat label="Needs attention" value={(lowStockCount + missingImages).toString()} />
+        <MiniStat label="Launch readiness" value={`${averageReadiness}%`} />
+        <MiniStat label="Jewellery gaps" value={(blockedCount + missingCareCount + missingImages + lowStockCount).toString()} />
       </section>
 
       <nav className="mt-5 flex gap-2 overflow-x-auto pb-1">
@@ -116,6 +130,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
           const stockQty = product.inventory?.stockQty || 0;
           const lowStockAt = product.inventory?.lowStockAt ?? 3;
           const isLowStock = stockQty <= lowStockAt;
+          const productReadiness = getProductReadiness(product);
           return (
             <Link key={product.id} href={`/admin/products/${product.id}`} className="border border-ink/8 bg-white p-4 shadow-sm">
               <div className="flex gap-4">
@@ -139,12 +154,14 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
                   <div className="mt-4 grid grid-cols-2 gap-2">
                     <MiniCell label="Price" value={formatInr(product.priceInr)} />
                     <MiniCell label="Stock" value={stockQty.toString()} tone={isLowStock ? 'bad' : 'neutral'} />
+                    <MiniCell label="Readiness" value={`${productReadiness.score}%`} tone={productReadiness.tone === 'bad' ? 'bad' : 'neutral'} />
+                    <MiniCell label="Media" value={`${productReadiness.imageCount} shots`} tone={productReadiness.imageCount < 2 ? 'bad' : 'neutral'} />
                   </div>
                 </div>
               </div>
-              {(isLowStock || product.images.length === 0) && (
+              {(isLowStock || productReadiness.issues.length > 0) && (
                 <div className="mt-3 flex items-center gap-2 border border-oxblood/10 bg-oxblood/5 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-oxblood">
-                  <AlertTriangle size={12} /> {isLowStock ? 'Low stock' : 'Missing image'}
+                  <AlertTriangle size={12} /> {isLowStock ? 'Low stock' : productReadiness.issues[0]}
                 </div>
               )}
             </Link>
@@ -169,6 +186,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
               <th className="py-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">Product</th>
               <th className="py-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">Inventory</th>
               <th className="py-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">Price</th>
+              <th className="py-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">Readiness</th>
               <th className="py-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">Status</th>
               <th className="px-6 py-4 text-right font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">Action</th>
             </tr>
@@ -179,7 +197,11 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
             ))}
             {products.length === 0 && (
               <tr>
-                <td colSpan={6} className="py-24 text-center text-[14px] text-ink/35">No products match this view.</td>
+                <td colSpan={7} className="py-24 text-center">
+                  <Gem size={18} className="mx-auto mb-3 text-ink/22" />
+                  <div className="text-[14px] text-ink/35">No products match this view.</div>
+                  {!hasDatabaseUrl() && <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink/30">Database not connected locally</div>}
+                </td>
               </tr>
             )}
           </tbody>
