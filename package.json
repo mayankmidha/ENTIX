@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "typecheck": "tsc --noEmit",
+    "build": "pnpm run typecheck && prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
+    "verify": "pnpm run typecheck && pnpm run lint && pnpm run build",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",

@@ -1,5 +1,6 @@
 import { Image, Search, Share2, Sparkles } from 'lucide-react';
 import { getSiteSettings } from '@/lib/settings';
+import { getCanonicalBaseUrl } from '@/lib/site-url';
 import { saveSeoSettings } from '../actions';
 import { Field, SelectInput, SettingsFrame, SettingsPanel, StatusPill, SubmitBar, TextArea, TextInput } from '../SettingsUi';
 
@@ -7,6 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function SeoSettingsPage({ searchParams }: { searchParams: Promise<{ saved?: string }> }) {
   const [{ saved }, settings] = await Promise.all([searchParams, getSiteSettings()]);
+  const previewUrl = getCanonicalBaseUrl(settings['domain.canonical'], settings['domain.primary']);
 
   return (
     <SettingsFrame
@@ -54,7 +56,7 @@ export default async function SeoSettingsPage({ searchParams }: { searchParams: 
           <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
             <div className="border border-ink/8 bg-[#f6f4ef] p-5">
               <div className="text-[18px] leading-tight text-[#1a0dab]">{settings['seo.homeTitle']}</div>
-              <div className="mt-1 text-[12px] text-[#006621]">entix-jewellery.vercel.app</div>
+              <div className="mt-1 text-[12px] text-[#006621]">{previewUrl.replace(/^https?:\/\//, '')}</div>
               <p className="mt-2 text-[13px] leading-relaxed text-ink/58">{settings['seo.homeDescription']}</p>
             </div>
             <div className="border border-ink/8 bg-[#120f0d] p-5 text-ivory">

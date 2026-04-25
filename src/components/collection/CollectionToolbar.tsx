@@ -14,6 +14,8 @@ const PRICE_RANGES = [
 ];
 
 const MATERIALS = ['Gold', 'Silver', 'Platinum', 'Rose Gold', 'Kundan', 'Polki', 'Diamond', 'Pearl'];
+const STONES = ['Diamond', 'Polki', 'Kundan', 'Pearl', 'Emerald', 'Ruby', 'Sapphire'];
+const OCCASIONS = ['Bridal', 'Everyday', 'Gifting', 'Festive', 'Wedding'];
 const SORT_OPTIONS = [
   { label: 'Newest', value: 'newest' },
   { label: 'Price: Low to High', value: 'price_asc' },
@@ -31,10 +33,13 @@ export function CollectionToolbar() {
 
   const activePrice = searchParams.get('priceMin');
   const activeMaterial = searchParams.get('material');
+  const activeStone = searchParams.get('stone');
+  const activeOccasion = searchParams.get('occasion');
+  const activeAvailability = searchParams.get('availability');
   const activeSort = searchParams.get('sort') || 'newest';
   const activeSortLabel = SORT_OPTIONS.find((option) => option.value === activeSort)?.label || 'Newest';
 
-  const hasFilters = activePrice || activeMaterial;
+  const hasFilters = activePrice || activeMaterial || activeStone || activeOccasion || activeAvailability;
 
   const updateQuery = useCallback(
     (updates: Record<string, string | null>) => {
@@ -77,6 +82,30 @@ export function CollectionToolbar() {
               className="flex h-11 items-center gap-2 border border-ink/8 bg-white/35 px-4 text-ink/55 transition-colors hover:text-ink"
             >
               {activeMaterial} <X size={12} />
+            </button>
+          )}
+          {activeStone && (
+            <button
+              onClick={() => updateQuery({ stone: null })}
+              className="flex h-11 items-center gap-2 border border-ink/8 bg-white/35 px-4 text-ink/55 transition-colors hover:text-ink"
+            >
+              {activeStone} <X size={12} />
+            </button>
+          )}
+          {activeOccasion && (
+            <button
+              onClick={() => updateQuery({ occasion: null })}
+              className="flex h-11 items-center gap-2 border border-ink/8 bg-white/35 px-4 text-ink/55 transition-colors hover:text-ink"
+            >
+              {activeOccasion} <X size={12} />
+            </button>
+          )}
+          {activeAvailability && (
+            <button
+              onClick={() => updateQuery({ availability: null })}
+              className="flex h-11 items-center gap-2 border border-ink/8 bg-white/35 px-4 text-ink/55 transition-colors hover:text-ink"
+            >
+              In stock <X size={12} />
             </button>
           )}
           {hasFilters && (
@@ -125,7 +154,7 @@ export function CollectionToolbar() {
       {/* Filter Panel */}
       {filtersOpen && (
         <div className="mb-14 border border-ink/8 bg-white/72 p-5 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300 md:p-8">
-          <div className="grid gap-8 md:grid-cols-2 md:gap-10">
+          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4 md:gap-10">
             {/* Price Filter */}
             <div>
               <h4 className="mb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/40">Price Range</h4>
@@ -181,6 +210,72 @@ export function CollectionToolbar() {
                   );
                 })}
               </div>
+            </div>
+
+            <div>
+              <h4 className="mb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/40">Stone</h4>
+              <div className="flex flex-wrap gap-2">
+                {STONES.map((stone) => {
+                  const isActive = activeStone === stone.toLowerCase();
+                  return (
+                    <button
+                      key={stone}
+                      onClick={() =>
+                        updateQuery({
+                          stone: isActive ? null : stone.toLowerCase(),
+                        })
+                      }
+                      className={cn(
+                        'border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-all',
+                        isActive
+                          ? 'bg-ink text-ivory border-ink'
+                          : 'border-ink/10 bg-ivory text-ink/50 hover:border-ink/30 hover:text-ink',
+                      )}
+                    >
+                      {stone}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <h4 className="mb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/40">Occasion</h4>
+              <div className="flex flex-wrap gap-2">
+                {OCCASIONS.map((occasion) => {
+                  const isActive = activeOccasion === occasion.toLowerCase();
+                  return (
+                    <button
+                      key={occasion}
+                      onClick={() =>
+                        updateQuery({
+                          occasion: isActive ? null : occasion.toLowerCase(),
+                        })
+                      }
+                      className={cn(
+                        'border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-all',
+                        isActive
+                          ? 'bg-ink text-ivory border-ink'
+                          : 'border-ink/10 bg-ivory text-ink/50 hover:border-ink/30 hover:text-ink',
+                      )}
+                    >
+                      {occasion}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() => updateQuery({ availability: activeAvailability ? null : 'in-stock' })}
+                className={cn(
+                  'mt-5 border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-all',
+                  activeAvailability
+                    ? 'bg-ink text-ivory border-ink'
+                    : 'border-ink/10 bg-ivory text-ink/50 hover:border-ink/30 hover:text-ink',
+                )}
+              >
+                In-stock only
+              </button>
             </div>
           </div>
         </div>

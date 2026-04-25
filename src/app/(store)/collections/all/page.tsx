@@ -6,6 +6,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { hasDatabaseUrl } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,12 +16,12 @@ export const metadata: Metadata = {
 };
 
 interface Props {
-  searchParams: Promise<{ sort?: string; priceMin?: string; priceMax?: string; material?: string }>;
+  searchParams: Promise<{ sort?: string; priceMin?: string; priceMax?: string; material?: string; stone?: string; occasion?: string; availability?: string }>;
 }
 
 function applyCatalogueFilters(
   products: any[],
-  filters: { sort?: string; priceMin?: string; priceMax?: string; material?: string }
+  filters: { sort?: string; priceMin?: string; priceMax?: string; material?: string; stone?: string; occasion?: string; availability?: string }
 ) {
   let filteredProducts = [...products];
 
@@ -34,8 +35,17 @@ function applyCatalogueFilters(
   }
   if (filters.material) {
     filteredProducts = filteredProducts.filter((p) =>
-      p.material?.toLowerCase().includes(filters.material!.toLowerCase())
+      [p.material, p.finish].some((value) => value?.toLowerCase().includes(filters.material!.toLowerCase()))
     );
+  }
+  if (filters.stone) {
+    filteredProducts = filteredProducts.filter((p) => p.gemstone?.toLowerCase().includes(filters.stone!.toLowerCase()));
+  }
+  if (filters.occasion) {
+    filteredProducts = filteredProducts.filter((p) => p.occasion?.toLowerCase().includes(filters.occasion!.toLowerCase()));
+  }
+  if (filters.availability === 'in-stock') {
+    filteredProducts = filteredProducts.filter((p) => p.inventory?.trackStock === false || (p.inventory?.stockQty ?? 0) > 0);
   }
 
   switch (filters.sort) {
@@ -57,14 +67,16 @@ function applyCatalogueFilters(
 
 export default async function AllCollectionsPage({ searchParams }: Props) {
   const filters = await searchParams;
-  const products = await prisma.product.findMany({
-    where: { isActive: true },
-    include: {
-      images: { orderBy: { position: 'asc' } },
-      inventory: true,
-    },
-    orderBy: [{ isFeatured: 'desc' }, { isBestseller: 'desc' }, { createdAt: 'desc' }],
-  });
+  const products = hasDatabaseUrl()
+    ? await prisma.product.findMany({
+        where: { isActive: true },
+        include: {
+          images: { orderBy: { position: 'asc' } },
+          inventory: true,
+        },
+        orderBy: [{ isFeatured: 'desc' }, { isBestseller: 'desc' }, { createdAt: 'desc' }],
+      }).catch(() => [])
+    : [];
   const hasProducts = products.length > 0;
   const filteredProducts = applyCatalogueFilters(products, filters);
 
@@ -130,19 +142,27 @@ export default async function AllCollectionsPage({ searchParams }: Props) {
             <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/35">Clear filters and browse the full catalogue</p>
           </div>
         ) : (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {SAMPLE_PRODUCTS.map((product) => (
-              <div key={product.title}>
-                <div className="relative aspect-[4/5] overflow-hidden border border-ink/8 bg-[#eee8de]">
-                  <img src={product.image} alt={product.title} className="h-full w-full object-cover" />
-                  <div className="absolute left-3 top-3 border border-white/50 bg-white/50 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur">
-                    Sample
-                  </div>
-                </div>
-                <h2 className="mt-5 font-display text-[22px] font-medium leading-tight text-ink">{product.title}</h2>
-                <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">{product.meta}</p>
+          <div className="border border-ink/10 bg-white/45 p-8 md:p-12">
+            <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
+              <div>
+                <div className="eyebrow">Catalogue Required</div>
+                <h2 className="mt-5 font-display text-5xl font-light leading-[0.9] tracking-normal text-ink md:text-7xl">
+                  Import the final Entix product file.
+                </h2>
               </div>
-            ))}
+              <div className="grid gap-3 text-[13px] leading-relaxed text-ink/55 md:grid-cols-2">
+                {[
+                  '300 products with SKU, price, stock, weights, dimensions, and images',
+                  'Collections for bangles, rings, earrings, necklaces, bridal, gifting, and everyday',
+                  'Jewellery fields: material, stone, finish, care, dispatch, certification, warranty',
+                  'Hover images and gallery order ready for the product cards',
+                ].map((item) => (
+                  <div key={item} className="border border-ink/8 bg-[#f6f4ef] p-4">
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -165,26 +185,3 @@ function Stat({ value, label }: { value: string; label: string }) {
     </div>
   );
 }
-
-const SAMPLE_PRODUCTS = [
-  {
-    title: 'Ceremonial Bangles',
-    meta: 'Awaiting SKU, price, stock',
-    image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=900&q=92',
-  },
-  {
-    title: 'Gold Necklines',
-    meta: 'Awaiting final catalogue',
-    image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=900&q=92',
-  },
-  {
-    title: 'Ring Objects',
-    meta: 'Awaiting product data',
-    image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=92',
-  },
-  {
-    title: 'Festive Drops',
-    meta: 'Awaiting imagery',
-    image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=92',
-  },
-];

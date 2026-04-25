@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { slugify } from '@/lib/utils';
 import { requireAdminSession } from '@/lib/auth';
+import { parseBoolean, parseCsv, parseMoney, parseNumber, splitList } from '@/lib/csv';
 
 export async function createProduct(data: any) {
   await requireAdminSession();
@@ -147,49 +148,73 @@ export async function deleteProduct(id: string) {
 
 export async function importProducts(csvData: string) {
   await requireAdminSession();
-  const rows = csvData.split('\n').filter(row => row.trim());
-  if (rows.length < 2) throw new Error('CSV is empty or missing headers');
-
-  const headers = rows[0].split(',').map(h => h.trim().toLowerCase());
-  const dataRows = rows.slice(1);
+  const rows = parseCsv(csvData);
+  if (rows.length === 0) throw new Error('CSV is empty or missing headers');
 
   const productsMap = new Map<string, any>();
 
-  for (const row of dataRows) {
-    // Simple CSV parser that handles quotes
-    const values = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
-    const item: any = {};
-    headers.forEach((header, i) => {
-      let val = values[i]?.trim() || '';
-      if (val.startsWith('"') && val.endsWith('"')) {
-        val = val.substring(1, val.length - 1);
-      }
-      item[header] = val;
-    });
-
+  for (const item of rows) {
     const title = item.title;
     if (!title) continue;
+    const key = item.slug || title;
 
-    if (!productsMap.has(title)) {
-      productsMap.set(title, {
+    if (!productsMap.has(key)) {
+      const collections = splitList(item.collections || item.collection || item.categories || item.category);
+      productsMap.set(key, {
         title: item.title,
         subtitle: item.subtitle || '',
         description: item.description || '',
-        sku: item.sku || `SKU-${Date.now()}`,
+        story: item.story || '',
+        sku: item.sku || `ENT-${slugify(item.title).toUpperCase()}`,
         material: item.material || '',
-        priceInr: parseInt(item.price) || 0,
-        compareAtInr: parseInt(item.compareatprice) || null,
-        images: item.images ? item.images.split('|').map((url: string) => url.trim()) : [],
+        finish: item.finish || item.plating || '',
+        gemstone: item.gemstone || item.stone || '',
+        occasion: item.occasion || item.category || '',
+        careInstructions: item.careinstructions || item.care || '',
+        dimensions: item.dimensions || '',
+        weightGrams: parseNumber(item.weightgrams || item.weight, 0) || null,
+        priceInr: parseMoney(item.priceinr || item.price),
+        compareAtInr: parseMoney(item.compareatinr || item.compareatprice) || null,
+        images: splitList(item.images || item.imageurls || item.image || item.photo),
+        isActive: parseBoolean(item.isactive || item.active || item.status, true),
+        isFeatured: parseBoolean(item.isfeatured || item.featured, false),
+        isBestseller: parseBoolean(item.isbestseller || item.bestseller, false),
+        isNewArrival: parseBoolean(item.isnewarrival || item.newarrival || item.new, false),
+        metaTitle: item.metatitle || item.seotitle || '',
+        metaDescription: item.metadescription || item.seodescription || '',
+        relatedProducts: splitList(item.relatedproducts || item.relatedskus),
+        collections,
+        stockQty: parseNumber(item.stock || item.stockqty || item.inventory, 0),
         variants: []
       });
     }
 
-    if (item.varianttitle) {
-      productsMap.get(title).variants.push({
-        title: item.varianttitle,
-        sku: item.variantsku || `${item.sku}-${item.varianttitle}`,
-        priceInr: parseInt(item.variantprice) || parseInt(item.price) || 0,
-        stockQty: parseInt(item.variantstock) || 0,
+    if (item.varianttitle || item.variantsku || item.size || item.metal || item.color) {
+      const variantTitle = item.varianttitle || [item.size, item.metal, item.stone, item.color, item.finish].filter(Boolean).join(' / ') || 'Default';
+      productsMap.get(key).variants.push({
+        title: variantTitle,
+        sku: item.variantsku || `${item.sku || slugify(title).toUpperCase()}-${slugify(variantTitle).toUpperCase()}`,
+        priceInr: parseMoney(item.variantpriceinr || item.variantprice || item.priceinr || item.price),
+        stockQty: parseNumber(item.variantstock || item.variantstockqty || item.stock || item.stockqty, 0),
+        compareAtInr: parseMoney(item.variantcompareatinr || item.variantcompareatprice) || null,
+        barcode: item.variantbarcode || item.barcode || '',
+        weight: parseNumber(item.variantweight || item.weight, 0),
+        dimensions: item.variantdimensions || item.dimensions || '',
+      });
+    }
+  }
+
+  for (const data of productsMap.values()) {
+    if (data.variants.length === 0) {
+      data.variants.push({
+        title: 'Default',
+        sku: data.sku,
+        priceInr: data.priceInr,
+        stockQty: data.stockQty,
+        compareAtInr: data.compareAtInr,
+        barcode: '',
+        weight: data.weightGrams || 0,
+        dimensions: data.dimensions || '',
       });
     }
   }
@@ -197,76 +222,118 @@ export async function importProducts(csvData: string) {
   const results = {
     success: 0,
     failed: 0,
-    errors: [] as string[]
+    errors: [] as string[],
+    collections: 0,
   };
 
   for (const [title, data] of productsMap.entries()) {
     try {
       await prisma.$transaction(async (tx) => {
-        // Upsert product by slug
-        const slug = slugify(title);
+        const slug = slugify(data.title || title);
         const existing = await tx.product.findUnique({ where: { slug } });
+        const totalStock = data.variants.reduce((acc: number, v: any) => acc + (v.stockQty || 0), 0);
+        const productData = {
+          subtitle: data.subtitle,
+          description: data.description,
+          story: data.story,
+          priceInr: data.priceInr,
+          compareAtInr: data.compareAtInr,
+          sku: data.sku,
+          material: data.material,
+          finish: data.finish,
+          gemstone: data.gemstone,
+          occasion: data.occasion,
+          careInstructions: data.careInstructions,
+          dimensions: data.dimensions,
+          weightGrams: data.weightGrams,
+          isActive: data.isActive,
+          isFeatured: data.isFeatured,
+          isBestseller: data.isBestseller,
+          isNewArrival: data.isNewArrival,
+          metaTitle: data.metaTitle || null,
+          metaDescription: data.metaDescription || null,
+          seoTitle: data.metaTitle || null,
+          seoDescription: data.metaDescription || null,
+          relatedProducts: data.relatedProducts,
+        };
+
+        const product = existing
+          ? await tx.product.update({
+              where: { id: existing.id },
+              data: {
+                ...productData,
+                title: data.title,
+                images: {
+                  deleteMany: {},
+                  create: data.images.map((url: string, index: number) => ({
+                    url,
+                    alt: `${data.title} ${index + 1}`,
+                    position: index,
+                    isPrimary: index === 0,
+                  })),
+                },
+                variants: {
+                  deleteMany: {},
+                  create: data.variants,
+                },
+              },
+            })
+          : await tx.product.create({
+              data: {
+                ...productData,
+                title: data.title,
+                slug,
+                images: {
+                  create: data.images.map((url: string, index: number) => ({
+                    url,
+                    alt: `${data.title} ${index + 1}`,
+                    position: index,
+                    isPrimary: index === 0,
+                  })),
+                },
+                variants: {
+                  create: data.variants,
+                },
+                inventory: {
+                  create: {
+                    stockQty: totalStock,
+                  },
+                },
+              },
+            });
 
         if (existing) {
-          // Update
-          await tx.productImage.deleteMany({ where: { productId: existing.id } });
-          await tx.productVariant.deleteMany({ where: { productId: existing.id } });
-
-          await tx.product.update({
-            where: { id: existing.id },
-            data: {
-              subtitle: data.subtitle,
-              description: data.description,
-              priceInr: data.priceInr,
-              compareAtInr: data.compareAtInr,
-              sku: data.sku,
-              material: data.material,
-              images: {
-                create: data.images.map((url: string, index: number) => ({
-                  url,
-                  position: index,
-                })),
-              },
-              variants: {
-                create: data.variants,
-              }
-            }
-          });
-
-          const totalStock = data.variants.reduce((acc: number, v: any) => acc + (v.stockQty || 0), 0);
           await tx.inventoryItem.upsert({
             where: { productId: existing.id },
             create: { productId: existing.id, stockQty: totalStock },
             update: { stockQty: totalStock },
           });
-        } else {
-          // Create
-          const product = await tx.product.create({
-            data: {
-              title: data.title,
-              slug,
-              subtitle: data.subtitle,
-              description: data.description,
-              priceInr: data.priceInr,
-              compareAtInr: data.compareAtInr,
-              sku: data.sku,
-              material: data.material,
-              images: {
-                create: data.images.map((url: string, index: number) => ({
-                  url,
-                  position: index,
-                })),
-              },
-              variants: {
-                create: data.variants,
-              },
-              inventory: {
-                create: {
-                  stockQty: data.variants.reduce((acc: number, v: any) => acc + (v.stockQty || 0), 0),
-                }
-              }
-            }
+          await tx.collectionProduct.deleteMany({ where: { productId: existing.id } });
+        }
+
+        for (const [index, collectionTitle] of data.collections.entries()) {
+          const collection = await tx.collection.upsert({
+            where: { slug: slugify(collectionTitle) },
+            create: {
+              title: collectionTitle,
+              slug: slugify(collectionTitle),
+              description: `${collectionTitle} jewellery curated by Entix.`,
+              position: index,
+              isActive: true,
+            },
+            update: { title: collectionTitle, isActive: true },
           });
+          await tx.collectionProduct.upsert({
+            where: {
+              collectionId_productId: {
+                collectionId: collection.id,
+                productId: product.id,
+              },
+            },
+            create: { collectionId: collection.id, productId: product.id, position: index },
+            update: { position: index },
+          });
+          results.collections++;
         }
       });
       results.success++;
@@ -277,5 +344,8 @@ export async function importProducts(csvData: string) {
   }
 
   revalidatePath('/admin/products');
+  revalidatePath('/admin/inventory');
+  revalidatePath('/collections/all');
+  revalidatePath('/');
   return results;
 }

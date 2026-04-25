@@ -6,12 +6,14 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import Link from 'next/link';
+import { getCanonicalBaseUrl } from '@/lib/site-url';
+import { getSiteSettings } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ sort?: string; priceMin?: string; priceMax?: string; material?: string }>;
+  searchParams: Promise<{ sort?: string; priceMin?: string; priceMax?: string; material?: string; stone?: string; occasion?: string; availability?: string }>;
 }
 
 const COLLECTION_NAV = [
@@ -131,7 +133,7 @@ async function resolveCollection(slug: string) {
 
 function applyCollectionFilters(
   products: any[],
-  filters: { sort?: string; priceMin?: string; priceMax?: string; material?: string }
+  filters: { sort?: string; priceMin?: string; priceMax?: string; material?: string; stone?: string; occasion?: string; availability?: string }
 ) {
   let filteredProducts = [...products];
 
@@ -145,8 +147,17 @@ function applyCollectionFilters(
   }
   if (filters.material) {
     filteredProducts = filteredProducts.filter((p) =>
-      p.material?.toLowerCase().includes(filters.material!.toLowerCase())
+      [p.material, p.finish].some((value) => value?.toLowerCase().includes(filters.material!.toLowerCase()))
     );
+  }
+  if (filters.stone) {
+    filteredProducts = filteredProducts.filter((p) => p.gemstone?.toLowerCase().includes(filters.stone!.toLowerCase()));
+  }
+  if (filters.occasion) {
+    filteredProducts = filteredProducts.filter((p) => p.occasion?.toLowerCase().includes(filters.occasion!.toLowerCase()));
+  }
+  if (filters.availability === 'in-stock') {
+    filteredProducts = filteredProducts.filter((p) => p.inventory?.trackStock === false || (p.inventory?.stockQty ?? 0) > 0);
   }
 
   switch (filters.sort) {
@@ -168,17 +179,21 @@ function applyCollectionFilters(
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const collection = await resolveCollection(slug);
+  const [collection, settings] = await Promise.all([resolveCollection(slug), getSiteSettings()]);
 
   if (!collection) return {};
 
   const title = `${collection.title} | Entix Jewellery Collections`;
   const description = collection.description.slice(0, 160);
   const image = collection.heroImage;
+  const baseUrl = getCanonicalBaseUrl(settings['domain.canonical'], settings['domain.primary']);
 
   return {
     title,
     description,
+    alternates: {
+      canonical: `${baseUrl}/collections/${slug}`,
+    },
     openGraph: {
       title,
       description,
@@ -197,14 +212,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CollectionPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const filters = await searchParams;
-  const collection = await resolveCollection(slug);
+  const [collection, settings] = await Promise.all([resolveCollection(slug), getSiteSettings()]);
 
   if (!collection) return notFound();
 
   const filteredProducts = applyCollectionFilters(collection.products, filters);
+  const baseUrl = getCanonicalBaseUrl(settings['domain.canonical'], settings['domain.primary']);
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: collection.title,
+    description: collection.description,
+    url: `${baseUrl}/collections/${slug}`,
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: filteredProducts.map((product, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `${baseUrl}/products/${product.slug}`,
+        name: product.title,
+      })),
+    },
+  };
 
   return (
     <div className="min-h-screen bg-ivory pb-32">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className="relative flex min-h-[70svh] items-end overflow-hidden px-6 pb-12 lg:px-12 lg:pb-16">
         <div className="absolute inset-0 z-0">
            {collection.heroImage ? (

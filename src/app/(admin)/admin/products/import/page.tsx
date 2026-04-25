@@ -17,7 +17,43 @@ export default function ImportPage() {
     success: number;
     failed: number;
     errors: string[];
+    collections?: number;
   } | null>(null);
+
+  const downloadTemplate = () => {
+    const headers = [
+      'Title',
+      'Subtitle',
+      'Description',
+      'Story',
+      'SKU',
+      'Price',
+      'CompareAtPrice',
+      'Material',
+      'Finish',
+      'Stone',
+      'Occasion',
+      'Care',
+      'WeightGrams',
+      'Dimensions',
+      'Collections',
+      'Images',
+      'Stock',
+      'VariantTitle',
+      'VariantSKU',
+      'VariantPrice',
+      'VariantStock',
+      'MetaTitle',
+      'MetaDescription',
+    ].join(',');
+    const blob = new Blob([`${headers}\n`], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'entix-product-import-template.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -105,8 +141,15 @@ export default function ImportPage() {
               )}
             </button>
             <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-ink/40">
-              <Info size={12} /> Format: Title, Subtitle, Description, SKU, Material, Price, CompareAtPrice, Images, VariantTitle, VariantSKU, VariantPrice, VariantStock
+              <Info size={12} /> Supports product data, jewellery specs, collection mapping, images, stock, variants, and SEO fields
             </p>
+            <button
+              type="button"
+              onClick={downloadTemplate}
+              className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink/45 underline-draw hover:text-ink"
+            >
+              Download CSV template
+            </button>
           </div>
         </section>
 
@@ -138,6 +181,11 @@ export default function ImportPage() {
                 </p>
               </div>
             </div>
+            {typeof results.collections === 'number' && (
+              <div className="mb-8 border border-ink/8 bg-ivory-2 p-4 font-mono text-[10px] uppercase tracking-[0.14em] text-ink/42">
+                Collection links repaired: {results.collections}
+              </div>
+            )}
 
             {results.errors.length > 0 && (
               <div className="space-y-3">

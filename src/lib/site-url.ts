@@ -1,4 +1,4 @@
-function normalizeUrl(value?: string | null) {
+export function normalizeUrl(value?: string | null) {
   if (!value) return null;
 
   const trimmed = value.trim();
@@ -21,3 +21,6 @@ export function getBaseUrl() {
   );
 }
 
+export function getCanonicalBaseUrl(primary?: string | null, fallback?: string | null) {
+  return normalizeUrl(primary) || normalizeUrl(fallback) || getBaseUrl();
+}

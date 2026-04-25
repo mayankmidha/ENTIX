@@ -249,11 +249,11 @@ function EditorialPlaceholderGrid({ compact = false }: { compact?: boolean }) {
           <div className="relative aspect-[4/5] overflow-hidden border border-ink/8 bg-[#eee8de]">
             <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
             <div className="absolute inset-x-3 top-3 border border-white/50 bg-white/50 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur">
-              Sample direction
+              Catalogue cue
             </div>
           </div>
           <h3 className="mt-5 font-display text-[22px] font-medium leading-tight text-ink">{item.title}</h3>
-          <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">Awaiting final catalogue data</p>
+          <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">Ready for final SKU import</p>
         </div>
       ))}
     </div>

@@ -12,6 +12,8 @@ import { ProductGallery } from '@/components/product/ProductGallery';
 import { ProductReviews } from '@/components/product/ProductReviews';
 import { RelatedProducts } from '@/components/product/RelatedProducts';
 import { WishlistButton } from '@/components/product/WishlistButton';
+import { getCanonicalBaseUrl } from '@/lib/site-url';
+import { getSiteSettings } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,13 +30,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!product) return {};
 
-  const title = product.metaTitle || `${product.title} | Entix Jewellery`;
-  const description = product.metaDescription || product.description.slice(0, 160);
+  const settings = await getSiteSettings();
+  const format = settings['seo.defaultProductTitle'] || '{product} | Entix Jewellery';
+  const title = product.metaTitle || product.seoTitle || format.replace('{product}', product.title);
+  const description = product.metaDescription || product.seoDescription || product.description.slice(0, 160);
   const image = product.images[0]?.url;
+  const baseUrl = getCanonicalBaseUrl(settings['domain.canonical'], settings['domain.primary']);
 
   return {
     title,
     description,
+    alternates: {
+      canonical: `${baseUrl}/products/${product.slug}`,
+    },
     openGraph: {
       title,
       description,
@@ -64,7 +72,7 @@ export default async function ProductPage({ params }: Props) {
 
   if (!product) return notFound();
 
-  const [approvedReviews, ratingAgg] = await Promise.all([
+  const [approvedReviews, ratingAgg, settings] = await Promise.all([
     prisma.review.findMany({
       where: { productId: product.id, status: 'approved' },
       orderBy: { createdAt: 'desc' },
@@ -75,9 +83,12 @@ export default async function ProductPage({ params }: Props) {
       _avg: { rating: true },
       _count: { _all: true },
     }),
+    getSiteSettings(),
   ]);
   const averageRating = ratingAgg._avg.rating || 0;
   const totalReviews = ratingAgg._count._all;
+  const baseUrl = getCanonicalBaseUrl(settings['domain.canonical'], settings['domain.primary']);
+  const inStock = product.inventory?.trackStock === false || (product.inventory?.stockQty ?? 0) > 0;
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -90,8 +101,8 @@ export default async function ProductPage({ params }: Props) {
       '@type': 'Offer',
       price: product.priceInr,
       priceCurrency: 'INR',
-      availability: 'https://schema.org/InStock',
-      url: `https://entix.jewellery/products/${product.slug}`,
+      availability: inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      url: `${baseUrl}/products/${product.slug}`,
     },
     ...(totalReviews > 0 && {
       aggregateRating: {

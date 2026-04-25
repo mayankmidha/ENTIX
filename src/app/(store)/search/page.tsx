@@ -1,9 +1,10 @@
 import { prisma } from '@/lib/prisma';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { Search as SearchIcon, ArrowRight } from 'lucide-react';
+import { Search as SearchIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { hasDatabaseUrl } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,17 +16,24 @@ export const metadata: Metadata = {
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q } = await searchParams;
 
-  const products = q ? await prisma.product.findMany({
+  const products = q && hasDatabaseUrl() ? await prisma.product.findMany({
     where: {
       OR: [
         { title: { contains: q, mode: 'insensitive' } },
+        { subtitle: { contains: q, mode: 'insensitive' } },
         { description: { contains: q, mode: 'insensitive' } },
+        { sku: { contains: q, mode: 'insensitive' } },
         { material: { contains: q, mode: 'insensitive' } },
+        { finish: { contains: q, mode: 'insensitive' } },
+        { gemstone: { contains: q, mode: 'insensitive' } },
+        { occasion: { contains: q, mode: 'insensitive' } },
+        { collections: { some: { collection: { title: { contains: q, mode: 'insensitive' } } } } },
+        { collections: { some: { collection: { slug: { contains: q, mode: 'insensitive' } } } } },
       ],
       isActive: true
     },
     include: { images: { orderBy: { position: 'asc' } } }
-  }) : [];
+  }).catch(() => []) : [];
 
   return (
     <div className="bg-ivory min-h-screen py-24 px-6 lg:px-12">

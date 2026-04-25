@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { hasDatabaseUrl } from '@/lib/settings';
 
 export async function GET(req: NextRequest) {
   try {
@@ -9,6 +10,10 @@ export async function GET(req: NextRequest) {
     const featured = searchParams.get('featured') === 'true';
     const limit = Math.min(Number(searchParams.get('limit') || 24), 60);
 
+    if (!hasDatabaseUrl()) {
+      return NextResponse.json({ products: [], unavailable: true });
+    }
+
     const products = await prisma.product.findMany({
       where: {
         isActive: true,
@@ -17,8 +22,15 @@ export async function GET(req: NextRequest) {
           ? {
               OR: [
                 { title: { contains: q, mode: 'insensitive' } },
+                { subtitle: { contains: q, mode: 'insensitive' } },
                 { description: { contains: q, mode: 'insensitive' } },
+                { sku: { contains: q, mode: 'insensitive' } },
                 { material: { contains: q, mode: 'insensitive' } },
+                { finish: { contains: q, mode: 'insensitive' } },
+                { gemstone: { contains: q, mode: 'insensitive' } },
+                { occasion: { contains: q, mode: 'insensitive' } },
+                { collections: { some: { collection: { title: { contains: q, mode: 'insensitive' } } } } },
+                { collections: { some: { collection: { slug: { contains: q, mode: 'insensitive' } } } } },
               ],
             }
           : {}),

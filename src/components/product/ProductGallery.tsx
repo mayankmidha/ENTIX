@@ -21,7 +21,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
   if (images.length === 0) {
     return (
       <div className="flex aspect-square items-center justify-center border border-ink/8 bg-ivory-2 font-display text-2xl italic text-ink/10">
-        Imagery coming soon
+        Product imagery required
       </div>
     );
   }

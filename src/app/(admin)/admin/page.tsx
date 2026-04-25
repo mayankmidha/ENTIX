@@ -25,57 +25,28 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
-const PREVIEW_RECENT_ORDERS = [
-  {
-    id: 'preview-order-1',
-    orderNumber: 'ENTIX-2401',
-    shippingName: 'Nupur Khanna',
-    totalInr: 18499,
-    status: 'paid',
-    createdAt: new Date(),
-    items: [{ imageUrl: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=400&q=80' }],
-  },
-  {
-    id: 'preview-order-2',
-    orderNumber: 'ENTIX-2402',
-    shippingName: 'Chahat Kapoor',
-    totalInr: 12499,
-    status: 'processing',
-    createdAt: new Date(Date.now() - 1000 * 60 * 42),
-    items: [{ imageUrl: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=400&q=80' }],
-  },
-  {
-    id: 'preview-order-3',
-    orderNumber: 'ENTIX-2403',
-    shippingName: 'Aarohi Mehta',
-    totalInr: 9499,
-    status: 'shipped',
-    createdAt: new Date(Date.now() - 1000 * 60 * 78),
-    items: [{ imageUrl: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=400&q=80' }],
-  },
-];
-
-function createPreviewMetrics() {
+function createUnavailableMetrics(error?: unknown) {
   return {
-    ordersCount: 38,
-    customerCount: 24,
-    productsCount: 63,
-    totalRevenue: 248400,
-    aov: 6537,
-    recentOrders: PREVIEW_RECENT_ORDERS,
-    lowStockCount: 2,
-    activeCollections: 4,
-    productsMissingImages: 37,
-    pendingOrders: 6,
-    reviewQueue: 3,
-    paidOrders: 11,
-    processingOrders: 8,
-    shippedOrders: 13,
-    activeDiscounts: 2,
+    ordersCount: 0,
+    customerCount: 0,
+    productsCount: 0,
+    totalRevenue: 0,
+    aov: 0,
+    recentOrders: [],
+    lowStockCount: 0,
+    activeCollections: 0,
+    productsMissingImages: 0,
+    pendingOrders: 0,
+    reviewQueue: 0,
+    paidOrders: 0,
+    processingOrders: 0,
+    shippedOrders: 0,
+    activeDiscounts: 0,
     razorpayReady: Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET),
     resendReady: Boolean(process.env.RESEND_API_KEY),
     baseUrlReady: Boolean(process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL),
-    isPreview: true,
+    dbUnavailable: true,
+    databaseError: error instanceof Error ? error.message : 'Database metrics unavailable',
   };
 }
 
@@ -145,11 +116,12 @@ async function getMetrics() {
       razorpayReady: paymentRuntime.razorpayEnabled,
       resendReady: Boolean(process.env.RESEND_API_KEY),
       baseUrlReady: Boolean(process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL),
-      isPreview: false,
+      dbUnavailable: false,
+      databaseError: '',
     };
   } catch (error) {
     console.error('Dashboard metrics error:', error);
-    return createPreviewMetrics();
+    return createUnavailableMetrics(error);
   }
 }
 
@@ -167,7 +139,7 @@ export default async function AdminDashboard() {
             <h1 className="font-display text-[34px] font-medium leading-none tracking-normal text-ink sm:text-[42px]">
               Operations Dashboard
             </h1>
-            <StatusBadge tone={m.isPreview ? 'warn' : 'good'} label={m.isPreview ? 'Preview data' : 'Live data'} />
+            <StatusBadge tone={m.dbUnavailable ? 'warn' : 'good'} label={m.dbUnavailable ? 'DB attention' : 'Live data'} />
           </div>
           <p className="mt-3 max-w-3xl text-[14px] leading-relaxed text-ink/55">
             Monitor order flow, catalogue readiness, stock risk, and launch configuration from one working surface.
@@ -293,12 +265,13 @@ export default async function AdminDashboard() {
             <SystemCheck icon={Sparkles} label="Email" ok={m.resendReady} />
             <SystemCheck icon={PackageCheck} label="Base URL" ok={m.baseUrlReady} />
           </div>
-          {m.isPreview && (
-            <div className="mt-4 border border-champagne-200 bg-champagne-50 p-4">
-              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-champagne-900/55">Preview mode</div>
+          {m.dbUnavailable && (
+            <div className="mt-4 border border-oxblood/18 bg-oxblood/5 p-4">
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-oxblood/70">Database attention required</div>
               <p className="mt-2 text-[13px] leading-relaxed text-ink/55">
-                Live database data is unavailable, so the dashboard is using launch-preview metrics instead of breaking.
+                Live dashboard metrics could not be read. The dashboard is showing zeros so no preview orders or fake revenue can be mistaken for real data.
               </p>
+              <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-oxblood/60">{m.databaseError}</p>
             </div>
           )}
         </Panel>
