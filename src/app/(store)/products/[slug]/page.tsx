@@ -105,12 +105,12 @@ export default async function ProductPage({ params }: Props) {
   };
 
   return (
-    <div className="bg-ivory pt-10 pb-32 px-6 lg:px-12">
+    <div className="bg-ivory pb-32">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="max-w-[1440px] mx-auto">
+      <div className="mx-auto max-w-[1500px] px-6 pt-10 lg:px-12">
         <nav className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-12">
            <Link href="/" className="hover:text-ink">Home</Link>
            <ChevronRight size={10} />
@@ -119,7 +119,7 @@ export default async function ProductPage({ params }: Props) {
            <span className="text-ink">{product.title}</span>
         </nav>
 
-        <div className="grid lg:grid-cols-2 gap-20 items-start">
+        <div className="grid lg:grid-cols-[1.08fr_0.92fr] gap-20 items-start">
           {/* Visual Showcase */}
           <ProductGallery images={product.images} title={product.title} />
 
@@ -128,8 +128,8 @@ export default async function ProductPage({ params }: Props) {
              <ScrollReveal>
                 <div className="flex items-start justify-between gap-6">
                    <div>
-                      <div className="eyebrow mb-4">— {product.material || 'Heirloom Piece'}</div>
-                      <h1 className="font-display text-[48px] font-medium leading-tight tracking-display text-ink">{product.title}</h1>
+                      <div className="eyebrow mb-4">{product.material || 'Heirloom Piece'}</div>
+                      <h1 className="font-display text-[54px] font-light leading-[0.92] text-ink">{product.title}</h1>
                       <p className="mt-4 font-display text-[22px] italic text-champagne-600">{product.subtitle}</p>
                    </div>
                    <WishlistButton
@@ -151,19 +151,19 @@ export default async function ProductPage({ params }: Props) {
              <ScrollReveal delay={0.1}>
                 <div className="space-y-8">
                    <div>
-                      <h3 className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/30 border-b border-ink/5 pb-3 mb-6">— Atelier Narrative</h3>
+                      <h3 className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/30 border-b border-ink/5 pb-3 mb-6">Atelier Narrative</h3>
                       <div className="prose prose-ink prose-sm max-w-none font-mono text-[13px] leading-relaxed text-ink/60 italic">
                          {product.description}
                       </div>
                    </div>
 
-                   <div className="grid grid-cols-2 gap-8">
-                      <div className="p-6 rounded-[24px] border border-ink/5 bg-white/40">
+                   <div className="grid grid-cols-2 gap-4">
+                      <div className="p-6 border border-ink/5 bg-white/40">
                          <Gem size={18} className="text-champagne-600 mb-4" />
                          <div className="font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-1">Craftmanship</div>
                          <div className="font-display text-[15px] font-medium text-ink">Studio-finished Polki Detail</div>
                       </div>
-                      <div className="p-6 rounded-[24px] border border-ink/5 bg-white/40">
+                      <div className="p-6 border border-ink/5 bg-white/40">
                          <Sparkles size={18} className="text-champagne-600 mb-4" />
                          <div className="font-mono text-[10px] uppercase tracking-widest text-ink/40 mb-1">Assurance</div>
                          <div className="font-display text-[15px] font-medium text-ink">Lifetime Atelier Care</div>

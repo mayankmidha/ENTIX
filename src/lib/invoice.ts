@@ -51,7 +51,7 @@ export async function generateGSTInvoice(order: any) {
   
   doc.text(`Subtotal: ${formatInr(order.subtotalInr)}`, 140, finalY);
   doc.text(`Shipping: ${order.shippingInr === 0 ? 'Complimentary' : formatInr(order.shippingInr)}`, 140, finalY + 5);
-  doc.text(`GST (18%): ${formatInr(order.taxInr)}`, 140, finalY + 10);
+  doc.text(`GST (3%): ${formatInr(order.taxInr)}`, 140, finalY + 10);
   
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');

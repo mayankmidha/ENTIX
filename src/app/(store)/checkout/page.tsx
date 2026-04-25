@@ -60,8 +60,8 @@ export default function CheckoutPage() {
   const baseShipping = discountedSubtotal > 10000 ? 0 : 500;
   const shipping = appliedDiscount?.type === 'free_shipping' ? 0 : baseShipping;
   
-  // GST 18% breakdown (assuming inclusive for luxury positioning, but calculating for display)
-  const tax = Math.round(discountedSubtotal * 0.18); 
+  // Jewellery GST is displayed as inclusive in this checkout.
+  const tax = Math.round(discountedSubtotal * 0.03);
   const total = discountedSubtotal + shipping;
   const canUseRazorpay = hasPublicRazorpayKey && razorpayStatus === 'ready';
 
@@ -186,7 +186,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-ivory py-20 px-6 lg:px-12">
-      <div className="max-w-[1440px] mx-auto grid lg:grid-cols-[1fr_450px] gap-20">
+      <div className="max-w-[1500px] mx-auto grid lg:grid-cols-[1fr_450px] gap-20">
         
         {/* Left Column: Customer Details & Payment */}
         <div>
@@ -198,7 +198,7 @@ export default function CheckoutPage() {
             {/* Step 1: Shipping */}
             <section className={cn("transition-all duration-500", step > 1 && "opacity-50 pointer-events-none")}>
               <div className="flex items-center justify-between mb-8">
-                <h2 className="font-display text-[32px] font-medium tracking-display text-ink">Shipping Information</h2>
+                <h2 className="font-display text-[38px] font-light text-ink">Dispatch details</h2>
                 <div className="h-8 w-8 rounded-full bg-ink text-ivory flex items-center justify-center font-mono text-[12px]">1</div>
               </div>
 
@@ -297,7 +297,7 @@ export default function CheckoutPage() {
             {/* Step 2: Payment */}
             <section className={cn("transition-all duration-500", step < 2 && "opacity-20 pointer-events-none")}>
                <div className="flex items-center justify-between mb-8">
-                <h2 className="font-display text-[32px] font-medium tracking-display text-ink">Payment Method</h2>
+                <h2 className="font-display text-[38px] font-light text-ink">Payment method</h2>
                 <div className={cn("h-8 w-8 rounded-full flex items-center justify-center font-mono text-[12px]", step === 2 ? "bg-ink text-ivory" : "bg-ink/5 text-ink/20")}>2</div>
               </div>
 
@@ -449,7 +449,7 @@ export default function CheckoutPage() {
                   <span className={cn(shipping === 0 && "text-jade")}>{shipping === 0 ? 'Complimentary' : formatInr(shipping)}</span>
                 </div>
                 <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40">
-                  <span>GST (18% breakdown)</span>
+                  <span>GST (3% breakdown)</span>
                   <span>{formatInr(tax)}</span>
                 </div>
               </div>

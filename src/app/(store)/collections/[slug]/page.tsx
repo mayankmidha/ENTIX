@@ -176,33 +176,36 @@ export default async function CollectionPage({ params, searchParams }: Props) {
 
   return (
     <div className="bg-ivory min-h-screen pb-32">
-      <header className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+      <header className="relative flex min-h-[68svh] items-end overflow-hidden">
         <div className="absolute inset-0 z-0">
            {collection.heroImage ? (
-             <img src={collection.heroImage} className="h-full w-full object-cover grayscale" alt={collection.title} />
+             <img src={collection.heroImage} className="h-full w-full object-cover" alt={collection.title} />
            ) : (
              <div className="h-full w-full bg-ink" />
            )}
-           <div className="absolute inset-0 bg-ink/40 backdrop-blur-[2px]" />
+           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,15,13,0.2),rgba(18,15,13,0.86)),linear-gradient(90deg,rgba(18,15,13,0.72),rgba(18,15,13,0.2))]" />
         </div>
         
-        <div className="relative z-10 text-center px-6">
+        <div className="relative z-10 mx-auto w-full max-w-[1500px] px-6 pb-12 lg:px-12">
            <ScrollReveal>
-              <div className="eyebrow text-champagne-300 mb-6">{collection.eyebrow}</div>
-              <h1 className="font-display text-[12vw] md:text-[8rem] font-light leading-none tracking-display text-ivory">
-                {collection.title.split(' ')[0]} <span className="font-display-italic text-champagne-400">{collection.title.split(' ').slice(1).join(' ')}</span>
+              <div className="font-mono text-[10px] uppercase text-champagne-300 mb-6">{collection.eyebrow}</div>
+              <h1 className="font-display text-[76px] md:text-[132px] font-light leading-[0.86] text-ivory">
+                {collection.title}
               </h1>
               {collection.description && (
-                <p className="mt-8 max-w-xl mx-auto text-[17px] text-ivory/60 leading-relaxed italic">{collection.description}</p>
+                <p className="mt-8 max-w-xl text-[18px] text-ivory/64 leading-relaxed">{collection.description}</p>
               )}
            </ScrollReveal>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-24">
-        <div className="flex items-center gap-4 mb-2">
+      <div className="max-w-[1500px] mx-auto px-6 lg:px-12 mt-20">
+        <div className="mb-8 flex items-center justify-between gap-4 border-b border-ink/8 pb-6">
           <span className="font-mono text-[11px] uppercase tracking-widest text-ink/40">
             {filteredProducts.length} Piece{filteredProducts.length !== 1 ? 's' : ''}
+          </span>
+          <span className="hidden font-mono text-[11px] uppercase tracking-widest text-ink/32 sm:inline">
+            Gurgaon / insured dispatch
           </span>
         </div>
 

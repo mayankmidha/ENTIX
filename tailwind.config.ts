@@ -45,7 +45,7 @@ const config: Config = {
         mono: ["var(--font-mono)", "monospace"],
       },
       letterSpacing: {
-        display: "-0.02em",
+        display: "0",
         caps: "0.2em",
       },
       backgroundImage: {

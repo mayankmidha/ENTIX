@@ -11,22 +11,22 @@ export default function WishlistPage() {
 
   return (
     <div className="bg-ivory min-h-screen py-24 px-6 lg:px-12">
-      <div className="max-w-7xl mx-auto">
-        <header className="mb-20 text-center">
+      <div className="max-w-[1500px] mx-auto">
+        <header className="mb-20 max-w-4xl">
            <ScrollReveal>
-              <div className="eyebrow">— Your Private Archive</div>
-              <h1 className="font-display mt-6 text-[56px] font-light leading-tight tracking-display text-ink">
+              <div className="eyebrow">Your Private Archive</div>
+              <h1 className="font-display mt-6 text-[72px] font-light leading-[0.9] text-ink md:text-[118px]">
                 The <span className="font-display-italic text-champagne-600">Wishlist.</span>
               </h1>
-              <p className="mt-4 text-[17px] text-ink/50 italic max-w-xl mx-auto leading-relaxed">
+              <p className="mt-7 text-[18px] text-ink/52 max-w-xl leading-relaxed">
                 Shortlist the pieces you keep coming back to. Curate your perfect ensemble for the moments that matter.
               </p>
            </ScrollReveal>
         </header>
 
         {items.length === 0 ? (
-           <div className="py-24 text-center rounded-[44px] border border-dashed border-ink/10 bg-ivory-2/40">
-              <div className="h-20 w-20 rounded-full bg-ink/5 flex items-center justify-center text-ink/10 mx-auto mb-8">
+           <div className="py-24 text-center border border-dashed border-ink/10 bg-ivory-2/40">
+              <div className="h-20 w-20 border border-ink/8 flex items-center justify-center text-ink/14 mx-auto mb-8">
                  <Heart size={32} />
               </div>
               <p className="font-display text-2xl text-ink/30 italic">Your private archive is currently empty.</p>
@@ -59,7 +59,7 @@ export default function WishlistPage() {
                  </p>
                  <Link href="/contact" className="mt-8 inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-ink underline-draw">Contact Entix Care <ArrowRight size={14} /></Link>
               </div>
-              <div className="aspect-[16/7] rounded-[40px] overflow-hidden border border-ink/5">
+              <div className="aspect-[16/7] overflow-hidden border border-ink/5">
                  <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=85" className="h-full w-full object-cover grayscale" alt="" />
               </div>
            </div>

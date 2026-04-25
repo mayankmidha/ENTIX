@@ -14,11 +14,11 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-[80vh] flex flex-col items-center justify-center bg-ivory px-6">
-         <div className="h-24 w-24 rounded-full bg-ink/5 flex items-center justify-center text-ink/10 mb-10">
+      <div className="min-h-[80vh] flex flex-col items-center justify-center bg-ivory px-6 text-center">
+         <div className="mb-10 flex h-24 w-24 items-center justify-center border border-ink/8 text-ink/16">
             <ShoppingBag size={48} />
          </div>
-         <h1 className="font-display text-4xl text-ink">Your bag is empty.</h1>
+         <h1 className="font-display text-[54px] font-light leading-none text-ink">Your bag is empty.</h1>
          <p className="mt-4 text-ink/40 font-mono text-[11px] uppercase tracking-widest italic">Acquisitions begin in the atelier</p>
          <Link href="/collections/all" className="mt-12 rounded-full bg-ink text-ivory px-12 py-5 font-mono text-[11px] uppercase tracking-[0.2em] hover:bg-ink-2 transition-all shadow-xl active:scale-95">Explore Collection</Link>
       </div>
@@ -27,12 +27,12 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-ivory py-24 px-6 lg:px-12">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1500px] mx-auto">
         <header className="mb-16">
            <Link href="/collections/all" className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-ink/40 hover:text-ink transition-colors mb-8">
               <ChevronLeft size={12} /> Return to Atelier
            </Link>
-           <h1 className="font-display text-[56px] font-light leading-tight tracking-display text-ink">
+           <h1 className="font-display text-[76px] font-light leading-[0.9] text-ink">
              Your <span className="font-display-italic text-champagne-600">Selection.</span>
            </h1>
            <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-ink/40">{totalItems()} Pieces Prepared for Acquisition</p>
@@ -43,7 +43,7 @@ export default function CartPage() {
              <div className="divide-y divide-ink/5">
                 {items.map((item) => (
                    <div key={`${item.productId}:${item.variantId || 'base'}:${item.engraving || 'plain'}`} className="py-10 first:pt-0 group flex flex-col sm:flex-row gap-10 items-start">
-                      <div className="relative h-40 w-32 shrink-0 overflow-hidden rounded-[24px] bg-ivory-2 border border-ink/5">
+                      <div className="relative h-44 w-32 shrink-0 overflow-hidden bg-ivory-2 border border-ink/5">
                          {item.imageUrl ? (
                            <Image 
                              src={item.imageUrl} 
@@ -117,8 +117,8 @@ export default function CartPage() {
           </div>
 
           <aside>
-             <div className="rounded-[44px] border border-ink/5 bg-white p-10 shadow-luxe sticky top-32">
-                <h2 className="font-display text-[28px] font-medium text-ink mb-10 tracking-display">Summary</h2>
+             <div className="sticky top-32 border border-ink/5 bg-white p-10 shadow-luxe">
+                <h2 className="font-display text-[32px] font-light text-ink mb-10">Selection summary</h2>
                 
                 <div className="space-y-5">
                    <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40">
@@ -130,7 +130,7 @@ export default function CartPage() {
                       <span className="text-jade">{subtotal() > 10000 ? 'Complimentary' : formatInr(500)}</span>
                    </div>
                    <div className="flex justify-between font-mono text-[11px] uppercase tracking-widest text-ink/40 border-b border-ink/5 pb-5">
-                      <span>GST (18%)</span>
+                      <span>GST (3%)</span>
                       <span className="text-ink">Included</span>
                    </div>
                 </div>

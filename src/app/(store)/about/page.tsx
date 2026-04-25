@@ -6,17 +6,17 @@ export const dynamic = 'force-dynamic';
 export default function AboutPage() {
   return (
     <div className="bg-ivory min-h-screen pb-32">
-      <header className="relative h-[70vh] flex items-center justify-center overflow-hidden bg-ink">
+      <header className="relative min-h-[72svh] flex items-end overflow-hidden bg-ink">
         <img 
           src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=2000&q=90" 
           className="absolute inset-0 w-full h-full object-cover opacity-50 grayscale"
           alt="Entix jewellery studio"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-transparent" />
-        <div className="relative z-10 text-center px-6 max-w-4xl">
+        <div className="relative z-10 mx-auto w-full max-w-[1500px] px-6 pb-12 lg:px-12">
            <ScrollReveal>
-              <div className="eyebrow text-champagne-300 mb-6">— The Atelier Narrative</div>
-              <h1 className="font-display text-[10vw] md:text-[7rem] font-light leading-[0.9] tracking-display text-ivory">
+              <div className="font-mono text-[10px] uppercase text-champagne-300 mb-6">The Atelier Narrative</div>
+              <h1 className="font-display text-[76px] md:text-[132px] font-light leading-[0.86] text-ivory">
                 Gurgaon House, <br />
                 <span className="font-display-italic text-champagne-400">Modern Heirlooms.</span>
               </h1>
@@ -26,7 +26,7 @@ export default function AboutPage() {
 
       <div className="max-w-5xl mx-auto px-6 mt-24">
         <ScrollReveal>
-           <h2 className="font-display text-[42px] font-medium text-ink mb-10 tracking-display italic text-center">A house for jewellery that feels collected slowly, not mass-produced.</h2>
+           <h2 className="font-display text-[52px] font-light leading-[0.96] text-ink mb-10 italic">A house for jewellery that feels collected slowly, not mass-produced.</h2>
            <div className="prose prose-ink prose-lg mx-auto max-w-3xl font-mono text-[15px] leading-relaxed text-ink/60 space-y-8">
               <p>
                  Entix is a Gurgaon-based jewellery house shaped around celebrations, gifting,
@@ -55,14 +55,14 @@ export default function AboutPage() {
 
         <div className="mt-24 grid gap-10 lg:grid-cols-2">
            <ScrollReveal delay={0.1}>
-              <div className="aspect-[4/5] rounded-[40px] overflow-hidden border border-ink/5">
+              <div className="aspect-[4/5] overflow-hidden border border-ink/5">
                  <img src="https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1200&q=88" className="w-full h-full object-cover" alt="" />
               </div>
               <h3 className="font-display text-2xl font-medium text-ink mt-8">The Gurgaon Studio</h3>
               <p className="font-mono text-[12px] text-ink/40 uppercase tracking-widest mt-2">Where time slows down.</p>
            </ScrollReveal>
            <ScrollReveal delay={0.2}>
-              <div className="aspect-[4/5] rounded-[40px] overflow-hidden border border-ink/5 lg:translate-y-12">
+              <div className="aspect-[4/5] overflow-hidden border border-ink/5 lg:translate-y-12">
                  <img src="https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?auto=format&fit=crop&w=1200&q=88" className="w-full h-full object-cover" alt="" />
               </div>
               <h3 className="font-display text-2xl font-medium text-ink mt-20">Artisanal Craft</h3>

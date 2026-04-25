@@ -29,10 +29,10 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="bg-ivory min-h-screen py-24 px-6 lg:px-12">
-      <div className="max-w-7xl mx-auto">
-        <header className="mb-20">
-           <div className="eyebrow">— The Atelier Search</div>
-           <h1 className="font-display mt-6 text-[56px] font-light leading-tight tracking-display text-ink">
+      <div className="max-w-[1500px] mx-auto">
+        <header className="mb-20 max-w-4xl">
+           <div className="eyebrow">The Atelier Search</div>
+           <h1 className="font-display mt-6 text-[72px] font-light leading-[0.9] text-ink md:text-[118px]">
              {q ? `Results for "${q}"` : 'Explore the Collection.'}
            </h1>
            
@@ -48,7 +48,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         </header>
 
         {q && products.length === 0 ? (
-           <div className="py-24 text-center rounded-[44px] border border-dashed border-ink/10 bg-ivory-2/40">
+           <div className="py-24 text-center border border-dashed border-ink/10 bg-ivory-2/40">
               <p className="font-display text-2xl text-ink/30 italic">No pieces matching your search found in the archive.</p>
               <Link href="/collections/all" className="mt-8 inline-block font-mono text-[10px] uppercase tracking-widest text-ink underline-draw">View Entire Collection</Link>
            </div>

@@ -41,7 +41,7 @@ body {
 }
 
 @layer utilities {
-  .tracking-display { letter-spacing: -0.02em; }
+  .tracking-display { letter-spacing: 0; }
   .tracking-caps { letter-spacing: 0.15em; }
   .tracking-logo { letter-spacing: 0.4em; }
 }

@@ -12,22 +12,28 @@ export const revalidate = 60;
 const collectionRooms = [
   {
     title: 'Spring 26',
-    text: 'Sculptural drops, luminous chains, and occasion signatures.',
+    text: 'A nocturne of sculptural drops, luminous chains, and occasion signatures.',
     href: '/collections/spring-26',
     image: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1200&q=90',
   },
   {
     title: 'Bangles',
-    text: 'Stacks, cuffs, and ritual-ready silhouettes.',
+    text: 'Stacks and cuffs with enough presence to become the outfit.',
     href: '/collections/bangles',
     image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1200&q=90',
   },
   {
     title: 'Necklaces',
-    text: 'Layered heirlooms, pendants, and bridal statements.',
+    text: 'Layered heirlooms, pendants, and ceremony pieces made for close attention.',
     href: '/collections/necklaces',
     image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=90',
   },
+];
+
+const ritualImages = [
+  'https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?auto=format&fit=crop&w=1200&q=88',
+  'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=1200&q=88',
+  'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1200&q=88',
 ];
 
 async function getHomeData() {
@@ -60,23 +66,63 @@ export default async function HomePage() {
       <Hero />
       <Marquee />
 
+      <section className="bg-[#f7f4ee] px-6 py-20 lg:px-12 lg:py-28">
+        <div className="mx-auto max-w-[1500px]">
+          <ScrollReveal className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+            <div>
+              <div className="eyebrow">The Entix House</div>
+              <h2 className="mt-6 max-w-4xl font-display text-[56px] font-light leading-[0.9] text-ink md:text-[88px]">
+                Three rituals.
+                <span className="block font-display-italic text-champagne-700">One quiet voltage.</span>
+              </h2>
+            </div>
+            <p className="max-w-2xl text-[18px] leading-relaxed text-ink/54">
+              Entix should feel discovered rather than browsed. The site now moves like a small
+              jewellery house: image first, copy held back, product details arriving only when they
+              earn their place.
+            </p>
+          </ScrollReveal>
+
+          <div className="mt-16 grid gap-4 lg:grid-cols-3">
+            {['Ceremony', 'Gifting', 'Night dressing'].map((title, index) => (
+              <ScrollReveal key={title} delay={index * 0.08}>
+                <div className="group relative min-h-[440px] overflow-hidden bg-ink">
+                  <img src={ritualImages[index]} alt={title} className="absolute inset-0 h-full w-full object-cover opacity-82 transition duration-[1400ms] group-hover:scale-105 group-hover:opacity-100" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/86 via-ink/16 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-7 text-ivory">
+                    <div className="font-mono text-[10px] uppercase text-champagne-300">0{index + 1}</div>
+                    <h3 className="mt-4 font-display text-[44px] font-light leading-none">{title}</h3>
+                    <p className="mt-4 max-w-sm text-[14px] leading-relaxed text-ivory/62">
+                      {index === 0 && 'Statement pieces that hold a room without shouting across it.'}
+                      {index === 1 && 'Objects with enough intimacy to feel chosen, not selected.'}
+                      {index === 2 && 'Warm metal, sharp light, and silhouettes made for after-dark rituals.'}
+                    </p>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="bg-ivory px-6 py-20 lg:px-12 lg:py-28">
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-[1500px]">
           <ScrollReveal className="mx-auto max-w-4xl text-center">
-            <div className="eyebrow">— The Entix House</div>
-            <h2 className="mt-6 font-display text-[12vw] font-light leading-[0.86] tracking-display text-ink md:text-[6.8rem]">
-              Quiet luxury, shaped for <span className="font-display-italic text-champagne-700">modern celebrations.</span>
+            <div className="eyebrow">Collection Rooms</div>
+            <h2 className="mt-6 font-display text-[54px] font-light leading-[0.9] text-ink md:text-[92px]">
+              Enter through
+              <span className="block font-display-italic text-champagne-700">the object.</span>
             </h2>
             <p className="mx-auto mt-8 max-w-2xl text-[16px] leading-relaxed text-ink/50">
-              Entix is designed like a luxury house: clear categories, rich product storytelling,
-              secure trust cues, and an elegant path from discovery to purchase.
+              Collections are framed as rooms: each one has a mood, a use case, and a tighter point
+              of view than a generic product grid.
             </p>
           </ScrollReveal>
 
           <div className="mt-16 grid gap-5 lg:grid-cols-3">
             {collectionRooms.map((room, idx) => (
               <ScrollReveal key={room.href} delay={idx * 0.08}>
-                <Link href={room.href} className="group block overflow-hidden rounded-[38px] bg-ink shadow-sm">
+                <Link href={room.href} className="group block overflow-hidden bg-ink shadow-sm">
                   <div className="relative aspect-[4/5] overflow-hidden">
                     <img src={room.image} alt={room.title} className="h-full w-full object-cover opacity-88 transition duration-[1.6s] group-hover:scale-105 group-hover:opacity-100" />
                     <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
@@ -100,7 +146,7 @@ export default async function HomePage() {
           <ScrollReveal className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
               <div className="eyebrow">— Selected Pieces</div>
-              <h2 className="mt-5 font-display text-[11vw] font-light leading-[0.9] tracking-display text-ink md:text-[5.8rem]">
+              <h2 className="mt-5 font-display text-[52px] font-light leading-[0.92] text-ink md:text-[84px]">
                 The pieces <span className="font-display-italic text-champagne-700">worth pausing for.</span>
               </h2>
             </div>
@@ -139,7 +185,7 @@ export default async function HomePage() {
         <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
           <ScrollReveal>
             <div className="eyebrow text-champagne-300">— Atelier Standard</div>
-            <h2 className="mt-6 font-display text-[12vw] font-light leading-[0.88] tracking-display md:text-[6.5rem]">
+            <h2 className="mt-6 font-display text-[54px] font-light leading-[0.92] md:text-[88px]">
               Every product must earn <span className="font-display-italic text-foil">trust.</span>
             </h2>
           </ScrollReveal>
@@ -153,11 +199,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="bg-[#f7f1e8] px-6 py-20 lg:px-12 lg:py-28">
+      <section className="bg-[#eef1ed] px-6 py-20 lg:px-12 lg:py-28">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-          <ScrollReveal className="rounded-[38px] bg-white px-8 py-10 shadow-sm">
-            <div className="eyebrow">— Concierge Services</div>
-            <h2 className="mt-5 font-display text-[10vw] font-light leading-[0.9] tracking-display text-ink md:text-[4.7rem]">
+          <ScrollReveal className="px-0 py-4">
+            <div className="eyebrow">Concierge Services</div>
+            <h2 className="mt-5 font-display text-[52px] font-light leading-[0.92] text-ink md:text-[76px]">
               Built for gifting, occasion styling, and <span className="font-display-italic text-champagne-700">high-intent support.</span>
             </h2>
             <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-ink/55">
@@ -182,9 +228,9 @@ export default async function HomePage() {
         <div className="mx-auto max-w-7xl">
           <ScrollReveal className="mb-14 text-center">
             <div className="eyebrow">— Fresh From The Atelier</div>
-            <h2 className="mt-5 font-display text-[10vw] font-light leading-tight tracking-display text-ink md:text-[5rem]">
-              Latest <span className="font-display-italic text-champagne-700">acquisitions.</span>
-            </h2>
+              <h2 className="mt-5 font-display text-[52px] font-light leading-tight text-ink md:text-[78px]">
+                Latest <span className="font-display-italic text-champagne-700">acquisitions.</span>
+              </h2>
           </ScrollReveal>
 
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

@@ -21,14 +21,14 @@ export default function ContactPage() {
 
   return (
     <div className="bg-ivory min-h-screen py-24 px-6 lg:px-12">
-      <div className="max-w-[1440px] mx-auto">
-        <header className="mb-20 text-center">
+      <div className="max-w-[1500px] mx-auto">
+        <header className="mb-20 max-w-4xl">
            <ScrollReveal>
-              <div className="eyebrow">— The Concierge</div>
-              <h1 className="font-display mt-6 text-[56px] font-light leading-tight tracking-display text-ink">
+              <div className="eyebrow">The Concierge</div>
+              <h1 className="font-display mt-6 text-[72px] font-light leading-[0.9] text-ink md:text-[118px]">
                 At Your <span className="font-display-italic text-champagne-600">Service.</span>
               </h1>
-              <p className="mt-4 text-[17px] text-ink/50 italic max-w-xl mx-auto leading-relaxed">
+              <p className="mt-7 text-[18px] text-ink/52 max-w-xl leading-relaxed">
                 Product questions, gifting help, order support, and sizing guidance with a luxury-service tone.
               </p>
            </ScrollReveal>
@@ -81,7 +81,7 @@ export default function ContactPage() {
 
            {/* Form */}
            <ScrollReveal delay={0.1}>
-              <div className="rounded-[44px] border border-ink/5 bg-white p-10 lg:p-12 shadow-luxe">
+              <div className="border border-ink/5 bg-white p-10 lg:p-12 shadow-luxe">
                  <form onSubmit={handleSubmit} className="space-y-8">
                     <div className="grid sm:grid-cols-2 gap-6">
                        <div className="space-y-2">
