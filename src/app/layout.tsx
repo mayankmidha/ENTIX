@@ -1,29 +1,8 @@
 import type { Metadata } from 'next';
-import { Fraunces, Inter_Tight, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'sonner';
 import { getBaseUrl } from '@/lib/site-url';
 import { enabled, getSiteSettings } from '@/lib/settings';
-
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  variable: '--font-display',
-  display: 'swap',
-  axes: ['opsz', 'SOFT', 'WONK'],
-  style: ['normal', 'italic'],
-});
-const interTight = Inter_Tight({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  display: 'swap',
-  weight: ['300', '400', '500', '600'],
-});
-const jbMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  display: 'swap',
-  weight: ['400', '500'],
-});
 
 function safeUrl(url: string) {
   try {
@@ -42,16 +21,22 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase,
+    applicationName: 'Entix Jewellery',
     title: {
       default: title,
       template: `%s · ${settings['store.name']}`,
     },
     description,
+    icons: {
+      icon: [{ url: '/brand/entix-mark.svg', type: 'image/svg+xml' }],
+      shortcut: '/brand/entix-mark.svg',
+      apple: '/brand/entix-mark.svg',
+    },
     openGraph: {
       title,
       description,
       siteName: settings['store.name'],
-      images: settings['seo.ogImage'] ? [{ url: settings['seo.ogImage'] }] : undefined,
+      images: settings['seo.ogImage'] ? [{ url: settings['seo.ogImage'] }] : ['/brand/entix-full-lockup.svg'],
     },
     robots: indexed ? undefined : { index: false, follow: false },
   };
@@ -59,7 +44,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${interTight.variable} ${jbMono.variable}`}>
+    <html lang="en">
       <body className="bg-ivory text-ink min-h-screen flex flex-col antialiased">
         <main className="flex-1 flex flex-col">{children}</main>
         <Toaster position="bottom-center" toastOptions={{ className: 'font-mono' }} />

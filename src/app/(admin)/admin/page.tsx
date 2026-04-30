@@ -270,7 +270,7 @@ export default async function AdminDashboard() {
 
       <section className="mt-5">
         <Panel title="Jewellery Control Room" action="Products" href="/admin/products">
-          <div className="mb-5 grid gap-4 border border-ink/8 bg-[#120f0d] p-5 text-ivory lg:grid-cols-[220px_1fr] lg:items-center">
+          <div className="mb-5 grid gap-4 border border-ink/8 bg-[#000000] p-5 text-ivory lg:grid-cols-[220px_1fr] lg:items-center">
             <div>
               <div className="font-display text-[54px] leading-none">{m.readinessAverage}%</div>
               <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ivory/45">Average readiness</div>
@@ -360,7 +360,7 @@ export default async function AdminDashboard() {
       <section className="mt-5 grid gap-5 xl:grid-cols-[0.85fr_1.15fr]">
         <Panel title="Catalogue Health" action="Import" href="/admin/products/import">
           <div className="grid gap-4 sm:grid-cols-[160px_1fr] sm:items-center">
-            <div className="border border-ink/8 bg-[#120f0d] p-5 text-ivory">
+            <div className="border border-ink/8 bg-[#000000] p-5 text-ivory">
               <div className="font-display text-[44px] leading-none">{catalogueHealth}%</div>
               <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ivory/45">Image coverage</div>
             </div>

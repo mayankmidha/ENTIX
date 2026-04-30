@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { BadgeCheck, Facebook, Gem, Instagram, Mail, MessageCircle, ShieldCheck, Truck, Twitter } from 'lucide-react';
 import { Newsletter } from './Newsletter';
 import { editorialCollections, trustLayer } from '@/lib/storefront-world';
+import { EntixLogo } from '@/components/brand/EntixLogo';
 
 export function Footer() {
   return (
@@ -40,7 +41,9 @@ export function Footer() {
 
         <div className="mb-24 grid gap-16 lg:grid-cols-[1.05fr_0.7fr_0.7fr_0.7fr_1.1fr] lg:gap-8">
           <div className="lg:col-span-1">
-            <Link href="/" className="font-display text-[24px] font-medium tracking-logo">ENTIX</Link>
+            <Link href="/" aria-label="Entix Jewellery home" className="block w-[150px]">
+              <EntixLogo variant="wordmarkWhite" />
+            </Link>
             <p className="mt-8 text-[14px] text-ivory/50 leading-relaxed max-w-xs italic">
               Fine jewellery for modern rituals, collected for the lifetime moments that matter.
             </p>

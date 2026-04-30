@@ -27,7 +27,7 @@ export default async function BulkProductsPage({
             Paste SKUs, product IDs, or slugs, then update status, prices, stock, jewellery fields, SEO defaults, and collection membership in one audited operation.
           </p>
         </div>
-        <div className="border border-ink/8 bg-[#120f0d] p-5 text-ivory">
+        <div className="border border-ink/8 bg-[#000000] p-5 text-ivory">
           <Wand2 size={18} className="text-champagne-300" />
           <p className="mt-5 text-[13px] leading-relaxed text-ivory/58">
             Designed for the 300-product handoff: import first, then use this surface for price corrections, launch status, low-stock thresholds, and merchandising rooms.

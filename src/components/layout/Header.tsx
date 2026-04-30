@@ -9,6 +9,7 @@ import { CartDrawer } from './CartDrawer';
 import { MegaMenu } from './MegaMenu';
 import { useCart } from '@/stores/cart-store';
 import { editorialCollections, editorialRooms, trustLayer } from '@/lib/storefront-world';
+import { EntixLogo } from '@/components/brand/EntixLogo';
 
 const NAV_LINKS = [
   { label: 'Shop All', href: '/collections/all' },
@@ -67,8 +68,8 @@ export function Header() {
           </button>
 
           {/* Logo */}
-          <Link href="/" className="absolute left-1/2 -translate-x-1/2 font-display text-[26px] font-medium tracking-logo">
-            ENTIX
+          <Link href="/" aria-label="Entix Jewellery home" className="absolute left-1/2 w-[128px] -translate-x-1/2 sm:w-[150px]">
+            <EntixLogo priority />
           </Link>
 
           {/* Desktop Navigation */}
@@ -141,8 +142,8 @@ export function Header() {
           <div className="absolute inset-0 bg-ink/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
           <div className="absolute inset-y-0 left-0 flex w-full max-w-[430px] flex-col bg-ivory shadow-2xl animate-in slide-in-from-left duration-300">
             <div className="flex items-center justify-between border-b border-ink/5 p-5">
-              <Link href="/" className="font-display text-[22px] font-medium tracking-logo text-ink" onClick={() => setMobileOpen(false)}>
-                ENTIX
+              <Link href="/" aria-label="Entix Jewellery home" className="w-[122px]" onClick={() => setMobileOpen(false)}>
+                <EntixLogo />
               </Link>
               <button
                 type="button"

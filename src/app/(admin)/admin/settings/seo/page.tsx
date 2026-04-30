@@ -59,7 +59,7 @@ export default async function SeoSettingsPage({ searchParams }: { searchParams: 
               <div className="mt-1 text-[12px] text-[#006621]">{previewUrl.replace(/^https?:\/\//, '')}</div>
               <p className="mt-2 text-[13px] leading-relaxed text-ink/58">{settings['seo.homeDescription']}</p>
             </div>
-            <div className="border border-ink/8 bg-[#120f0d] p-5 text-ivory">
+            <div className="border border-ink/8 bg-[#000000] p-5 text-ivory">
               <div className="mb-3 flex gap-2">
                 <StatusPill tone={settings['seo.indexing'] === 'enabled' ? 'good' : 'warn'}>
                   {settings['seo.indexing'] === 'enabled' ? 'Indexable' : 'Noindex planned'}

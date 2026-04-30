@@ -10,25 +10,26 @@ const config: Config = {
     extend: {
       colors: {
         ivory: {
-          DEFAULT: "#fcfaf7",
-          2: "#f5f2ed",
+          DEFAULT: "#ffffff",
+          2: "#f8f7f2",
         },
         ink: {
-          DEFAULT: "#120f0d",
-          2: "#1c1815",
+          DEFAULT: "#000000",
+          2: "#111111",
         },
         champagne: {
-          50: "#fbf8f1",
-          100: "#f5edd9",
-          200: "#eadab2",
-          300: "#d9b36a",
-          400: "#c7a055",
-          500: "#b48c42",
-          600: "#9f7b3a",
-          700: "#856431",
-          800: "#6d522b",
-          900: "#5a4326",
-          950: "#342614",
+          DEFAULT: "#A69664",
+          50: "#fbfaf5",
+          100: "#f2eedf",
+          200: "#e0d6b8",
+          300: "#c8ba8a",
+          400: "#b4a36f",
+          500: "#A69664",
+          600: "#928356",
+          700: "#766B48",
+          800: "#5e5539",
+          900: "#403a27",
+          950: "#242115",
         },
         jade: {
           DEFAULT: "#00a86b",
@@ -40,8 +41,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-display)", "serif"],
-        sans: ["var(--font-sans)", "sans-serif"],
+        display: ["var(--font-display)", "Times New Roman", "serif"],
+        subhead: ["var(--font-subhead)", "Times New Roman", "serif"],
+        sans: ["var(--font-sans)", "Helvetica Neue", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"],
       },
       letterSpacing: {
@@ -49,10 +51,10 @@ const config: Config = {
         caps: "0.2em",
       },
       backgroundImage: {
-        'ivory-grain': "url('https://www.transparenttextures.com/patterns/felt.png'), linear-gradient(to bottom, #fcfaf7, #f5f2ed)",
+        'ivory-grain': "url('https://www.transparenttextures.com/patterns/felt.png'), linear-gradient(to bottom, #ffffff, #f8f7f2)",
       },
       boxShadow: {
-        luxe: "0 20px 50px rgba(18, 15, 13, 0.05)",
+        luxe: "0 20px 50px rgba(0, 0, 0, 0.05)",
       }
     },
   },

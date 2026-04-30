@@ -9,6 +9,7 @@ import {
   RotateCcw, Star, MailWarning, Gift, Megaphone, FileClock, ShieldCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { EntixLogo } from '@/components/brand/EntixLogo';
 
 const groups = [
   {
@@ -75,8 +76,8 @@ export function AdminSidebar() {
     <>
       <div className="fixed inset-x-0 top-0 z-50 border-b border-ink/10 bg-[#f6f4ef]/94 px-4 py-3 backdrop-blur-xl lg:hidden">
         <div className="flex items-center justify-between">
-          <Link href="/admin" className="font-display text-[20px] font-medium tracking-logo text-ink">
-            ENTIX
+          <Link href="/admin" aria-label="Entix admin home" className="w-[106px]">
+            <EntixLogo />
           </Link>
           <div className="flex items-center gap-2">
             <Link href="/admin/search" aria-label="Search admin" className="flex h-10 w-10 items-center justify-center border border-ink/10 bg-white text-ink/55">
@@ -105,8 +106,8 @@ export function AdminSidebar() {
           <div className="absolute inset-y-0 left-0 flex w-[min(88vw,320px)] flex-col border-r border-ink/10 bg-[#f6f4ef] shadow-2xl">
             <div className="flex items-center justify-between border-b border-ink/10 px-5 py-4">
               <div>
-                <Link href="/admin" onClick={() => setMobileOpen(false)} className="font-display text-[20px] font-medium tracking-logo text-ink">
-                  ENTIX
+                <Link href="/admin" aria-label="Entix admin home" onClick={() => setMobileOpen(false)} className="block w-[108px]">
+                  <EntixLogo />
                 </Link>
                 <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.2em] text-ink/38">Admin console</div>
               </div>
@@ -151,7 +152,7 @@ export function AdminSidebar() {
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[280px] border-r border-ink/10 bg-[#f6f4ef] lg:flex lg:flex-col">
         <div className="border-b border-ink/10 px-6 py-5">
           <Link href="/admin" className="flex items-center justify-between">
-            <span className="font-display text-[22px] font-medium tracking-logo text-ink">ENTIX</span>
+            <span className="block w-[118px]"><EntixLogo /></span>
             <span className="flex h-9 w-9 items-center justify-center border border-ink/10 bg-white text-ink/45">
               <PanelLeft size={16} />
             </span>

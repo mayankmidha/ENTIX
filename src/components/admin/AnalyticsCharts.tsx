@@ -41,10 +41,10 @@ export function RevenueChart({ data }: { data: any[] }) {
           <Line 
             type="monotone" 
             dataKey="revenue" 
-            stroke="#120f0d" 
+            stroke="#000000" 
             strokeWidth={2} 
-            dot={{ r: 4, fill: '#120f0d', strokeWidth: 2, stroke: '#fff' }}
-            activeDot={{ r: 6, fill: '#d9b36a' }}
+            dot={{ r: 4, fill: '#000000', strokeWidth: 2, stroke: '#fff' }}
+            activeDot={{ r: 6, fill: '#A69664' }}
           />
         </LineChart>
       </ResponsiveContainer>
@@ -52,7 +52,7 @@ export function RevenueChart({ data }: { data: any[] }) {
   );
 }
 
-const COLORS = ['#120f0d', '#d9b36a', '#856431', '#1c1815'];
+const COLORS = ['#000000', '#A69664', '#766B48', '#111111'];
 
 export function CategoryPie({ data }: { data: any[] }) {
   return (

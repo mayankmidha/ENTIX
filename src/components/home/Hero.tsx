@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useRef } from 'react';
+import { EntixLogo } from '@/components/brand/EntixLogo';
 
 const heroImage =
   'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=2200&q=94';
@@ -51,9 +52,10 @@ export function Hero() {
             initial={{ opacity: 0, y: 36 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12, duration: 1 }}
-            className="mt-5 font-display text-7xl font-light leading-[0.78] tracking-normal text-ivory sm:text-9xl md:text-[10.5rem] lg:text-[14rem]"
+            className="mt-7 w-[min(88vw,760px)]"
           >
-            ENTIX
+            <span className="sr-only">Entix Jewellery</span>
+            <EntixLogo variant="wordmarkWhite" priority />
           </motion.h1>
 
           <motion.p

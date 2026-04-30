@@ -2,10 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Brown Sugar';
+  src: local('Brown Sugar'), local('BrownSugar');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Glacial Indifference';
+  src: url('/fonts/entix/GlacialIndifference-Regular.woff') format('woff');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Glacial Indifference';
+  src: url('/fonts/entix/GlacialIndifference-Bold.woff') format('woff');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 :root {
-  --font-display: 'Fraunces', serif;
-  --font-sans: 'Inter Tight', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Brown Sugar', 'Times New Roman', serif;
+  --font-subhead: 'Times New Roman MT', 'Times New Roman', serif;
+  --font-sans: 'Glacial Indifference', 'Avenir Next', 'Helvetica Neue', sans-serif;
+  --font-mono: 'Glacial Indifference', 'Avenir Next', 'Helvetica Neue', sans-serif;
+  --entix-gold: #A69664;
+  --entix-olive: #766B48;
+  --entix-black: #000000;
+  --entix-white: #FFFFFF;
 }
 
 body {
@@ -36,12 +65,16 @@ body {
   }
 
   .eyebrow {
-    @apply font-mono text-[10px] uppercase tracking-[0.3em] text-ink/40;
+    @apply font-subhead text-[10px] uppercase tracking-[0.3em] text-ink/40;
   }
 
   .font-display-italic {
     font-family: var(--font-display);
     font-style: italic;
+  }
+
+  .font-subhead {
+    font-family: var(--font-subhead);
   }
 }
 

@@ -89,7 +89,7 @@ export default async function SettingsPage() {
         ))}
       </div>
 
-      <section className="mt-5 border border-ink/8 bg-[#120f0d] p-5 text-ivory shadow-sm sm:p-6">
+      <section className="mt-5 border border-ink/8 bg-[#000000] p-5 text-ivory shadow-sm sm:p-6">
         <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-champagne-300/70">Launch checklist</div>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           {launchChecks.map((item) => (

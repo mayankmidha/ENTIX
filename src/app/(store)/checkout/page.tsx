@@ -273,7 +273,7 @@ export default function CheckoutPage() {
           contact: customerInfo.phone,
         },
         theme: {
-          color: "#120f0d",
+          color: "#000000",
         },
       };
 

@@ -8,6 +8,7 @@ import {
   ArrowRight, Sparkles, ShieldCheck 
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { EntixLogo } from '@/components/brand/EntixLogo';
 
 
 function LoginInner() {
@@ -48,7 +49,9 @@ function LoginInner() {
   return (
     <div className="min-h-screen bg-ivory flex flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <Link href="/" className="font-display text-[32px] font-medium tracking-logo text-ink">ENTIX</Link>
+        <Link href="/" aria-label="Entix Jewellery home" className="mx-auto block w-[150px]">
+          <EntixLogo priority />
+        </Link>
         <h2 className="mt-8 font-display text-[36px] font-light leading-tight tracking-display text-ink italic">
           Enter the <span className="text-champagne-600">Circle.</span>
         </h2>

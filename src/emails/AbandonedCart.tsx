@@ -23,8 +23,6 @@ interface AbandonedCartEmailProps {
   cartUrl: string;
   discountCode?: string;
   discountPercent?: number;
-  brandName?: string;
-  introText?: string;
 }
 
 export const AbandonedCartEmail = ({
@@ -33,48 +31,53 @@ export const AbandonedCartEmail = ({
   cartUrl = 'https://entix.jewellery/cart',
   discountCode,
   discountPercent,
-  brandName = 'Entix Jewellery',
-  introText,
 }: AbandonedCartEmailProps) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://entix.jewellery';
 
   return (
     <Html>
       <Head />
-      <Preview>Your curated selection awaits at {brandName}</Preview>
+      <Preview>Your curated selection awaits at Entix Jewellery</Preview>
       <Tailwind
         config={{
           theme: {
             extend: {
               colors: {
-                ivory: '#fcfaf7',
-                ink: '#120f0d',
-                champagne: '#d8b15f',
+                ivory: '#ffffff',
+                paper: '#f8f7f2',
+                ink: '#000000',
+                champagne: '#A69664',
+                olive: '#766B48',
+              },
+              fontFamily: {
+                serif: ['Brown Sugar', 'Times New Roman', 'serif'],
+                sans: ['Glacial Indifference', 'Arial', 'sans-serif'],
+                mono: ['Glacial Indifference', 'monospace'],
               },
             },
           },
         }}
       >
-        <Body className="bg-ivory my-auto mx-auto font-sans">
-          <Container className="border border-solid border-[#eee] rounded my-[40px] mx-auto p-[20px] max-w-[465px] bg-white">
+        <Body className="bg-paper my-auto mx-auto font-sans">
+          <Container className="border border-solid border-[#A6966433] rounded my-[40px] mx-auto p-[20px] max-w-[465px] bg-white">
             <Section className="mt-[32px] text-center">
-              <Text className="text-ink text-[12px] font-bold tracking-[0.2em] uppercase">
-                {brandName}
+              <Text className="text-champagne text-[13px] font-serif font-normal tracking-[0.18em] uppercase">
+                Entix Jewellery
               </Text>
             </Section>
-            <Heading className="text-ink text-[24px] font-normal text-center p-0 my-[30px] mx-0 italic">
+            <Heading className="text-ink text-[24px] font-serif font-normal text-center p-0 my-[30px] mx-0 italic">
               Your selection awaits.
             </Heading>
             <Text className="text-ink text-[14px] leading-[24px]">
               Dear {customerName},
             </Text>
             <Text className="text-ink text-[14px] leading-[24px]">
-              {introText || <>We noticed you left some pieces in your bag. Each Entix creation is handcrafted in limited quantities - we&apos;d hate for you to miss out.</>}
+              We noticed you left some exquisite pieces in your bag. Each Entix creation is handcrafted in limited quantities — we&apos;d hate for you to miss out.
             </Text>
 
             {items.length > 0 && (
               <Section className="mt-[32px] mb-[32px]">
-                <Text className="text-ink text-[12px] font-bold tracking-[0.1em] uppercase border-b border-solid border-[#eee] pb-2">
+                <Text className="text-olive text-[12px] font-bold tracking-[0.1em] uppercase border-b border-solid border-[#A6966426] pb-2">
                   Your Curated Selection
                 </Text>
                 {items.map((item, index) => (
@@ -101,8 +104,8 @@ export const AbandonedCartEmail = ({
             )}
 
             {discountCode && discountPercent && (
-              <Section className="mt-[24px] mb-[24px] p-[20px] bg-[#d8b15f15] rounded-[12px] text-center">
-                <Text className="text-ink text-[12px] font-bold tracking-[0.1em] uppercase m-0 mb-2">
+              <Section className="mt-[24px] mb-[24px] p-[20px] bg-[#A6966418] rounded-[12px] text-center">
+                <Text className="text-olive text-[12px] font-bold tracking-[0.1em] uppercase m-0 mb-2">
                   Exclusive Offer
                 </Text>
                 <Text className="text-ink text-[20px] font-bold m-0 mb-2">
@@ -111,7 +114,7 @@ export const AbandonedCartEmail = ({
                 <Text className="text-[#666] text-[12px] m-0 mb-3">
                   Use code at checkout:
                 </Text>
-                <Text className="text-ink text-[16px] font-mono font-bold m-0 p-[10px] bg-white rounded-[8px] border border-solid border-[#eee]">
+                <Text className="text-ink text-[16px] font-mono font-bold m-0 p-[10px] bg-white rounded-[8px] border border-solid border-[#A6966426]">
                   {discountCode}
                 </Text>
               </Section>
@@ -130,10 +133,10 @@ export const AbandonedCartEmail = ({
               Every Entix piece carries a lifetime re-polish guarantee and arrives in our signature presentation case.
             </Text>
             
-            <Hr className="border-[#eee] my-[20px]" />
+            <Hr className="border-[#A6966426] my-[20px]" />
             <Section className="text-center">
-              <Text className="text-[#999] text-[11px] tracking-[0.1em] uppercase">
-                {brandName} · India
+              <Text className="text-olive text-[11px] tracking-[0.1em] uppercase">
+                Entix Jewellery · India
               </Text>
               <Link href={baseUrl} className="text-[#999] text-[11px] underline">
                 entix.jewellery

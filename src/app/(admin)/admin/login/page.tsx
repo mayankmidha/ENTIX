@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowRight, Lock, Mail, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import { EntixLogo } from '@/components/brand/EntixLogo';
 
 function AdminLoginForm() {
   const router = useRouter();
@@ -59,8 +60,8 @@ function AdminLoginForm() {
         <div className="sm:mx-auto sm:w-full sm:max-w-[460px] lg:mx-0 lg:max-w-none">
           <div className="border border-ink/8 bg-white px-5 py-8 shadow-sm sm:px-8 sm:py-10 lg:px-10 lg:py-12">
             <div className="text-center">
-              <Link href="/" className="font-display text-[32px] font-medium tracking-logo text-ink">
-                ENTIX
+              <Link href="/" aria-label="Entix Jewellery home" className="mx-auto block w-[150px]">
+                <EntixLogo priority />
               </Link>
               <h2 className="mt-7 font-display text-[30px] font-medium leading-tight tracking-normal text-ink sm:text-[36px]">
                 Sign in to admin.

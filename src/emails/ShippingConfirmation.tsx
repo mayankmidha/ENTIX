@@ -20,8 +20,6 @@ interface ShippingConfirmationEmailProps {
   trackingNumber: string;
   trackingUrl?: string;
   estimatedDelivery?: string;
-  brandName?: string;
-  introText?: string;
 }
 
 export const ShippingConfirmationEmail = ({
@@ -30,48 +28,53 @@ export const ShippingConfirmationEmail = ({
   trackingNumber = 'TRACK123456',
   trackingUrl = '',
   estimatedDelivery = '3-5 business days',
-  brandName = 'Entix Jewellery',
-  introText,
 }: ShippingConfirmationEmailProps) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://entix.jewellery';
 
   return (
     <Html>
       <Head />
-      <Preview>Your {brandName} order {orderNumber} has been shipped!</Preview>
+      <Preview>Your Entix Jewellery order {orderNumber} has been shipped!</Preview>
       <Tailwind
         config={{
           theme: {
             extend: {
               colors: {
-                ivory: '#fcfaf7',
-                ink: '#120f0d',
-                champagne: '#d8b15f',
+                ivory: '#ffffff',
+                paper: '#f8f7f2',
+                ink: '#000000',
+                champagne: '#A69664',
+                olive: '#766B48',
                 jade: '#2d6a4f',
+              },
+              fontFamily: {
+                serif: ['Brown Sugar', 'Times New Roman', 'serif'],
+                sans: ['Glacial Indifference', 'Arial', 'sans-serif'],
+                mono: ['Glacial Indifference', 'monospace'],
               },
             },
           },
         }}
       >
-        <Body className="bg-ivory my-auto mx-auto font-sans">
-          <Container className="border border-solid border-[#eee] rounded my-[40px] mx-auto p-[20px] max-w-[465px] bg-white">
+        <Body className="bg-paper my-auto mx-auto font-sans">
+          <Container className="border border-solid border-[#A6966433] rounded my-[40px] mx-auto p-[20px] max-w-[465px] bg-white">
             <Section className="mt-[32px] text-center">
-              <Text className="text-ink text-[12px] font-bold tracking-[0.2em] uppercase">
-                {brandName}
+              <Text className="text-champagne text-[13px] font-serif font-normal tracking-[0.18em] uppercase">
+                Entix Jewellery
               </Text>
             </Section>
-            <Heading className="text-ink text-[24px] font-normal text-center p-0 my-[30px] mx-0 italic">
+            <Heading className="text-ink text-[24px] font-serif font-normal text-center p-0 my-[30px] mx-0 italic">
               Your heirloom is on its way.
             </Heading>
             <Text className="text-ink text-[14px] leading-[24px]">
               Dear {customerName},
             </Text>
             <Text className="text-ink text-[14px] leading-[24px]">
-              {introText || <>Great news! Your order <strong>{orderNumber}</strong> has been carefully packaged and dispatched.</>}
+              Great news! Your order <strong>{orderNumber}</strong> has been carefully packaged and dispatched from our studio.
             </Text>
             
-            <Section className="mt-[32px] mb-[32px] p-[20px] bg-[#f8f7f5] rounded-[12px]">
-              <Text className="text-ink text-[12px] font-bold tracking-[0.1em] uppercase m-0 mb-2">
+            <Section className="mt-[32px] mb-[32px] p-[20px] bg-[#f8f7f2] rounded-[12px]">
+              <Text className="text-olive text-[12px] font-bold tracking-[0.1em] uppercase m-0 mb-2">
                 Tracking Details
               </Text>
               <Text className="text-ink text-[16px] font-mono m-0 mb-2">
@@ -95,10 +98,10 @@ export const ShippingConfirmationEmail = ({
               Your piece has been insured and will be delivered with signature confirmation for your security.
             </Text>
             
-            <Hr className="border-[#eee] my-[20px]" />
+            <Hr className="border-[#A6966426] my-[20px]" />
             <Section className="text-center">
-              <Text className="text-[#999] text-[11px] tracking-[0.1em] uppercase">
-                {brandName} · India
+              <Text className="text-olive text-[11px] tracking-[0.1em] uppercase">
+                Entix Jewellery · India
               </Text>
               <Link href={baseUrl} className="text-[#999] text-[11px] underline">
                 entix.jewellery
