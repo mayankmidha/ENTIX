@@ -14,20 +14,20 @@ export const revalidate = 60;
 
 const collectionRooms = [
   {
-    title: 'The Ceremonial Edit',
-    text: 'Gold-toned forms for vows, festivals, and evening light.',
+    title: 'Ceremony',
+    text: 'For vows, festivals, and the photograph that stays.',
     href: '/collections/bridal',
     image: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1400&q=92',
   },
   {
-    title: 'Bangle Architecture',
-    text: 'Stacks, cuffs, and silhouettes with a clean graphic edge.',
+    title: 'The Wrist',
+    text: 'Stacks, cuffs, and bangles with a clean graphic edge.',
     href: '/collections/bangles',
     image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=92',
   },
   {
-    title: 'Necklines In Gold',
-    text: 'Pendants, layered chains, and heirloom-weight statements.',
+    title: 'The Portrait',
+    text: 'Necklines, earrings, and rings that hold the face and hand.',
     href: '/collections/necklaces',
     image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=92',
   },
@@ -136,31 +136,44 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="bg-ivory px-6 py-16 lg:px-12 lg:py-24">
+      <section className="relative overflow-hidden bg-ivory px-6 py-20 lg:px-12 lg:py-28">
+        <div className="absolute left-0 top-0 hidden h-full w-[8%] border-r border-ink/8 lg:block" />
         <div className="mx-auto max-w-7xl">
-          <ScrollReveal className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
-            <div className="eyebrow">{contentSettings['content.homeEyebrow']}</div>
+          <ScrollReveal className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-end">
             <div>
-              <h2 className="font-display text-5xl font-light leading-[0.9] tracking-normal text-ink sm:text-6xl md:text-7xl">
+              <div className="eyebrow">{contentSettings['content.homeEyebrow']}</div>
+              <div className="mt-10 hidden max-w-xs border-y border-ink/10 py-5 font-subhead text-[10px] uppercase leading-relaxed tracking-[0.2em] text-ink/38 lg:block">
+                Gold / black / white / olive / glacial body / times subhead / brown sugar heading
+              </div>
+            </div>
+            <div>
+              <h2 className="font-display text-6xl font-light leading-[0.86] tracking-normal text-ink sm:text-7xl md:text-8xl">
                 {contentSettings['content.homeHeadline']}
-            </h2>
-              <p className="mt-7 max-w-2xl text-[16px] leading-relaxed text-ink/55">
+              </h2>
+              <p className="mt-8 max-w-2xl text-[17px] leading-relaxed text-ink/58">
                 {contentSettings['content.homeBody']}
-            </p>
+              </p>
             </div>
           </ScrollReveal>
 
-          <div className="mt-14 grid gap-px bg-ink/10 lg:grid-cols-3">
+          <div className="mt-16 grid gap-px bg-ink/10 lg:grid-cols-[1.12fr_0.88fr_1fr]">
             {collectionRooms.map((room, idx) => (
               <ScrollReveal key={room.href} delay={idx * 0.08}>
-                <Link href={room.href} className="group block bg-ivory p-3">
-                  <div className="relative aspect-[4/5] overflow-hidden bg-ink">
-                    <img src={room.image} alt={room.title} className="h-full w-full object-cover opacity-88 transition duration-[1.6s] group-hover:scale-105 group-hover:opacity-100" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
-                    <div className="absolute bottom-6 left-6 right-6 text-ivory">
-                      <div className="font-display text-[36px] font-light leading-none tracking-normal">{room.title}</div>
-                      <p className="mt-3 max-w-xs text-[14px] leading-relaxed text-ivory/60 italic">{room.text}</p>
-                      <div className="mt-6 inline-flex items-center gap-2 font-subhead text-[10px] uppercase tracking-[0.18em] text-champagne-200">
+                <Link href={room.href} className="group block bg-ivory p-2">
+                  <div className={`relative overflow-hidden bg-ink ${idx === 1 ? 'aspect-[4/5] lg:mt-16' : 'aspect-[4/5]'}`}>
+                    <Image
+                      src={room.image}
+                      alt={room.title}
+                      fill
+                      sizes="(min-width: 1024px) 33vw, 92vw"
+                      className="object-cover opacity-90 transition duration-[1.6s] group-hover:scale-105 group-hover:opacity-100"
+                    />
+                    <div className="image-veil" />
+                    <div className="absolute inset-x-5 bottom-5 text-ivory sm:inset-x-7 sm:bottom-7">
+                      <div className="font-subhead text-[9px] uppercase tracking-[0.22em] text-champagne-200">Room 0{idx + 1}</div>
+                      <div className="mt-4 font-display text-[42px] font-light leading-none tracking-normal sm:text-[54px]">{room.title}</div>
+                      <p className="mt-4 max-w-xs text-[14px] leading-relaxed text-ivory/64">{room.text}</p>
+                      <div className="mt-7 inline-flex items-center gap-2 font-subhead text-[10px] uppercase tracking-[0.18em] text-champagne-200">
                         Enter collection <ArrowRight size={13} />
                       </div>
                     </div>
@@ -172,12 +185,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="bg-[#f8f2e9] px-6 py-20 lg:px-12 lg:py-28">
-        <div className="mx-auto max-w-7xl">
-          <ScrollReveal className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+      <section className="bg-[#f8f7f2] px-6 py-20 lg:px-12 lg:py-28">
+        <div className="mx-auto max-w-[1500px]">
+          <ScrollReveal className="mb-14 grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
             <div>
               <div className="eyebrow">Selected Pieces</div>
-              <h2 className="mt-5 font-display text-5xl font-light leading-[0.9] tracking-normal text-ink sm:text-6xl md:text-7xl">
+              <h2 className="mt-5 max-w-4xl font-display text-5xl font-light leading-[0.9] tracking-normal text-ink sm:text-6xl md:text-7xl">
                 Pieces that hold <span className="font-display-italic text-champagne-700">the frame.</span>
               </h2>
             </div>
@@ -229,10 +242,10 @@ export default async function HomePage() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.08}>
-            <div className="flex h-full flex-col justify-between bg-[#f6f1e8] p-7 sm:p-10 lg:p-12">
+            <div className="flex h-full flex-col justify-between bg-[#f8f7f2] p-7 sm:p-10 lg:p-12">
               <div>
                 <HeartHandshake size={22} className="text-champagne-700" />
-                <p className="mt-8 max-w-xl text-[17px] leading-relaxed text-ink/62">
+                <p className="mt-8 max-w-xl text-[19px] leading-relaxed text-ink/64">
                   Choose by certainty: earrings and pendants when sizing is unknown, rings when the fit is known, bangles when the gift needs presence.
                 </p>
               </div>
@@ -309,7 +322,7 @@ export default async function HomePage() {
 function TrustCard({ icon: Icon, title, text }: { icon: any; title: string; text: string }) {
   return (
     <ScrollReveal>
-      <div className="h-full border border-white/10 bg-white/[0.06] p-7 backdrop-blur">
+      <div className="h-full border border-white/10 bg-white/[0.06] p-7 backdrop-blur transition-colors hover:bg-white/[0.1]">
         <div className="mb-10 flex h-12 w-12 items-center justify-center border border-white/12 text-champagne-300">
           <Icon size={18} />
         </div>
@@ -343,9 +356,9 @@ function EditorialPlaceholderGrid({ compact = false }: { compact?: boolean }) {
   return (
     <div className={`grid gap-8 sm:grid-cols-2 ${compact ? 'lg:grid-cols-4' : 'lg:grid-cols-4'}`}>
       {items.map((item) => (
-        <div key={item.title}>
+        <div key={item.title} className="group">
           <div className="relative aspect-[4/5] overflow-hidden border border-ink/8 bg-[#eee8de]">
-            <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
+            <Image src={item.image} alt={item.title} fill sizes="(min-width:1024px) 24vw, 92vw" className="object-cover transition duration-[1400ms] group-hover:scale-105" />
             <div className="absolute inset-x-3 top-3 border border-white/50 bg-white/50 px-3 py-1.5 font-subhead text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur">
               Entix room
             </div>

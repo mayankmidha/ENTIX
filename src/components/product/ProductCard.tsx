@@ -32,7 +32,7 @@ export function ProductCard({ product }: { product: any }) {
 
   return (
     <article className="group transition duration-500 motion-safe:hover:-translate-y-1">
-      <div className="relative block aspect-[4/5] overflow-hidden border border-ink/8 bg-[#eee8de] shadow-[0_18px_46px_rgba(18,15,13,0)] transition-shadow duration-500 group-hover:shadow-[0_22px_70px_rgba(18,15,13,0.10)]">
+      <div className="relative block aspect-[4/5] overflow-hidden bg-[#eee8de] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)] transition-shadow duration-500 group-hover:shadow-[inset_0_0_0_1px_rgba(166,150,100,0.42),0_28px_80px_rgba(0,0,0,0.12)]">
         <Link href={`/products/${product.slug}`} className="absolute inset-0 z-0" aria-label={`View ${product.title}`}>
           {primaryImage ? (
             <Image
@@ -56,13 +56,13 @@ export function ProductCard({ product }: { product: any }) {
               className="object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
             />
           )}
-          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.38),rgba(18,15,13,0)_42%)] opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
+          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.44),rgba(0,0,0,0)_48%)] opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
         </Link>
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-3 p-3">
           <div className="flex flex-col gap-2">
             {product.tag && (
-              <span className="w-fit border border-white/55 bg-white/58 px-3 py-1.5 font-subhead text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur-md">
+              <span className="w-fit border border-white/55 bg-white/70 px-3 py-1.5 font-subhead text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur-md">
                 {product.tag}
               </span>
             )}
@@ -87,7 +87,7 @@ export function ProductCard({ product }: { product: any }) {
         <div className="absolute inset-x-3 bottom-3 z-10 translate-y-0 opacity-100 transition-all duration-500 sm:translate-y-4 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100">
           <button 
             onClick={handleAddToCart}
-            className="flex w-full items-center justify-center gap-2 bg-ink py-3.5 font-subhead text-[10px] uppercase tracking-[0.16em] text-ivory shadow-2xl transition-all hover:bg-ink-2 active:scale-[0.98]"
+            className="flex w-full items-center justify-center gap-2 bg-ivory py-3.5 font-subhead text-[10px] uppercase tracking-[0.16em] text-ink shadow-2xl transition-all hover:bg-champagne-100 active:scale-[0.98]"
           >
             Quick Bag <Plus size={12} />
           </button>
@@ -102,14 +102,14 @@ export function ProductCard({ product }: { product: any }) {
       <div className="mt-5 flex justify-between gap-4">
         <div className="min-w-0">
           <Link href={`/products/${product.slug}`}>
-            <h3 className="font-display text-[20px] font-medium leading-tight text-ink underline-draw">{product.title}</h3>
+            <h3 className="font-display text-[25px] font-light leading-none text-ink underline-draw">{product.title}</h3>
           </Link>
           <div className="mt-2 max-w-[16rem] truncate font-subhead text-[10px] uppercase tracking-[0.14em] text-ink/40">
             {meta || product.occasion || 'Entix selection'}
           </div>
         </div>
         <div className="shrink-0 text-right">
-          <div className="font-display text-[18px] font-medium text-ink">{formatInr(product.priceInr)}</div>
+          <div className="font-subhead text-[14px] text-ink">{formatInr(product.priceInr)}</div>
           {compareAt && (
             <div className="font-sans text-[10px] text-ink/20 line-through">{formatInr(compareAt)}</div>
           )}

@@ -2,7 +2,12 @@ Entix brand fonts
 ==================
 
 Loaded in production:
-- Glacial Indifference Regular / Bold, SIL Open Font License 1.1.
+- Body: Glacial Indifference Regular / Bold, SIL Open Font License 1.1.
+- Sub heading: Times New Roman MT, with Times New Roman as the system fallback.
+- Heading: Brown Sugar via local/purchased font slot and Entix vector logo assets.
+
+Font files included now:
+- Glacial Indifference Regular / Italic / Bold, SIL Open Font License 1.1.
 - Times New Roman MT falls back to the system Times New Roman family.
 
 Pending licensed webfont:

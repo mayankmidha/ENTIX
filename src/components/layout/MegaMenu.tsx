@@ -14,14 +14,14 @@ const trustLinks = [
 
 export function MegaMenu({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+    <div className="grid gap-3 lg:grid-cols-[1.2fr_0.8fr]">
       <div className="grid gap-px bg-ink/10 sm:grid-cols-2">
         {editorialCollections.map((item) => (
           <Link
             key={item.href}
             href={item.href}
             onClick={onNavigate}
-            className="group grid min-h-[164px] grid-cols-[0.92fr_1.08fr] overflow-hidden bg-ivory transition-colors hover:bg-ink hover:text-ivory"
+            className="group grid min-h-[176px] grid-cols-[0.92fr_1.08fr] overflow-hidden bg-ivory transition-colors hover:bg-ink hover:text-ivory"
           >
             <div className="relative overflow-hidden">
               <Image
@@ -29,14 +29,14 @@ export function MegaMenu({ onNavigate }: { onNavigate?: () => void }) {
                 alt={item.label}
                 fill
                 sizes="220px"
-                className="object-cover transition duration-[1200ms] group-hover:scale-110"
+                className="object-cover transition duration-[1400ms] group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-ink/12 transition-colors group-hover:bg-ink/26" />
             </div>
             <div className="flex min-w-0 flex-col justify-between p-4">
               <div>
                 <div className="font-subhead text-[9px] uppercase tracking-[0.16em] text-current/38">{item.kicker}</div>
-                <h3 className="mt-3 font-display text-[27px] font-light leading-none tracking-normal">{item.label}</h3>
+                <h3 className="mt-3 font-display text-[32px] font-light leading-none tracking-normal">{item.label}</h3>
               </div>
               <div className="flex items-end justify-between gap-3">
                 <p className="line-clamp-2 text-[12px] leading-relaxed text-current/52">{item.copy}</p>
@@ -48,13 +48,23 @@ export function MegaMenu({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <div className="grid gap-px bg-ink/10">
-        <div className="bg-ink p-5 text-ivory">
+        <div className="relative min-h-[206px] overflow-hidden bg-ink p-5 text-ivory">
+          <Image
+            src={editorialRooms[2].image}
+            alt="Entix world"
+            fill
+            sizes="420px"
+            className="object-cover opacity-34"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.92),rgba(0,0,0,0.42))]" />
+          <div className="relative z-10">
           <div className="flex items-center gap-2 font-subhead text-[9px] uppercase tracking-[0.18em] text-champagne-200">
             <Sparkles size={13} /> The Entix world
           </div>
-          <p className="mt-5 font-display text-[31px] font-light leading-[0.95] tracking-normal">
+          <p className="mt-5 font-display text-[38px] font-light leading-[0.9] tracking-normal">
             Browse by ritual, silhouette, or the person receiving it.
           </p>
+          </div>
         </div>
 
         {editorialRooms.map((item) => (
