@@ -20,6 +20,8 @@ interface ShippingConfirmationEmailProps {
   trackingNumber: string;
   trackingUrl?: string;
   estimatedDelivery?: string;
+  brandName?: string;
+  introText?: string;
 }
 
 export const ShippingConfirmationEmail = ({
@@ -28,13 +30,15 @@ export const ShippingConfirmationEmail = ({
   trackingNumber = 'TRACK123456',
   trackingUrl = '',
   estimatedDelivery = '3-5 business days',
+  brandName = 'Entix Jewellery',
+  introText,
 }: ShippingConfirmationEmailProps) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://entix.jewellery';
 
   return (
     <Html>
       <Head />
-      <Preview>Your Entix Jewellery order {orderNumber} has been shipped!</Preview>
+      <Preview>Your {brandName} order {orderNumber} has been shipped!</Preview>
       <Tailwind
         config={{
           theme: {
@@ -60,7 +64,7 @@ export const ShippingConfirmationEmail = ({
           <Container className="border border-solid border-[#A6966433] rounded my-[40px] mx-auto p-[20px] max-w-[465px] bg-white">
             <Section className="mt-[32px] text-center">
               <Text className="text-champagne text-[13px] font-serif font-normal tracking-[0.18em] uppercase">
-                Entix Jewellery
+                {brandName}
               </Text>
             </Section>
             <Heading className="text-ink text-[24px] font-serif font-normal text-center p-0 my-[30px] mx-0 italic">
@@ -70,7 +74,7 @@ export const ShippingConfirmationEmail = ({
               Dear {customerName},
             </Text>
             <Text className="text-ink text-[14px] leading-[24px]">
-              Great news! Your order <strong>{orderNumber}</strong> has been carefully packaged and dispatched from our studio.
+              {introText || <>Great news! Your order <strong>{orderNumber}</strong> has been carefully packaged and dispatched from our studio.</>}
             </Text>
             
             <Section className="mt-[32px] mb-[32px] p-[20px] bg-[#f8f7f2] rounded-[12px]">
@@ -101,7 +105,7 @@ export const ShippingConfirmationEmail = ({
             <Hr className="border-[#A6966426] my-[20px]" />
             <Section className="text-center">
               <Text className="text-olive text-[11px] tracking-[0.1em] uppercase">
-                Entix Jewellery · India
+                {brandName} · India
               </Text>
               <Link href={baseUrl} className="text-[#999] text-[11px] underline">
                 entix.jewellery

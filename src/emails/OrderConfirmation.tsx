@@ -21,6 +21,8 @@ interface OrderConfirmationEmailProps {
   customerName: string;
   items: Array<{ title: string; quantity: number; price: string; image?: string }>;
   total: string;
+  brandName?: string;
+  introText?: string;
 }
 
 export const OrderConfirmationEmail = ({
@@ -28,11 +30,13 @@ export const OrderConfirmationEmail = ({
   customerName = 'Collector',
   items = [],
   total = '₹0',
+  brandName = 'Entix Jewellery',
+  introText,
 }: OrderConfirmationEmailProps) => {
   return (
     <Html>
       <Head />
-      <Preview>Your Entix Jewellery order {orderNumber} is confirmed.</Preview>
+      <Preview>Your {brandName} order {orderNumber} is confirmed.</Preview>
       <Tailwind
         config={{
           theme: {
@@ -57,7 +61,7 @@ export const OrderConfirmationEmail = ({
           <Container className="border border-solid border-[#A6966433] rounded my-[40px] mx-auto p-[20px] max-w-[465px] bg-white">
             <Section className="mt-[32px] text-center">
               <Text className="text-champagne text-[13px] font-serif font-normal tracking-[0.18em] uppercase">
-                Entix Jewellery
+                {brandName}
               </Text>
             </Section>
             <Heading className="text-ink text-[24px] font-serif font-normal text-center p-0 my-[30px] mx-0 italic">
@@ -67,7 +71,7 @@ export const OrderConfirmationEmail = ({
               Dear {customerName},
             </Text>
             <Text className="text-ink text-[14px] leading-[24px]">
-              Thank you for your patronage. Your order <strong>{orderNumber}</strong> has been received and is currently being prepared by our studio.
+              {introText || <>Thank you for your patronage. Your order <strong>{orderNumber}</strong> has been received and is currently being prepared by our studio.</>}
             </Text>
             <Section className="mt-[32px] mb-[32px]">
                 <Text className="text-olive text-[12px] font-bold tracking-[0.1em] uppercase border-b border-solid border-[#A6966426] pb-2">
@@ -112,7 +116,7 @@ export const OrderConfirmationEmail = ({
             <Hr className="border-[#A6966426] my-[20px]" />
             <Section className="text-center">
               <Text className="text-olive text-[11px] tracking-[0.1em] uppercase">
-                Entix Jewellery · India
+                {brandName} · India
               </Text>
             </Section>
           </Container>
