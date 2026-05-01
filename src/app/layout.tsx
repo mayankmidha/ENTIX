@@ -45,9 +45,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-ivory text-ink min-h-screen flex flex-col antialiased">
+      <body className="bg-ivory text-ink min-h-screen flex flex-col font-sans antialiased">
         <main className="flex-1 flex flex-col">{children}</main>
-        <Toaster position="bottom-center" toastOptions={{ className: 'font-mono' }} />
+        <Toaster position="bottom-center" toastOptions={{ className: 'font-sans' }} />
       </body>
     </html>
   );

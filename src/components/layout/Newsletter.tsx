@@ -35,8 +35,8 @@ export function Newsletter() {
 
   return (
     <div className="space-y-6">
-      <h4 className="font-mono text-[10px] uppercase tracking-widest text-ivory/30">— The Circle</h4>
-      <p className="font-mono text-[11px] text-ivory/50 uppercase leading-relaxed">
+      <h4 className="font-subhead text-[10px] uppercase tracking-widest text-ivory/30">— The Circle</h4>
+      <p className="font-subhead text-[11px] text-ivory/50 uppercase leading-relaxed">
         Join our circle for early access to collection drops.
       </p>
       <form onSubmit={handleSubmit} className="relative group">
@@ -47,12 +47,12 @@ export function Newsletter() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email Address" 
           disabled={loading}
-          className="w-full bg-transparent border-b border-ivory/10 pb-3 font-mono text-[12px] focus:outline-none focus:border-champagne-500 transition-all placeholder:text-ivory/20 disabled:opacity-50"
+          className="w-full bg-transparent border-b border-ivory/10 pb-3 font-sans text-[12px] focus:outline-none focus:border-champagne-500 transition-all placeholder:text-ivory/20 disabled:opacity-50"
         />
         <button 
           type="submit"
           disabled={loading}
-          className="absolute right-0 bottom-3 font-mono text-[10px] uppercase tracking-widest text-ivory/40 hover:text-ivory transition-colors disabled:opacity-50"
+          className="absolute right-0 bottom-3 font-subhead text-[10px] uppercase tracking-widest text-ivory/40 hover:text-ivory transition-colors disabled:opacity-50"
         >
           {loading ? 'Joining...' : 'Join'}
         </button>

@@ -57,7 +57,7 @@ export default async function GiftGuidePage() {
 
         <div className="relative z-10 mx-auto flex min-h-[calc(76svh-7rem)] max-w-7xl items-end">
           <ScrollReveal className="max-w-4xl text-ivory">
-            <div className="inline-flex items-center gap-2 border border-ivory/22 bg-ivory/10 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-champagne-200 backdrop-blur">
+            <div className="inline-flex items-center gap-2 border border-ivory/22 bg-ivory/10 px-4 py-2 font-subhead text-[10px] uppercase tracking-[0.2em] text-champagne-200 backdrop-blur">
               <Gift size={14} /> Entix Gift Guide
             </div>
             <h1 className="mt-8 font-display text-6xl font-light leading-[0.86] tracking-normal sm:text-7xl md:text-8xl lg:text-9xl">
@@ -94,14 +94,14 @@ export default async function GiftGuidePage() {
                       className="object-cover opacity-88 transition duration-[1400ms] group-hover:scale-105 group-hover:opacity-100"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-ink/78 via-transparent to-transparent" />
-                    <div className="absolute left-5 top-5 border border-white/50 bg-white/52 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur">
+                    <div className="absolute left-5 top-5 border border-white/50 bg-white/52 px-3 py-1.5 font-subhead text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur">
                       {edit.cue}
                     </div>
                   </div>
                   <div className="p-3 pt-6">
                     <h3 className="font-display text-[34px] font-light leading-none tracking-normal">{edit.title}</h3>
                     <p className="mt-4 max-w-sm text-[14px] leading-relaxed text-current/52">{edit.text}</p>
-                    <div className="mt-7 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-current/48 group-hover:text-current">
+                    <div className="mt-7 inline-flex items-center gap-2 font-subhead text-[10px] uppercase tracking-[0.18em] text-current/48 group-hover:text-current">
                       Open edit <ArrowRight size={13} />
                     </div>
                   </div>
@@ -121,7 +121,7 @@ export default async function GiftGuidePage() {
                 Pieces ready for consideration.
               </h2>
             </div>
-            <Link href="/collections/gifts" className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/48 underline-draw hover:text-ink">
+            <Link href="/collections/gifts" className="inline-flex items-center gap-2 font-subhead text-[10px] uppercase tracking-[0.16em] text-ink/48 underline-draw hover:text-ink">
               View gifting room <ArrowRight size={13} />
             </Link>
           </ScrollReveal>
@@ -154,7 +154,7 @@ export default async function GiftGuidePage() {
                       className="object-cover transition duration-[1200ms] group-hover:scale-105"
                     />
                   </div>
-                  <div className="mt-5 font-mono text-[9px] uppercase tracking-[0.16em] text-current/42">{item.kicker}</div>
+                  <div className="mt-5 font-subhead text-[9px] uppercase tracking-[0.16em] text-current/42">{item.kicker}</div>
                   <div className="mt-3 flex items-center justify-between gap-4 font-display text-[25px] font-light leading-none">
                     {item.label}
                     <ArrowRight size={14} />
@@ -176,7 +176,7 @@ export default async function GiftGuidePage() {
             <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-ivory/58">
               When sizing, metal tone, or occasion is uncertain, start with concierge, wishlist, or the easier categories first.
             </p>
-            <Link href="/contact" className="mt-9 inline-flex items-center gap-3 bg-ivory px-7 py-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink transition-colors hover:bg-champagne-200">
+            <Link href="/contact" className="mt-9 inline-flex items-center gap-3 bg-ivory px-7 py-4 font-subhead text-[10px] uppercase tracking-[0.18em] text-ink transition-colors hover:bg-champagne-200">
               Ask concierge <MessageCircle size={14} />
             </Link>
           </div>

@@ -40,7 +40,7 @@ export default async function CollectionsLandingPage() {
         <div className="mb-12 grid gap-px bg-ink/10 md:grid-cols-4">
           {['Ceremony', 'Stacking', 'Gifting', 'Everyday'].map((intent) => (
             <div key={intent} className="bg-ivory p-5">
-              <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink/35">Shop by intent</div>
+              <div className="font-subhead text-[9px] uppercase tracking-[0.16em] text-ink/35">Shop by intent</div>
               <div className="mt-8 font-display text-[24px] font-light leading-none text-ink">{intent}</div>
             </div>
           ))}
@@ -65,7 +65,7 @@ export default async function CollectionsLandingPage() {
                       <div>
                          <h2 className="font-display text-[28px] font-medium leading-none tracking-normal sm:text-[34px]">{c.title}</h2>
                          {c.subtitle && <p className="mt-2 max-w-sm text-[13px] leading-relaxed text-ivory/62">{c.subtitle}</p>}
-                         <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-ivory/60">Explore selection</p>
+                         <p className="mt-3 font-subhead text-[10px] uppercase tracking-[0.18em] text-ivory/60">Explore selection</p>
                       </div>
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-ivory/24 transition-all group-hover:bg-ivory group-hover:text-ink">
                          <ArrowRight size={20} />
@@ -116,7 +116,7 @@ function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="bg-ivory p-4 lg:mt-4 lg:border lg:border-ink/10">
       <div className="font-display text-[30px] font-medium leading-none text-ink">{value}</div>
-      <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/38">{label}</div>
+      <div className="mt-2 font-subhead text-[9px] uppercase tracking-[0.14em] text-ink/38">{label}</div>
     </div>
   );
 }

@@ -35,7 +35,7 @@ export function MegaMenu({ onNavigate }: { onNavigate?: () => void }) {
             </div>
             <div className="flex min-w-0 flex-col justify-between p-4">
               <div>
-                <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-current/38">{item.kicker}</div>
+                <div className="font-subhead text-[9px] uppercase tracking-[0.16em] text-current/38">{item.kicker}</div>
                 <h3 className="mt-3 font-display text-[27px] font-light leading-none tracking-normal">{item.label}</h3>
               </div>
               <div className="flex items-end justify-between gap-3">
@@ -49,7 +49,7 @@ export function MegaMenu({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="grid gap-px bg-ink/10">
         <div className="bg-ink p-5 text-ivory">
-          <div className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.18em] text-champagne-200">
+          <div className="flex items-center gap-2 font-subhead text-[9px] uppercase tracking-[0.18em] text-champagne-200">
             <Sparkles size={13} /> The Entix world
           </div>
           <p className="mt-5 font-display text-[31px] font-light leading-[0.95] tracking-normal">
@@ -87,7 +87,7 @@ export function MegaMenu({ onNavigate }: { onNavigate?: () => void }) {
           {trustLinks.map((item) => (
             <Link key={item.href} href={item.href} onClick={onNavigate} className="bg-white/65 p-4 transition-colors hover:bg-ink hover:text-ivory">
               <Gem size={14} className="text-champagne-700" />
-              <div className="mt-4 font-mono text-[9px] uppercase tracking-[0.14em] text-current/45">{item.title}</div>
+              <div className="mt-4 font-subhead text-[9px] uppercase tracking-[0.14em] text-current/45">{item.title}</div>
             </Link>
           ))}
         </div>

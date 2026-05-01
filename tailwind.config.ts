@@ -41,10 +41,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-display)", "Times New Roman", "serif"],
-        subhead: ["var(--font-subhead)", "Times New Roman", "serif"],
-        sans: ["var(--font-sans)", "Helvetica Neue", "sans-serif"],
-        mono: ["var(--font-mono)", "monospace"],
+        display: ["var(--font-display)", "Times New Roman MT", "Times New Roman", "serif"],
+        subhead: ["var(--font-subhead)", "TimesNRMTPro", "Times New Roman", "serif"],
+        sans: ["var(--font-sans)", "Glacial Indifference", "Helvetica Neue", "Arial", "sans-serif"],
+        mono: ["var(--font-mono)", "Glacial Indifference", "Helvetica Neue", "Arial", "sans-serif"],
       },
       letterSpacing: {
         display: "0",

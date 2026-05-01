@@ -21,7 +21,7 @@ export function Marquee() {
       >
         {[...items, ...items, ...items].map((text, idx) => (
           <div key={idx} className="flex items-center gap-12">
-            <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-ink/48">{text}</span>
+            <span className="font-subhead text-[10px] uppercase tracking-[0.24em] text-ink/48">{text}</span>
             <div className="h-px w-12 bg-oxblood/35" />
           </div>
         ))}

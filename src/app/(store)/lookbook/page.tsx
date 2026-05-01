@@ -26,7 +26,7 @@ export default function LookbookPage() {
 
         <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-10 text-ivory lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
           <ScrollReveal>
-            <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-champagne-200">Entix Lookbook</div>
+            <div className="font-subhead text-[10px] uppercase tracking-[0.24em] text-champagne-200">Entix Lookbook</div>
             <div className="mt-8 grid max-w-sm gap-px bg-ivory/16 sm:grid-cols-2">
               <Signal value="03" label="Editorial scenes" />
               <Signal value="04" label="Shop rooms" />
@@ -39,7 +39,7 @@ export default function LookbookPage() {
             <p className="mt-7 max-w-2xl text-[17px] leading-relaxed text-ivory/68">
               A slower path through Entix: pieces seen as ritual, portrait, gift, and gesture before they become catalogue cards.
             </p>
-            <Link href="/collections/all" className="mt-9 inline-flex items-center gap-3 bg-ivory px-7 py-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink transition-colors hover:bg-champagne-200">
+            <Link href="/collections/all" className="mt-9 inline-flex items-center gap-3 bg-ivory px-7 py-4 font-subhead text-[10px] uppercase tracking-[0.18em] text-ink transition-colors hover:bg-champagne-200">
               Shop the edit <ArrowRight size={14} />
             </Link>
           </ScrollReveal>
@@ -78,13 +78,13 @@ export default function LookbookPage() {
                   </div>
                   <div className="flex flex-col justify-between p-7 sm:p-10 lg:p-12">
                     <div>
-                      <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink/36">{scene.eyebrow}</div>
+                      <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-ink/36">{scene.eyebrow}</div>
                       <h3 className="mt-7 font-display text-5xl font-light leading-[0.94] tracking-normal text-ink sm:text-6xl">
                         {scene.title}
                       </h3>
                       <p className="mt-6 max-w-md text-[15px] leading-relaxed text-ink/56">{scene.text}</p>
                     </div>
-                    <div className="mt-12 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/48 group-hover:text-ink">
+                    <div className="mt-12 inline-flex items-center gap-3 font-subhead text-[10px] uppercase tracking-[0.18em] text-ink/48 group-hover:text-ink">
                       Shop this mood <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
                     </div>
                   </div>
@@ -98,7 +98,7 @@ export default function LookbookPage() {
       <section className="bg-ink px-6 py-20 text-ivory lg:px-12 lg:py-28">
         <div className="mx-auto max-w-7xl">
           <ScrollReveal className="mb-12 grid gap-5 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-            <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-champagne-300">Shop the rooms</div>
+            <div className="font-subhead text-[10px] uppercase tracking-[0.24em] text-champagne-300">Shop the rooms</div>
             <h2 className="font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
               Move from image to intent.
             </h2>
@@ -115,7 +115,7 @@ export default function LookbookPage() {
                     className="object-cover opacity-82 transition duration-[1200ms] group-hover:scale-105 group-hover:opacity-100"
                   />
                 </div>
-                <div className="mt-5 font-mono text-[9px] uppercase tracking-[0.16em] text-current/42">{item.kicker}</div>
+                <div className="mt-5 font-subhead text-[9px] uppercase tracking-[0.16em] text-current/42">{item.kicker}</div>
                 <div className="mt-3 flex items-center justify-between gap-4 font-display text-[27px] font-light leading-none">
                   {item.label}
                   <ArrowRight size={15} />
@@ -148,7 +148,7 @@ function Signal({ value, label }: { value: string; label: string }) {
   return (
     <div className="bg-ink/28 p-4 backdrop-blur">
       <div className="font-display text-[30px] font-medium leading-none text-ivory">{value}</div>
-      <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ivory/48">{label}</div>
+      <div className="mt-2 font-subhead text-[9px] uppercase tracking-[0.14em] text-ivory/48">{label}</div>
     </div>
   );
 }

@@ -177,7 +177,7 @@ export default async function ProductPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="max-w-[1440px] mx-auto">
-        <nav className="mb-12 flex items-center gap-2 font-mono text-[9px] uppercase tracking-widest text-ink/40">
+        <nav className="mb-12 flex items-center gap-2 font-subhead text-[9px] uppercase tracking-widest text-ink/40">
            <Link href="/" className="hover:text-ink">Home</Link>
            <ChevronRight size={10} />
            <Link href="/collections/all" className="hover:text-ink">Catalogue</Link>
@@ -199,7 +199,7 @@ export default async function ProductPage({ params }: Props) {
                   {product.subtitle && (
                     <p className="mt-4 font-display text-[22px] italic leading-snug text-champagne-600">{product.subtitle}</p>
                   )}
-                  <div className="mt-5 flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-ink/42">
+                  <div className="mt-5 flex flex-wrap items-center gap-3 font-subhead text-[10px] uppercase tracking-[0.14em] text-ink/42">
                     <span className="border border-ink/10 bg-white/45 px-3 py-1.5">{totalReviews > 0 ? `${averageRating.toFixed(1)} rating` : 'Review ready'}</span>
                     <span className="border border-ink/10 bg-white/45 px-3 py-1.5">{product.isBestseller ? 'Bestseller' : product.isNewArrival ? 'New arrival' : 'Catalogue piece'}</span>
                   </div>
@@ -222,7 +222,7 @@ export default async function ProductPage({ params }: Props) {
 
             <ScrollReveal delay={0.1}>
               <div className="border border-ink/8 bg-white/45 p-5 sm:p-7">
-                <h2 className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/35">Decision Details</h2>
+                <h2 className="font-subhead text-[10px] uppercase tracking-[0.2em] text-ink/35">Decision Details</h2>
                 <p className="mt-5 text-[15px] leading-relaxed text-ink/62">{narrative}</p>
 
                 <div className="mt-8 grid gap-px bg-ink/8 sm:grid-cols-2">
@@ -278,7 +278,7 @@ export default async function ProductPage({ params }: Props) {
               )}
               <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.78),rgba(18,15,13,0.08))]" />
               <div className="absolute bottom-8 left-8 right-8 text-ivory">
-                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne-200">The feeling</div>
+                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">The feeling</div>
                 <h2 className="mt-5 max-w-xl font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
                   A small object with a long memory.
                 </h2>
@@ -361,7 +361,7 @@ export default async function ProductPage({ params }: Props) {
 function SpecRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-ivory p-4">
-      <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink/35">{label}</div>
+      <div className="font-subhead text-[9px] uppercase tracking-[0.18em] text-ink/35">{label}</div>
       <div className="mt-2 font-display text-[17px] font-medium leading-snug text-ink">{value}</div>
     </div>
   );
@@ -369,7 +369,7 @@ function SpecRow({ label, value }: { label: string; value: string }) {
 
 function GuideLink({ href, label }: { href: string; label: string }) {
   return (
-    <Link href={href} className="border border-ink/10 bg-white px-3 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/45 transition-colors hover:border-ink/25 hover:text-ink">
+    <Link href={href} className="border border-ink/10 bg-white px-3 py-2 font-subhead text-[9px] uppercase tracking-[0.14em] text-ink/45 transition-colors hover:border-ink/25 hover:text-ink">
       {label}
     </Link>
   );
@@ -396,7 +396,7 @@ function ProofRow({ icon: Icon, title, text }: { icon: any; title: string; text:
         <Icon size={18} />
       </div>
       <div>
-        <h3 className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink/45">{title}</h3>
+        <h3 className="font-subhead text-[10px] uppercase tracking-[0.18em] text-ink/45">{title}</h3>
         <p className="mt-2 text-[13px] leading-relaxed text-ink/55">{text}</p>
       </div>
     </div>
@@ -406,7 +406,7 @@ function ProofRow({ icon: Icon, title, text }: { icon: any; title: string; text:
 function StoryCue({ title, text }: { title: string; text: string }) {
   return (
     <div className="bg-ivory p-4">
-      <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink/35">{title}</div>
+      <div className="font-subhead text-[9px] uppercase tracking-[0.18em] text-ink/35">{title}</div>
       <div className="mt-3 font-display text-[19px] font-light leading-tight tracking-normal text-ink">{text}</div>
     </div>
   );

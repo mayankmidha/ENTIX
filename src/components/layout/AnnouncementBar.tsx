@@ -17,7 +17,7 @@ export function AnnouncementBar({
     <motion.p
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="font-mono text-[9px] uppercase tracking-[0.3em] relative z-10"
+      className="font-subhead text-[9px] uppercase tracking-[0.3em] relative z-10"
     >
       {message}
     </motion.p>

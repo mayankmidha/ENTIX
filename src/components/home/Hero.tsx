@@ -32,7 +32,7 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0, y: -14 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid gap-4 border-b border-white/14 pb-5 font-mono text-[10px] uppercase tracking-[0.24em] text-ivory/62 sm:grid-cols-3"
+          className="grid gap-4 border-b border-white/14 pb-5 font-subhead text-[10px] uppercase tracking-[0.24em] text-ivory/62 sm:grid-cols-3"
         >
           <span>Fine jewellery</span>
           <span className="hidden sm:block">Spring 26 edit</span>
@@ -43,7 +43,7 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-mono text-[10px] uppercase tracking-[0.26em] text-champagne-200"
+            className="font-subhead text-[10px] uppercase tracking-[0.26em] text-champagne-200"
           >
             Spring 26 / crafted shine / collected slowly
           </motion.div>
@@ -74,17 +74,17 @@ export function Hero() {
             transition={{ delay: 0.38, duration: 0.8 }}
             className="mt-10 flex flex-col gap-3 sm:flex-row"
           >
-            <Link href="/collections/all" className="bg-ivory px-9 py-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink shadow-xl transition-all hover:bg-champagne-100 active:scale-95">
+            <Link href="/collections/all" className="bg-ivory px-9 py-4 text-center font-subhead text-[11px] uppercase tracking-[0.18em] text-ink shadow-xl transition-all hover:bg-champagne-100 active:scale-95">
               Shop the edit
             </Link>
-            <Link href="/collections/bangles" className="inline-flex items-center justify-center gap-3 border border-white/22 bg-white/8 px-9 py-4 font-mono text-[11px] uppercase tracking-[0.18em] text-ivory backdrop-blur transition-all hover:border-white/45 hover:bg-white/14">
+            <Link href="/collections/bangles" className="inline-flex items-center justify-center gap-3 border border-white/22 bg-white/8 px-9 py-4 font-subhead text-[11px] uppercase tracking-[0.18em] text-ivory backdrop-blur transition-all hover:border-white/45 hover:bg-white/14">
               View bangles <ArrowRight size={14} />
             </Link>
           </motion.div>
         </motion.div>
 
         <div className="grid items-end gap-6 border-t border-white/14 pt-5 md:grid-cols-[1fr_280px]">
-          <p className="max-w-2xl font-mono text-[10px] uppercase leading-relaxed tracking-[0.22em] text-ivory/52">
+          <p className="max-w-2xl font-subhead text-[10px] uppercase leading-relaxed tracking-[0.22em] text-ivory/52">
             New arrivals / gifting / rings / necklaces / bangles
           </p>
           <motion.div

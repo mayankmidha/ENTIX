@@ -108,7 +108,7 @@ export default async function AllCollectionsPage({ searchParams }: Props) {
         <div className="mb-10 grid gap-px bg-ink/10 md:grid-cols-4">
           {ROOM_LINKS.map((room) => (
             <Link key={room.href} href={room.href} className="group flex min-h-28 flex-col justify-between bg-ivory p-5 transition-colors hover:bg-ink hover:text-ivory">
-              <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-current/42">{room.kicker}</span>
+              <span className="font-subhead text-[9px] uppercase tracking-[0.16em] text-current/42">{room.kicker}</span>
               <span className="mt-8 flex items-end justify-between gap-4 font-display text-[24px] font-light leading-none tracking-normal">
                 {room.label}
                 <ArrowRight size={16} className="shrink-0 transition-transform group-hover:translate-x-1" />
@@ -129,7 +129,7 @@ export default async function AllCollectionsPage({ searchParams }: Props) {
               />
               <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.82),rgba(18,15,13,0.08))]" />
               <div className="absolute bottom-7 left-7 right-7 text-ivory">
-                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne-200">Browse with intent</div>
+                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">Browse with intent</div>
                 <h2 className="mt-5 max-w-2xl font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
                   Every piece deserves an emotional route.
                 </h2>
@@ -167,7 +167,7 @@ export default async function AllCollectionsPage({ searchParams }: Props) {
         ) : hasProducts ? (
           <div className="border border-dashed border-ink/12 bg-white/35 px-6 py-24 text-center">
             <p className="font-display text-3xl text-ink/25 italic">No pieces match your filters.</p>
-            <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/35">Clear filters and browse the full catalogue</p>
+            <p className="mt-4 font-subhead text-[10px] uppercase tracking-[0.16em] text-ink/35">Clear filters and browse the full catalogue</p>
           </div>
         ) : (
           <div className="border border-ink/10 bg-white/45 p-8 md:p-12">
@@ -209,7 +209,7 @@ function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="bg-ivory p-4 lg:mt-4 lg:border lg:border-ink/10">
       <div className="font-display text-[30px] font-medium leading-none text-ink">{value}</div>
-      <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/38">{label}</div>
+      <div className="mt-2 font-subhead text-[9px] uppercase tracking-[0.14em] text-ink/38">{label}</div>
     </div>
   );
 }

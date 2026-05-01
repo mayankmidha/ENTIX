@@ -41,6 +41,13 @@ const MOBILE_EXTRA = [
   { label: 'Returns', href: '/account/returns' },
 ];
 
+const desktopNavClass =
+  'font-subhead text-[11px] uppercase tracking-[0.2em] transition-colors hover:text-champagne-500';
+const mobileKickerClass =
+  'font-subhead text-[9px] uppercase tracking-[0.2em] text-current/40';
+const mobileLinkClass =
+  'flex items-center justify-between bg-white/50 px-4 py-3.5 font-subhead text-[11px] uppercase tracking-widest text-ink/58 transition-colors hover:bg-ink hover:text-ivory';
+
 export function Header() {
   const pathname = usePathname();
   const isHome = pathname === '/';
@@ -55,7 +62,7 @@ export function Header() {
         isHome
           ? "border-[#d8c29a]/35 bg-[#fffdfa]/92 shadow-[0_14px_50px_rgba(18,15,13,0.06)] backdrop-blur-2xl"
           : "border-ink/5 bg-ivory/88 backdrop-blur-xl"
-      )}>
+      )} onMouseLeave={() => setShopOpen(false)}>
         <div className="relative mx-auto flex h-20 max-w-[1500px] items-center justify-between gap-8 px-6 lg:px-12">
           {/* Mobile menu toggle */}
           <button
@@ -77,28 +84,35 @@ export function Header() {
             <div
               className="relative"
               onMouseEnter={() => setShopOpen(true)}
-              onMouseLeave={() => setShopOpen(false)}
             >
               <button
                 type="button"
-                className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] transition-colors hover:text-champagne-500"
+                aria-expanded={shopOpen}
+                className={cn('inline-flex items-center gap-2', desktopNavClass)}
                 onFocus={() => setShopOpen(true)}
+                onClick={() => setShopOpen((open) => !open)}
               >
                 Shop <ChevronDown size={12} />
               </button>
               {shopOpen && (
-                <div className="absolute left-0 top-full z-50 mt-6 w-[920px] max-w-[calc(100vw-6rem)] border border-ink/10 bg-ivory/96 p-3 text-ink shadow-[0_28px_90px_rgba(18,15,13,0.16)] backdrop-blur-2xl animate-in fade-in slide-in-from-top-2 duration-300">
-                  <MegaMenu onNavigate={() => setShopOpen(false)} />
+                <div
+                  className="fixed left-1/2 top-[76px] z-50 w-[min(1120px,calc(100vw-48px))] -translate-x-1/2 pt-3 animate-in fade-in slide-in-from-top-2 duration-300"
+                  onMouseEnter={() => setShopOpen(true)}
+                  onMouseLeave={() => setShopOpen(false)}
+                >
+                  <div className="border border-ink/10 bg-ivory/96 p-3 text-ink shadow-[0_34px_120px_rgba(18,15,13,0.18)] backdrop-blur-2xl">
+                    <MegaMenu onNavigate={() => setShopOpen(false)} />
+                  </div>
                 </div>
               )}
             </div>
             {NAV_LINKS.slice(1, 4).map((link) => (
-              <Link key={link.href} href={link.href} className="font-mono text-[10px] uppercase tracking-[0.2em] transition-colors hover:text-champagne-500">
+              <Link key={link.href} href={link.href} className={desktopNavClass}>
                 {link.label}
               </Link>
             ))}
             {EDITORIAL_LINKS.slice(0, 1).map((link) => (
-              <Link key={link.href} href={link.href} className="font-mono text-[10px] uppercase tracking-[0.2em] transition-colors hover:text-champagne-500">
+              <Link key={link.href} href={link.href} className={desktopNavClass}>
                 {link.label}
               </Link>
             ))}
@@ -106,10 +120,10 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-4 sm:gap-6">
-            <Link href="/gift-guide" className="hidden font-mono text-[10px] uppercase tracking-[0.2em] transition-colors hover:text-champagne-500 xl:block">
+            <Link href="/gift-guide" className={cn('hidden xl:block', desktopNavClass)}>
               Gifts
             </Link>
-            <Link href="/contact" className="hidden font-mono text-[10px] uppercase tracking-[0.2em] transition-colors hover:text-champagne-500 xl:block">
+            <Link href="/contact" className={cn('hidden xl:block', desktopNavClass)}>
               Contact
             </Link>
             <Link href="/search" className="p-2 hover:text-champagne-500 transition-colors">
@@ -170,7 +184,7 @@ export function Header() {
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.84),rgba(18,15,13,0.08))]" />
                 <div className="absolute inset-x-5 bottom-5">
-                  <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-champagne-200">Entix lookbook</div>
+                  <div className="font-subhead text-[9px] uppercase tracking-[0.2em] text-champagne-200">Entix lookbook</div>
                   <div className="mt-3 flex items-end justify-between gap-5">
                     <div className="font-display text-[38px] font-light leading-none tracking-normal">Enter the lookbook</div>
                     <ArrowRight size={18} className="shrink-0" />
@@ -179,7 +193,7 @@ export function Header() {
               </Link>
 
               <div>
-                <div className="px-1 pb-3 font-mono text-[9px] uppercase tracking-[0.25em] text-ink/30">Shop rooms</div>
+                <div className="px-1 pb-3 font-subhead text-[9px] uppercase tracking-[0.25em] text-ink/30">Shop rooms</div>
                 <div className="grid grid-cols-2 gap-px bg-ink/10">
                   {editorialCollections.map((link) => (
                     <Link
@@ -191,7 +205,7 @@ export function Header() {
                         pathname === link.href ? 'bg-ink text-ivory' : 'text-ink'
                       )}
                     >
-                      <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-current/40">{link.kicker}</div>
+                      <div className={mobileKickerClass}>{link.kicker}</div>
                       <div className="mt-7 flex items-end justify-between gap-3 font-display text-[24px] font-light leading-none">
                         {link.label}
                         <ArrowRight size={14} />
@@ -202,14 +216,14 @@ export function Header() {
               </div>
 
               <div>
-                <div className="px-1 pb-3 font-mono text-[9px] uppercase tracking-[0.25em] text-ink/30">More</div>
+                <div className="px-1 pb-3 font-subhead text-[9px] uppercase tracking-[0.25em] text-ink/30">More</div>
                 <div className="grid gap-1">
                   {MOBILE_EXTRA.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center justify-between bg-white/50 px-4 py-3.5 font-mono text-[11px] uppercase tracking-widest text-ink/58 transition-colors hover:bg-ink hover:text-ivory"
+                      className={mobileLinkClass}
                     >
                       {link.label}
                       <ArrowRight size={13} />
@@ -225,7 +239,7 @@ export function Header() {
                       {index === 0 ? <ShieldCheck size={15} /> : <Gem size={15} />}
                     </div>
                     <div>
-                      <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink/45">{item.title}</div>
+                      <div className="font-subhead text-[9px] uppercase tracking-[0.14em] text-ink/45">{item.title}</div>
                       <p className="mt-1 line-clamp-1 text-[12px] text-ink/45">{item.text}</p>
                     </div>
                   </div>
@@ -237,7 +251,7 @@ export function Header() {
               <Link
                 href="/account"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 bg-ink px-4 py-3 font-mono text-[11px] uppercase tracking-widest text-ivory transition-colors hover:bg-ink-2"
+                className="flex items-center gap-3 bg-ink px-4 py-3 font-subhead text-[11px] uppercase tracking-widest text-ivory transition-colors hover:bg-ink-2"
               >
                 <User size={16} /> My Account
               </Link>

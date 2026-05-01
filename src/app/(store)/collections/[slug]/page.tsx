@@ -262,15 +262,15 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         
         <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
            <ScrollReveal>
-              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne-200">{collection.eyebrow}</div>
+              <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">{collection.eyebrow}</div>
               <div className="mt-8 grid max-w-sm grid-cols-2 gap-px bg-ivory/20">
                 <div className="bg-ink/35 p-4 backdrop-blur">
                   <div className="font-display text-[30px] font-medium leading-none text-ivory">{collection.products.length}</div>
-                  <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ivory/48">Pieces</div>
+                  <div className="mt-2 font-subhead text-[9px] uppercase tracking-[0.14em] text-ivory/48">Pieces</div>
                 </div>
                 <div className="bg-ink/35 p-4 backdrop-blur">
                   <div className="font-display text-[30px] font-medium leading-none text-ivory">{filteredProducts.length}</div>
-                  <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ivory/48">Visible</div>
+                  <div className="mt-2 font-subhead text-[9px] uppercase tracking-[0.14em] text-ivory/48">Visible</div>
                 </div>
               </div>
             </ScrollReveal>
@@ -286,7 +286,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="border border-ivory/22 bg-ivory/8 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ivory/72 backdrop-blur transition-colors hover:bg-ivory hover:text-ink"
+                    className="border border-ivory/22 bg-ivory/8 px-4 py-2 font-subhead text-[10px] uppercase tracking-[0.16em] text-ivory/72 backdrop-blur transition-colors hover:bg-ivory hover:text-ink"
                   >
                     {item.label}
                   </Link>
@@ -309,7 +309,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
               />
               <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.76),rgba(18,15,13,0.08))]" />
               <div className="absolute bottom-7 left-7 right-7 text-ivory">
-                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne-200">How to enter</div>
+                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">How to enter</div>
                 <h2 className="mt-4 max-w-xl font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
                   Start with the mood, then choose the piece.
                 </h2>
@@ -331,7 +331,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
             <Link
               key={item.href}
               href={item.href}
-              className="shrink-0 border border-ink/10 bg-white/55 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink/55"
+              className="shrink-0 border border-ink/10 bg-white/55 px-4 py-2 font-subhead text-[10px] uppercase tracking-[0.14em] text-ink/55"
             >
               {item.label}
             </Link>
@@ -342,14 +342,14 @@ export default async function CollectionPage({ params, searchParams }: Props) {
           <ScrollReveal>
             <Link href={`/products/${leadProduct.slug}`} className="group mb-14 grid gap-px overflow-hidden bg-ink/10 lg:grid-cols-[0.72fr_1.28fr]">
               <div className="bg-ink p-7 text-ivory sm:p-9">
-                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne-300">Lead Piece</div>
+                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-300">Lead Piece</div>
                 <h2 className="mt-8 font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
                   {leadProduct.title}
                 </h2>
                 <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-ivory/58">
                   {leadProduct.subtitle || leadProduct.story || leadProduct.description}
                 </p>
-                <div className="mt-9 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-champagne-200">
+                <div className="mt-9 inline-flex items-center gap-2 font-subhead text-[10px] uppercase tracking-[0.18em] text-champagne-200">
                   View product <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
                 </div>
               </div>
@@ -371,10 +371,10 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         )}
 
         <div className="mb-8 grid gap-4 border-b border-ink/10 pb-5 sm:grid-cols-[1fr_auto] sm:items-end">
-          <span className="font-mono text-[11px] uppercase tracking-widest text-ink/40">
+          <span className="font-subhead text-[11px] uppercase tracking-widest text-ink/40">
             {filteredProducts.length} Piece{filteredProducts.length !== 1 ? 's' : ''}
           </span>
-          <Link href="/collections" className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink/45 underline-draw hover:text-ink">
+          <Link href="/collections" className="font-subhead text-[10px] uppercase tracking-[0.18em] text-ink/45 underline-draw hover:text-ink">
             All collections
           </Link>
         </div>
@@ -401,7 +401,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         {filteredProducts.length === 0 && (
            <div className="py-40 text-center">
               <p className="font-display text-3xl text-ink/24 italic">This exact edit is hiding for now.</p>
-              <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-ink/30">Adjust the filters or return to the full room</p>
+              <p className="mt-4 font-subhead text-[11px] uppercase tracking-widest text-ink/30">Adjust the filters or return to the full room</p>
            </div>
         )}
       </div>

@@ -24,7 +24,7 @@ export function Footer() {
 
         <div className="mb-20 grid gap-10 border-y border-white/8 py-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-champagne-300">The Entix standard</div>
+            <div className="font-subhead text-[10px] uppercase tracking-[0.24em] text-champagne-300">The Entix standard</div>
             <h2 className="mt-5 max-w-3xl font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
               A quieter kind of luxury, backed by details you can trust.
             </h2>
@@ -47,17 +47,17 @@ export function Footer() {
             <p className="mt-8 text-[14px] text-ivory/50 leading-relaxed max-w-xs italic">
               Fine jewellery for modern rituals, collected for the lifetime moments that matter.
             </p>
-            <div className="mt-8 grid gap-3 font-mono text-[10px] uppercase tracking-[0.15em] text-ivory/38">
+            <div className="mt-8 grid gap-3 font-subhead text-[10px] uppercase tracking-[0.15em] text-ivory/38">
               <span className="flex items-center gap-2"><Gem size={13} className="text-champagne-300" /> Material-led catalogue</span>
               <span className="flex items-center gap-2"><Mail size={13} className="text-champagne-300" /> Concierge-ready support</span>
             </div>
           </div>
           
           <div>
-            <h4 className="font-mono text-[10px] uppercase tracking-widest text-ivory/30 mb-8">— Shop Entix</h4>
+            <h4 className="font-subhead text-[10px] uppercase tracking-widest text-ivory/30 mb-8">— Shop Entix</h4>
             <nav className="flex flex-col gap-4">
               {editorialCollections.map((item) => (
-                <Link key={item.href} href={item.href} className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">
+                <Link key={item.href} href={item.href} className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">
                   {item.label}
                 </Link>
               ))}
@@ -65,28 +65,28 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-mono text-[10px] uppercase tracking-widest text-ivory/30 mb-8">— Brand World</h4>
+            <h4 className="font-subhead text-[10px] uppercase tracking-widest text-ivory/30 mb-8">— Brand World</h4>
             <nav className="flex flex-col gap-4">
-              <Link href="/lookbook" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Lookbook</Link>
-              <Link href="/gift-guide" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Gift Guide</Link>
-              <Link href="/authenticity" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Authenticity</Link>
-              <Link href="/packaging-gifting" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Packaging</Link>
-              <Link href="/about" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">About Entix</Link>
-              <Link href="/blog" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Journal</Link>
+              <Link href="/lookbook" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Lookbook</Link>
+              <Link href="/gift-guide" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Gift Guide</Link>
+              <Link href="/authenticity" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Authenticity</Link>
+              <Link href="/packaging-gifting" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Packaging</Link>
+              <Link href="/about" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">About Entix</Link>
+              <Link href="/blog" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Journal</Link>
             </nav>
           </div>
 
           <div>
-            <h4 className="font-mono text-[10px] uppercase tracking-widest text-ivory/30 mb-8">— Assistance</h4>
+            <h4 className="font-subhead text-[10px] uppercase tracking-widest text-ivory/30 mb-8">— Assistance</h4>
             <nav className="flex flex-col gap-4">
-              <Link href="/shipping-policy" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Shipping Guide</Link>
-              <Link href="/size-guide" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Size Guide</Link>
-              <Link href="/materials-care" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Materials & Care</Link>
-              <Link href="/warranty-repairs" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Warranty</Link>
-              <Link href="/contact" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Contact</Link>
-              <Link href="/track" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Track Order</Link>
-              <Link href="/return-policy" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Returns</Link>
-              <Link href="/terms" className="font-mono text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Terms</Link>
+              <Link href="/shipping-policy" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Shipping Guide</Link>
+              <Link href="/size-guide" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Size Guide</Link>
+              <Link href="/materials-care" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Materials & Care</Link>
+              <Link href="/warranty-repairs" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Warranty</Link>
+              <Link href="/contact" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Contact</Link>
+              <Link href="/track" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Track Order</Link>
+              <Link href="/return-policy" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Returns</Link>
+              <Link href="/terms" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Terms</Link>
             </nav>
           </div>
 
@@ -96,7 +96,7 @@ export function Footer() {
         </div>
 
         <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="font-mono text-[9px] uppercase tracking-widest text-ivory/30">
+          <div className="font-subhead text-[9px] uppercase tracking-widest text-ivory/30">
             © 2026 Entix Jewellery · India
           </div>
           <div className="flex items-center gap-6">

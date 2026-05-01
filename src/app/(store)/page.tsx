@@ -81,7 +81,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 noise opacity-20" />
         <div className="relative z-10 mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.86fr_1.14fr] lg:items-end">
           <ScrollReveal>
-            <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-champagne-300">A House In Motion</div>
+            <div className="font-subhead text-[10px] uppercase tracking-[0.24em] text-champagne-300">A House In Motion</div>
             <h2 className="mt-6 font-display text-5xl font-light leading-[0.9] tracking-normal sm:text-6xl md:text-7xl">
               A jewellery film in three rooms.
             </h2>
@@ -105,7 +105,7 @@ export default async function HomePage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-ink/64 via-transparent to-transparent group-hover:opacity-0 transition-opacity" />
                   </div>
                   <div className="p-2 pt-5">
-                    <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-current/40">{scene.eyebrow}</div>
+                    <div className="font-subhead text-[9px] uppercase tracking-[0.16em] text-current/40">{scene.eyebrow}</div>
                     <div className="mt-3 flex items-end justify-between gap-3 font-display text-[27px] font-light leading-none tracking-normal">
                       {scene.title}
                       <ArrowRight size={14} className="shrink-0 transition-transform group-hover:translate-x-1" />
@@ -126,7 +126,7 @@ export default async function HomePage() {
               href={signal.href}
               className="group flex min-h-28 flex-col justify-between bg-ink p-5 transition-colors hover:bg-ivory hover:text-ink"
             >
-              <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-current/42">{signal.text}</span>
+              <span className="font-subhead text-[9px] uppercase tracking-[0.16em] text-current/42">{signal.text}</span>
               <span className="mt-7 flex items-center justify-between gap-4 font-display text-[25px] font-light leading-none tracking-normal">
                 {signal.label}
                 <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
@@ -160,7 +160,7 @@ export default async function HomePage() {
                     <div className="absolute bottom-6 left-6 right-6 text-ivory">
                       <div className="font-display text-[36px] font-light leading-none tracking-normal">{room.title}</div>
                       <p className="mt-3 max-w-xs text-[14px] leading-relaxed text-ivory/60 italic">{room.text}</p>
-                      <div className="mt-6 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-champagne-200">
+                      <div className="mt-6 inline-flex items-center gap-2 font-subhead text-[10px] uppercase tracking-[0.18em] text-champagne-200">
                         Enter collection <ArrowRight size={13} />
                       </div>
                     </div>
@@ -181,7 +181,7 @@ export default async function HomePage() {
                 Pieces that hold <span className="font-display-italic text-champagne-700">the frame.</span>
               </h2>
             </div>
-            <Link href="/collections/all" className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-ink/60 underline-draw hover:text-ink">
+            <Link href="/collections/all" className="inline-flex items-center gap-2 font-subhead text-[11px] uppercase tracking-[0.18em] text-ink/60 underline-draw hover:text-ink">
               View all jewellery <ArrowRight size={14} />
             </Link>
           </ScrollReveal>
@@ -220,7 +220,7 @@ export default async function HomePage() {
               />
               <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.82),rgba(18,15,13,0.05))]" />
               <div className="absolute bottom-8 left-8 right-8 text-ivory">
-                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne-200">Gift Guide</div>
+                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">Gift Guide</div>
                 <h2 className="mt-5 max-w-lg font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
                   When the choice needs to feel personal.
                 </h2>
@@ -239,7 +239,7 @@ export default async function HomePage() {
               <div className="mt-12 grid gap-px bg-ink/10 sm:grid-cols-3">
                 {giftEdits.map((edit) => (
                   <Link key={edit.title} href={edit.href} className="group bg-ivory p-4 transition-colors hover:bg-ink hover:text-ivory">
-                    <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-current/40">{edit.cue}</div>
+                    <div className="font-subhead text-[9px] uppercase tracking-[0.14em] text-current/40">{edit.cue}</div>
                     <div className="mt-8 flex items-end justify-between gap-3 font-display text-[22px] font-light leading-none">
                       {edit.title}
                       <ArrowRight size={13} />
@@ -247,7 +247,7 @@ export default async function HomePage() {
                   </Link>
                 ))}
               </div>
-              <Link href="/gift-guide" className="mt-8 inline-flex w-fit items-center gap-2 bg-ink px-6 py-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ivory transition-colors hover:bg-ink-2">
+              <Link href="/gift-guide" className="mt-8 inline-flex w-fit items-center gap-2 bg-ink px-6 py-4 font-subhead text-[10px] uppercase tracking-[0.18em] text-ivory transition-colors hover:bg-ink-2">
                 Open gift guide <ArrowRight size={13} />
               </Link>
             </div>
@@ -346,12 +346,12 @@ function EditorialPlaceholderGrid({ compact = false }: { compact?: boolean }) {
         <div key={item.title}>
           <div className="relative aspect-[4/5] overflow-hidden border border-ink/8 bg-[#eee8de]">
             <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
-            <div className="absolute inset-x-3 top-3 border border-white/50 bg-white/50 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur">
+            <div className="absolute inset-x-3 top-3 border border-white/50 bg-white/50 px-3 py-1.5 font-subhead text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur">
               Entix room
             </div>
           </div>
           <h3 className="mt-5 font-display text-[22px] font-medium leading-tight text-ink">{item.title}</h3>
-          <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">Editorial collection</p>
+          <p className="mt-2 font-subhead text-[10px] uppercase tracking-[0.16em] text-ink/38">Editorial collection</p>
         </div>
       ))}
     </div>

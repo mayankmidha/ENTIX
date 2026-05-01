@@ -52,7 +52,7 @@ export function ProductActions({ product }: ProductActionsProps) {
     }, quantity);
     
     toast.success('Added to selection bag', {
-      className: 'bg-ivory font-mono text-[11px] uppercase tracking-widest'
+      className: 'bg-ivory font-subhead text-[11px] uppercase tracking-widest'
     });
   };
 
@@ -64,15 +64,15 @@ export function ProductActions({ product }: ProductActionsProps) {
           <div>
             <span className="font-display text-[32px] font-medium text-ink">{formatInr(currentPrice)}</span>
             {compareAt && (
-              <span className="ml-3 font-mono text-[13px] text-ink/25 line-through">{formatInr(compareAt)}</span>
+              <span className="ml-3 font-sans text-[13px] text-ink/25 line-through">{formatInr(compareAt)}</span>
             )}
           </div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink/38">
+          <div className="font-subhead text-[10px] uppercase tracking-[0.16em] text-ink/38">
             {product.sku}
           </div>
         </div>
         {stockQty !== null && stockQty > 0 && (
-          <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/42">
+          <p className="mt-3 font-subhead text-[10px] uppercase tracking-[0.16em] text-ink/42">
             {stockQty <= 5 ? `Only ${stockQty} available` : 'Available for dispatch'}
           </p>
         )}
@@ -82,7 +82,7 @@ export function ProductActions({ product }: ProductActionsProps) {
       {product.variants.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-ink/40">Select Variation</span>
+            <span className="font-subhead text-[10px] uppercase tracking-widest text-ink/40">Select Variation</span>
             <SizeGuideButton />
           </div>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -92,7 +92,7 @@ export function ProductActions({ product }: ProductActionsProps) {
                 onClick={() => setSelectedVariant(v)}
                 disabled={v.stockQty <= 0}
                 className={cn(
-                  "border px-4 py-3 text-left font-mono text-[10px] uppercase tracking-[0.14em] transition-all disabled:cursor-not-allowed disabled:opacity-40",
+                  "border px-4 py-3 text-left font-subhead text-[10px] uppercase tracking-[0.14em] transition-all disabled:cursor-not-allowed disabled:opacity-40",
                   selectedVariant?.id === v.id 
                     ? "bg-ink text-ivory border-ink shadow-lg" 
                     : "bg-white text-ink/60 border-ink/10 hover:border-ink/30 hover:text-ink"
@@ -111,8 +111,8 @@ export function ProductActions({ product }: ProductActionsProps) {
       {/* Custom Engraving */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-ink/40">Custom Engraving (Optional)</span>
-          <span className="font-mono text-[9px] uppercase tracking-widest text-ink/30">{engraving.length}/20</span>
+          <span className="font-subhead text-[10px] uppercase tracking-widest text-ink/40">Custom Engraving (Optional)</span>
+          <span className="font-subhead text-[9px] uppercase tracking-widest text-ink/30">{engraving.length}/20</span>
         </div>
         <input 
           type="text"
@@ -120,7 +120,7 @@ export function ProductActions({ product }: ProductActionsProps) {
           value={engraving}
           onChange={(e) => setEngraving(e.target.value)}
           placeholder="e.g. A & M 2024"
-          className="w-full border border-ink/8 bg-white px-5 py-4 font-mono text-[13px] text-ink transition-all placeholder:text-ink/20 focus:border-ink/25 focus:outline-none"
+          className="w-full border border-ink/8 bg-white px-5 py-4 font-sans text-[13px] text-ink transition-all placeholder:text-ink/20 focus:border-ink/25 focus:outline-none"
         />
       </div>
 
@@ -134,20 +134,20 @@ export function ProductActions({ product }: ProductActionsProps) {
 
             <button 
               onClick={handleAddToCart}
-              className="flex w-full items-center justify-center gap-3 bg-ink py-5 font-mono text-[11px] uppercase tracking-[0.16em] text-ivory shadow-2xl transition-all hover:bg-ink-2 active:scale-[0.98]"
+              className="flex w-full items-center justify-center gap-3 bg-ink py-5 font-subhead text-[11px] uppercase tracking-[0.16em] text-ivory shadow-2xl transition-all hover:bg-ink-2 active:scale-[0.98]"
             >
               Add to Selection Bag <ShoppingBag size={14} />
             </button>
           </div>
 
           <div className="grid gap-px bg-ink/8 sm:grid-cols-3">
-             <div className="flex items-center gap-2 bg-ivory px-3 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-ink/42">
+             <div className="flex items-center gap-2 bg-ivory px-3 py-4 font-subhead text-[9px] uppercase tracking-[0.12em] text-ink/42">
                 <ShieldCheck size={14} className="shrink-0 text-jade" /> Secure Checkout
              </div>
-             <div className="flex items-center gap-2 bg-ivory px-3 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-ink/42">
+             <div className="flex items-center gap-2 bg-ivory px-3 py-4 font-subhead text-[9px] uppercase tracking-[0.12em] text-ink/42">
                 <Truck size={14} className="shrink-0 text-champagne-500" /> Insured Shipping
              </div>
-             <div className="flex items-center gap-2 bg-ivory px-3 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-ink/42">
+             <div className="flex items-center gap-2 bg-ivory px-3 py-4 font-subhead text-[9px] uppercase tracking-[0.12em] text-ink/42">
                 <MessageCircle size={14} className="shrink-0 text-oxblood" /> Concierge Support
              </div>
           </div>
@@ -156,11 +156,11 @@ export function ProductActions({ product }: ProductActionsProps) {
             <div className="mx-auto grid max-w-md grid-cols-[1fr_auto] items-center gap-3">
               <div className="min-w-0">
                 <div className="truncate font-display text-[18px] font-medium text-ink">{formatInr(currentPrice)}</div>
-                <div className="truncate font-mono text-[9px] uppercase tracking-[0.14em] text-ink/42">{selectedVariant?.title || 'Entix piece'}</div>
+                <div className="truncate font-subhead text-[9px] uppercase tracking-[0.14em] text-ink/42">{selectedVariant?.title || 'Entix piece'}</div>
               </div>
               <button
                 onClick={handleAddToCart}
-                className="flex h-12 items-center justify-center gap-2 bg-ink px-5 font-mono text-[10px] uppercase tracking-[0.14em] text-ivory"
+                className="flex h-12 items-center justify-center gap-2 bg-ink px-5 font-subhead text-[10px] uppercase tracking-[0.14em] text-ivory"
               >
                 Add <ShoppingBag size={13} />
               </button>
