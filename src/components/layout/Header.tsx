@@ -46,7 +46,7 @@ const desktopNavClass =
 const mobileKickerClass =
   'font-subhead text-[9px] uppercase tracking-[0.2em] text-current/40';
 const mobileLinkClass =
-  'flex items-center justify-between bg-white/50 px-4 py-3.5 font-subhead text-[11px] uppercase tracking-widest text-ink/58 transition-colors hover:bg-ink hover:text-ivory';
+  'flex items-center justify-between border-b border-ink/8 px-1 py-3.5 font-subhead text-[11px] uppercase tracking-widest text-ink/62 transition-colors last:border-0 hover:text-champagne-700';
 
 export function Header() {
   const pathname = usePathname();
@@ -60,7 +60,7 @@ export function Header() {
       <header className={cn(
         "sticky top-0 z-50 w-full border-b text-ink transition-all duration-500",
         isHome
-          ? "border-[#d8c29a]/35 bg-[#fffdfa]/92 shadow-[0_14px_50px_rgba(18,15,13,0.06)] backdrop-blur-2xl"
+          ? "border-champagne-500/28 bg-white/94 shadow-[0_14px_50px_rgba(0,0,0,0.06)] backdrop-blur-2xl"
           : "border-ink/5 bg-ivory/88 backdrop-blur-xl"
       )} onMouseLeave={() => setShopOpen(false)}>
         <div className="relative mx-auto flex h-20 max-w-[1500px] items-center justify-between gap-8 px-6 lg:px-12">
@@ -96,13 +96,11 @@ export function Header() {
               </button>
               {shopOpen && (
                 <div
-                  className="fixed left-1/2 top-[76px] z-50 w-[min(1120px,calc(100vw-48px))] -translate-x-1/2 pt-3 animate-in fade-in slide-in-from-top-2 duration-300"
+                  className="fixed inset-x-0 top-20 z-50 animate-in border-b border-ink/10 bg-white text-ink shadow-[0_34px_120px_rgba(0,0,0,0.18)] fade-in slide-in-from-top-2 duration-300"
                   onMouseEnter={() => setShopOpen(true)}
                   onMouseLeave={() => setShopOpen(false)}
                 >
-                  <div className="border border-ink/10 bg-ivory/96 p-3 text-ink shadow-[0_34px_120px_rgba(18,15,13,0.18)] backdrop-blur-2xl">
-                    <MegaMenu onNavigate={() => setShopOpen(false)} />
-                  </div>
+                  <MegaMenu onNavigate={() => setShopOpen(false)} />
                 </div>
               )}
             </div>
@@ -153,27 +151,27 @@ export function Header() {
       {/* Mobile Navigation Overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 z-[200] lg:hidden">
-          <div className="absolute inset-0 bg-ink/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <div className="absolute inset-y-0 left-0 flex w-full max-w-[430px] flex-col bg-ivory shadow-2xl animate-in slide-in-from-left duration-300">
-            <div className="flex items-center justify-between border-b border-ink/5 p-5">
+          <div className="absolute inset-0 bg-ink/72 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <div className="absolute inset-y-0 left-0 flex w-full max-w-[430px] flex-col bg-white text-ink shadow-2xl animate-in slide-in-from-left duration-300">
+            <div className="flex items-center justify-between border-b border-ink/10 px-5 py-4">
               <Link href="/" aria-label="Entix Jewellery home" className="w-[122px]" onClick={() => setMobileOpen(false)}>
                 <EntixLogo />
               </Link>
               <button
                 type="button"
                 aria-label="Close menu"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-ink/5 text-ink/60 transition-colors hover:text-ink"
+                className="flex h-10 w-10 items-center justify-center border border-ink/10 bg-white text-ink/60 transition-colors hover:border-ink hover:text-ink"
                 onClick={() => setMobileOpen(false)}
               >
                 <X size={20} />
               </button>
             </div>
 
-            <nav className="flex-1 space-y-7 overflow-y-auto p-5 custom-scrollbar">
+            <nav className="flex-1 space-y-8 overflow-y-auto p-5 custom-scrollbar">
               <Link
                 href="/lookbook"
                 onClick={() => setMobileOpen(false)}
-                className="group relative block min-h-[210px] overflow-hidden bg-ink text-ivory"
+                className="group relative block min-h-[236px] overflow-hidden bg-ink text-ivory"
               >
                 <Image
                   src={editorialRooms[2].image}
@@ -182,18 +180,21 @@ export function Header() {
                   sizes="430px"
                   className="object-cover opacity-78 transition duration-[1200ms] group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.84),rgba(18,15,13,0.08))]" />
+                <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.88),rgba(0,0,0,0.08))]" />
                 <div className="absolute inset-x-5 bottom-5">
-                  <div className="font-subhead text-[9px] uppercase tracking-[0.2em] text-champagne-200">Entix lookbook</div>
+                  <div className="font-subhead text-[9px] uppercase tracking-[0.2em] text-champagne-200">Entix world</div>
                   <div className="mt-3 flex items-end justify-between gap-5">
-                    <div className="font-display text-[38px] font-light leading-none tracking-normal">Enter the lookbook</div>
+                    <div className="font-display text-[42px] font-light leading-[0.88] tracking-normal">Jewellery rooms</div>
                     <ArrowRight size={18} className="shrink-0" />
                   </div>
                 </div>
               </Link>
 
               <div>
-                <div className="px-1 pb-3 font-subhead text-[9px] uppercase tracking-[0.25em] text-ink/30">Shop rooms</div>
+                <div className="flex items-center justify-between border-b border-ink pb-3">
+                  <div className="font-subhead text-[9px] uppercase tracking-[0.25em] text-ink/42">Shop rooms</div>
+                  <div className="font-subhead text-[9px] uppercase tracking-[0.2em] text-champagne-700">Entix</div>
+                </div>
                 <div className="grid grid-cols-2 gap-px bg-ink/10">
                   {editorialCollections.map((link) => (
                     <Link
@@ -201,7 +202,7 @@ export function Header() {
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
                       className={cn(
-                        'min-h-28 bg-ivory p-4 transition-colors hover:bg-ink hover:text-ivory',
+                        'min-h-28 bg-white p-4 transition-colors hover:bg-ink hover:text-ivory',
                         pathname === link.href ? 'bg-ink text-ivory' : 'text-ink'
                       )}
                     >
@@ -216,8 +217,8 @@ export function Header() {
               </div>
 
               <div>
-                <div className="px-1 pb-3 font-subhead text-[9px] uppercase tracking-[0.25em] text-ink/30">More</div>
-                <div className="grid gap-1">
+                <div className="border-b border-ink pb-3 font-subhead text-[9px] uppercase tracking-[0.25em] text-ink/42">More</div>
+                <div>
                   {MOBILE_EXTRA.map((link) => (
                     <Link
                       key={link.href}
@@ -234,7 +235,7 @@ export function Header() {
 
               <div className="grid gap-px bg-ink/10">
                 {trustLayer.slice(0, 3).map((item, index) => (
-                  <div key={item.title} className="grid grid-cols-[36px_1fr] items-center gap-3 bg-[#f6f2eb] p-4">
+                  <div key={item.title} className="grid grid-cols-[36px_1fr] items-center gap-3 bg-[#f8f7f2] p-4">
                     <div className="flex h-9 w-9 items-center justify-center border border-ink/10 text-champagne-700">
                       {index === 0 ? <ShieldCheck size={15} /> : <Gem size={15} />}
                     </div>
@@ -251,7 +252,7 @@ export function Header() {
               <Link
                 href="/account"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 bg-ink px-4 py-3 font-subhead text-[11px] uppercase tracking-widest text-ivory transition-colors hover:bg-ink-2"
+                className="flex items-center gap-3 bg-ink px-4 py-3 font-subhead text-[11px] uppercase tracking-widest text-ivory transition-colors hover:bg-champagne-700"
               >
                 <User size={16} /> My Account
               </Link>
