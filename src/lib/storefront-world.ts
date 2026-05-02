@@ -69,6 +69,24 @@ export const trustLayer = [
   },
 ];
 
+export const housePrinciples = [
+  {
+    title: 'Silhouette first',
+    text: 'The shopper enters by shape: wrist, neckline, face, hand, ceremony, gift.',
+    cue: '01',
+  },
+  {
+    title: 'Proof beside emotion',
+    text: 'Material, stone, finish, care, dispatch, return eligibility, and sizing stay close to the story.',
+    cue: '02',
+  },
+  {
+    title: 'A slower luxury rhythm',
+    text: 'Fewer noisy blocks, more editorial spacing, sharper image reveals, and a quieter luxury rhythm.',
+    cue: '03',
+  },
+];
+
 export const lookbookScenes = [
   {
     title: 'Morning Gold',

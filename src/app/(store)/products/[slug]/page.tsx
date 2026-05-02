@@ -171,13 +171,13 @@ export default async function ProductPage({ params }: Props) {
   const storyImage = product.images[1]?.url || primaryImage;
 
   return (
-    <div className="bg-ivory px-6 pb-40 pt-10 lg:px-12 lg:pb-32">
+    <div className="entix-gold-wash px-6 pb-40 pt-8 lg:px-12 lg:pb-32 lg:pt-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="max-w-[1440px] mx-auto">
-        <nav className="mb-12 flex items-center gap-2 font-subhead text-[9px] uppercase tracking-widest text-ink/40">
+        <nav className="mb-10 flex items-center gap-2 overflow-x-auto pb-2 font-subhead text-[9px] uppercase tracking-widest text-ink/40">
            <Link href="/" className="hover:text-ink">Home</Link>
            <ChevronRight size={10} />
            <Link href="/collections/all" className="hover:text-ink">Catalogue</Link>
@@ -193,15 +193,16 @@ export default async function ProductPage({ params }: Props) {
               <div className="flex items-start justify-between gap-6">
                 <div className="min-w-0">
                   <div className="eyebrow mb-4">{product.material || product.occasion || 'Entix Piece'}</div>
-                  <h1 className="font-display text-5xl font-medium leading-[0.98] tracking-normal text-ink sm:text-6xl">
+                  <h1 className="max-w-2xl font-display text-5xl font-medium leading-[0.94] tracking-normal text-ink sm:text-6xl lg:text-7xl">
                     {product.title}
                   </h1>
                   {product.subtitle && (
                     <p className="mt-4 font-display text-[22px] italic leading-snug text-champagne-600">{product.subtitle}</p>
                   )}
                   <div className="mt-5 flex flex-wrap items-center gap-3 font-subhead text-[10px] uppercase tracking-[0.14em] text-ink/42">
-                    <span className="border border-ink/10 bg-white/45 px-3 py-1.5">{totalReviews > 0 ? `${averageRating.toFixed(1)} rating` : 'Review ready'}</span>
-                    <span className="border border-ink/10 bg-white/45 px-3 py-1.5">{product.isBestseller ? 'Bestseller' : product.isNewArrival ? 'New arrival' : 'Catalogue piece'}</span>
+                    <ProductSignal label={totalReviews > 0 ? `${averageRating.toFixed(1)} rating` : 'Reviews open'} />
+                    <ProductSignal label={product.isBestseller ? 'Most loved' : product.isNewArrival ? 'New piece' : 'Entix edit'} />
+                    {product.sku && <ProductSignal label={`SKU ${product.sku}`} />}
                   </div>
                 </div>
                 <WishlistButton
@@ -221,8 +222,8 @@ export default async function ProductPage({ params }: Props) {
             </ScrollReveal>
 
             <ScrollReveal delay={0.1}>
-              <div className="border border-ink/8 bg-white/45 p-5 sm:p-7">
-                <h2 className="font-subhead text-[10px] uppercase tracking-[0.2em] text-ink/35">Decision Details</h2>
+              <div className="border border-ink/8 bg-white/72 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.06)] backdrop-blur sm:p-7">
+                <h2 className="font-subhead text-[10px] uppercase tracking-[0.2em] text-ink/35">Piece Dossier</h2>
                 <p className="mt-5 text-[15px] leading-relaxed text-ink/62">{narrative}</p>
 
                 <div className="mt-8 grid gap-px bg-ink/8 sm:grid-cols-2">
@@ -364,6 +365,14 @@ function SpecRow({ label, value }: { label: string; value: string }) {
       <div className="font-subhead text-[9px] uppercase tracking-[0.18em] text-ink/35">{label}</div>
       <div className="mt-2 font-display text-[17px] font-medium leading-snug text-ink">{value}</div>
     </div>
+  );
+}
+
+function ProductSignal({ label }: { label: string }) {
+  return (
+    <span className="border border-ink/10 bg-white/55 px-3 py-1.5 backdrop-blur">
+      {label}
+    </span>
   );
 }
 

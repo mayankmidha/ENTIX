@@ -63,19 +63,19 @@ export function Header() {
           ? "border-champagne-500/28 bg-white/94 shadow-[0_14px_50px_rgba(0,0,0,0.06)] backdrop-blur-2xl"
           : "border-ink/5 bg-ivory/88 backdrop-blur-xl"
       )} onMouseLeave={() => setShopOpen(false)}>
-        <div className="relative mx-auto flex h-20 max-w-[1500px] items-center justify-between gap-8 px-6 lg:px-12">
+        <div className="relative mx-auto grid h-[74px] max-w-[1500px] grid-cols-[44px_minmax(104px,1fr)_auto] items-center gap-2 px-4 sm:h-20 sm:grid-cols-[52px_minmax(128px,1fr)_auto] sm:px-6 lg:flex lg:justify-between lg:gap-8 lg:px-12">
           {/* Mobile menu toggle */}
           <button
             type="button"
             aria-label="Open menu"
-            className="-ml-2 p-2 transition-colors hover:text-champagne-600 lg:hidden"
+            className="flex h-11 w-11 items-center justify-center transition-colors hover:text-champagne-600 lg:hidden"
             onClick={() => setMobileOpen(true)}
           >
             <Menu size={20} />
           </button>
 
           {/* Logo */}
-          <Link href="/" aria-label="Entix Jewellery home" className="absolute left-1/2 w-[106px] -translate-x-1/2 sm:w-[150px]">
+          <Link href="/" aria-label="Entix Jewellery home" className="w-[104px] justify-self-center sm:w-[140px] lg:absolute lg:left-1/2 lg:w-[150px] lg:-translate-x-1/2">
             <EntixLogo priority />
           </Link>
 
@@ -117,25 +117,25 @@ export function Header() {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-2 sm:gap-6">
+          <div className="flex items-center justify-end gap-1 justify-self-end sm:gap-4 lg:gap-6">
             <Link href="/gift-guide" className={cn('hidden xl:block', desktopNavClass)}>
               Gifts
             </Link>
             <Link href="/contact" className={cn('hidden xl:block', desktopNavClass)}>
               Contact
             </Link>
-            <Link href="/search" className="p-2 hover:text-champagne-500 transition-colors">
+            <Link href="/search" aria-label="Search Entix" className="flex h-11 w-9 items-center justify-center transition-colors hover:text-champagne-500 sm:w-11">
               <Search size={18} />
             </Link>
-            <Link href="/wishlist" className="p-2 hover:text-champagne-500 transition-colors hidden sm:block">
+            <Link href="/wishlist" aria-label="Wishlist" className="hidden h-11 w-11 items-center justify-center transition-colors hover:text-champagne-500 sm:flex">
               <Heart size={18} />
             </Link>
-            <Link href="/account" className="hidden p-2 transition-colors hover:text-champagne-500 sm:block">
+            <Link href="/account" aria-label="Account" className="hidden h-11 w-11 items-center justify-center transition-colors hover:text-champagne-500 sm:flex">
               <User size={18} />
             </Link>
             
             <CartDrawer>
-              <button type="button" aria-label="Open cart" className="group relative p-2 transition-colors hover:text-champagne-500">
+              <button type="button" aria-label="Open cart" className="group relative flex h-11 w-9 items-center justify-center transition-colors hover:text-champagne-500 sm:w-11">
                 <ShoppingBag size={18} />
                 {totalItems() > 0 && (
                   <span className="absolute -top-1 -right-1 h-4 w-4 bg-champagne-500 text-ink text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-ivory group-hover:scale-110 transition-transform">

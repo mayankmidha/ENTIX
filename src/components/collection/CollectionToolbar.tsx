@@ -63,7 +63,7 @@ export function CollectionToolbar() {
   return (
     <div className="relative">
       <div className="mb-10 grid gap-3 border-y border-ink/8 py-4 md:mb-16 md:grid-cols-[1fr_auto] md:items-center">
-        <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/42">
+        <div className="flex flex-wrap items-center gap-3 font-subhead text-[10px] uppercase tracking-[0.16em] text-ink/42">
           <button
             onClick={() => { setFiltersOpen(!filtersOpen); setSortOpen(false); }}
             className={cn(
@@ -121,7 +121,7 @@ export function CollectionToolbar() {
         <div className="relative w-full md:w-auto">
           <button
             onClick={() => { setSortOpen(!sortOpen); setFiltersOpen(false); }}
-            className="flex h-11 w-full items-center justify-between gap-4 border border-ink/10 bg-white/45 px-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/60 transition-colors hover:text-ink md:w-[230px]"
+            className="flex h-11 w-full items-center justify-between gap-4 border border-ink/10 bg-white/45 px-4 font-subhead text-[10px] uppercase tracking-[0.16em] text-ink/60 transition-colors hover:text-ink md:w-[230px]"
           >
             <span>Sort: {activeSortLabel}</span>
             <ChevronDown size={12} className={cn('transition-transform', sortOpen && 'rotate-180')} />
@@ -137,7 +137,7 @@ export function CollectionToolbar() {
                     setSortOpen(false);
                   }}
                   className={cn(
-                    'w-full px-4 py-3 text-left font-mono text-[10px] uppercase tracking-[0.16em] transition-colors',
+                    'w-full px-4 py-3 text-left font-subhead text-[10px] uppercase tracking-[0.16em] transition-colors',
                     activeSort === opt.value
                       ? 'bg-ink text-ivory'
                       : 'text-ink/60 hover:bg-ink/5 hover:text-ink',
@@ -157,7 +157,7 @@ export function CollectionToolbar() {
           <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4 md:gap-10">
             {/* Price Filter */}
             <div>
-              <h4 className="mb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/40">Price Range</h4>
+              <h4 className="mb-4 font-subhead text-[10px] uppercase tracking-[0.18em] text-ink/40">Price Range</h4>
               <div className="flex flex-wrap gap-2">
                 {PRICE_RANGES.map((range) => {
                   const isActive = activePrice === String(range.min);
@@ -171,7 +171,7 @@ export function CollectionToolbar() {
                         })
                       }
                       className={cn(
-                        'border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-all',
+                        'border px-4 py-2.5 font-subhead text-[10px] uppercase tracking-[0.14em] transition-all',
                         isActive
                           ? 'bg-ink text-ivory border-ink'
                           : 'border-ink/10 bg-ivory text-ink/50 hover:border-ink/30 hover:text-ink',
@@ -186,7 +186,7 @@ export function CollectionToolbar() {
 
             {/* Material Filter */}
             <div>
-              <h4 className="mb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/40">Material</h4>
+              <h4 className="mb-4 font-subhead text-[10px] uppercase tracking-[0.18em] text-ink/40">Material</h4>
               <div className="flex flex-wrap gap-2">
                 {MATERIALS.map((mat) => {
                   const isActive = activeMaterial === mat.toLowerCase();
@@ -199,7 +199,7 @@ export function CollectionToolbar() {
                         })
                       }
                       className={cn(
-                        'border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-all',
+                        'border px-4 py-2.5 font-subhead text-[10px] uppercase tracking-[0.14em] transition-all',
                         isActive
                           ? 'bg-ink text-ivory border-ink'
                           : 'border-ink/10 bg-ivory text-ink/50 hover:border-ink/30 hover:text-ink',
@@ -213,7 +213,7 @@ export function CollectionToolbar() {
             </div>
 
             <div>
-              <h4 className="mb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/40">Stone</h4>
+              <h4 className="mb-4 font-subhead text-[10px] uppercase tracking-[0.18em] text-ink/40">Stone</h4>
               <div className="flex flex-wrap gap-2">
                 {STONES.map((stone) => {
                   const isActive = activeStone === stone.toLowerCase();
@@ -226,7 +226,7 @@ export function CollectionToolbar() {
                         })
                       }
                       className={cn(
-                        'border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-all',
+                        'border px-4 py-2.5 font-subhead text-[10px] uppercase tracking-[0.14em] transition-all',
                         isActive
                           ? 'bg-ink text-ivory border-ink'
                           : 'border-ink/10 bg-ivory text-ink/50 hover:border-ink/30 hover:text-ink',
@@ -240,7 +240,7 @@ export function CollectionToolbar() {
             </div>
 
             <div>
-              <h4 className="mb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/40">Occasion</h4>
+              <h4 className="mb-4 font-subhead text-[10px] uppercase tracking-[0.18em] text-ink/40">Occasion</h4>
               <div className="flex flex-wrap gap-2">
                 {OCCASIONS.map((occasion) => {
                   const isActive = activeOccasion === occasion.toLowerCase();
@@ -253,7 +253,7 @@ export function CollectionToolbar() {
                         })
                       }
                       className={cn(
-                        'border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-all',
+                        'border px-4 py-2.5 font-subhead text-[10px] uppercase tracking-[0.14em] transition-all',
                         isActive
                           ? 'bg-ink text-ivory border-ink'
                           : 'border-ink/10 bg-ivory text-ink/50 hover:border-ink/30 hover:text-ink',
@@ -268,7 +268,7 @@ export function CollectionToolbar() {
               <button
                 onClick={() => updateQuery({ availability: activeAvailability ? null : 'in-stock' })}
                 className={cn(
-                  'mt-5 border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-all',
+                  'mt-5 border px-4 py-2.5 font-subhead text-[10px] uppercase tracking-[0.14em] transition-all',
                   activeAvailability
                     ? 'bg-ink text-ivory border-ink'
                     : 'border-ink/10 bg-ivory text-ink/50 hover:border-ink/30 hover:text-ink',

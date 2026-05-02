@@ -19,7 +19,7 @@ export function Hero() {
   const imageY = useTransform(scrollYProgress, [0, 1], [0, 90]);
 
   return (
-    <section ref={ref} className="relative isolate min-h-[88svh] overflow-hidden bg-ink text-ivory lg:min-h-[calc(100svh-104px)]">
+    <section ref={ref} className="relative isolate min-h-[82svh] overflow-hidden bg-ink text-ivory lg:min-h-[calc(100svh-156px)]">
       <motion.div style={{ y: imageY }} className="absolute inset-0 h-[112%]">
         <Image
           src={heroImage}
@@ -35,15 +35,15 @@ export function Hero() {
       <div className="absolute inset-y-0 right-[34%] hidden w-px bg-white/10 lg:block" />
       <div className="absolute inset-x-0 bottom-0 h-px bg-champagne-300/45" />
 
-      <div className="relative mx-auto flex min-h-[88svh] max-w-[1540px] flex-col justify-between px-6 pb-7 pt-8 lg:min-h-[calc(100svh-104px)] lg:px-12">
+      <div className="relative mx-auto flex min-h-[82svh] max-w-[1540px] flex-col justify-between px-6 pb-7 pt-8 lg:min-h-[calc(100svh-156px)] lg:px-12">
         <motion.div
           initial={{ opacity: 0, y: -14 }}
           animate={{ opacity: 1, y: 0 }}
           className="grid gap-4 border-b border-white/14 pb-5 font-subhead text-[10px] uppercase tracking-[0.24em] text-ivory/62 sm:grid-cols-3"
         >
-          <span>Fine jewellery</span>
-          <span className="hidden sm:block">Gold / Black / White</span>
-          <span className="hidden text-right sm:block">Objects for ceremony</span>
+          <span>Entix Jewellery</span>
+          <span className="hidden sm:block">Modern ritual objects</span>
+          <span className="hidden text-right sm:block">Rooms, gifts, ceremony</span>
         </motion.div>
 
         <motion.div style={{ y }} className="grid gap-10 py-12 lg:grid-cols-[0.9fr_0.44fr] lg:items-end lg:py-16">
@@ -53,7 +53,7 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               className="inline-flex items-center gap-3 border border-white/16 bg-white/8 px-4 py-2 font-subhead text-[10px] uppercase tracking-[0.24em] text-champagne-200 backdrop-blur"
             >
-              <Sparkles size={13} /> Made for the moment before yes
+              <Sparkles size={13} /> Jewellery for the moment that stays
             </motion.div>
 
             <motion.h1
@@ -72,8 +72,7 @@ export function Hero() {
               transition={{ delay: 0.28, duration: 0.9 }}
               className="mt-8 max-w-2xl text-[17px] leading-relaxed text-ivory/72 md:text-[19px]"
             >
-              A jewellery house built like an editorial world: cinematic collection rooms,
-              decision-ready product detail, and a quieter kind of Indian luxury.
+              Enter by silhouette, occasion, and feeling. Every Entix piece is framed with story, scale, care, and proof close to purchase.
             </motion.p>
 
             <motion.div
@@ -83,10 +82,10 @@ export function Hero() {
               className="mt-10 flex flex-col gap-3 sm:flex-row"
             >
               <Link href="/collections/all" className="bg-ivory px-9 py-4 text-center font-subhead text-[11px] uppercase tracking-[0.18em] text-ink shadow-xl transition-all hover:bg-champagne-100 active:scale-95">
-                Enter the collection
+                Shop the rooms
               </Link>
-              <Link href="/lookbook" className="inline-flex items-center justify-center gap-3 border border-white/22 bg-white/8 px-9 py-4 font-subhead text-[11px] uppercase tracking-[0.18em] text-ivory backdrop-blur transition-all hover:border-white/45 hover:bg-white/14">
-                View lookbook <ArrowRight size={14} />
+              <Link href="/gift-guide" className="inline-flex items-center justify-center gap-3 border border-white/22 bg-white/8 px-9 py-4 font-subhead text-[11px] uppercase tracking-[0.18em] text-ivory backdrop-blur transition-all hover:border-white/45 hover:bg-white/14">
+                Find a gift <ArrowRight size={14} />
               </Link>
             </motion.div>
           </div>
@@ -104,7 +103,7 @@ export function Hero() {
                 <div className="absolute bottom-4 left-4 right-4">
                   <div className="font-subhead text-[9px] uppercase tracking-[0.22em] text-champagne-200">Detail study</div>
                   <p className="mt-3 text-[13px] leading-relaxed text-ivory/62">
-                    Finish, scale, stone, care and dispatch sit close to every product.
+                    Finish, scale, stone, care, and dispatch stay close to every product.
                   </p>
                 </div>
               </div>

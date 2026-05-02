@@ -253,7 +253,14 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       <header className="relative flex min-h-[70svh] items-end overflow-hidden px-6 pb-12 lg:px-12 lg:pb-16">
         <div className="absolute inset-0 z-0">
            {collection.heroImage ? (
-             <img src={collection.heroImage} className="h-full w-full object-cover" alt={collection.title} />
+             <Image
+               src={collection.heroImage}
+               alt={collection.title}
+               fill
+               sizes="100vw"
+               className="object-cover"
+               priority
+             />
            ) : (
              <div className="h-full w-full bg-ink" />
            )}
@@ -263,14 +270,14 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
            <ScrollReveal>
               <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">{collection.eyebrow}</div>
-              <div className="mt-8 grid max-w-sm grid-cols-2 gap-px bg-ivory/20">
-                <div className="bg-ink/35 p-4 backdrop-blur">
-                  <div className="font-display text-[30px] font-medium leading-none text-ivory">{collection.products.length}</div>
-                  <div className="mt-2 font-subhead text-[9px] uppercase tracking-[0.14em] text-ivory/48">Pieces</div>
-                </div>
-                <div className="bg-ink/35 p-4 backdrop-blur">
-                  <div className="font-display text-[30px] font-medium leading-none text-ivory">{filteredProducts.length}</div>
-                  <div className="mt-2 font-subhead text-[9px] uppercase tracking-[0.14em] text-ivory/48">Visible</div>
+              <div className="mt-8 max-w-sm border-l border-champagne-300/45 pl-5">
+                <p className="font-subhead text-[16px] italic leading-relaxed text-ivory/68">{mood.wear}</p>
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {['Material clarity', 'Size confidence', 'Gift logic'].map((item) => (
+                    <span key={item} className="border border-white/16 bg-white/8 px-3 py-1.5 font-subhead text-[9px] uppercase tracking-[0.16em] text-ivory/56 backdrop-blur">
+                      {item}
+                    </span>
+                  ))}
                 </div>
               </div>
             </ScrollReveal>

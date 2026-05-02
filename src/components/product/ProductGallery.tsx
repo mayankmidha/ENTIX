@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight, Expand, X } from 'lucide-react';
 
@@ -48,10 +49,12 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
                   : 'border-ink/5 opacity-55 hover:border-ink/30 hover:opacity-100',
               )}
             >
-              <img
+              <Image
                 src={img.url}
                 alt={img.alt || `${title} thumbnail ${i + 1}`}
-                className="h-full w-full object-cover"
+                fill
+                sizes="104px"
+                className="object-cover"
               />
             </button>
           ))}
@@ -61,13 +64,16 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
       <div className="order-1 space-y-4 lg:order-2">
         {/* Main image */}
         <div className="group relative aspect-[4/5] overflow-hidden border border-ink/8 bg-ivory-2">
-          <img
+          <Image
             src={current.url}
             alt={current.alt || title}
-            className="h-full w-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
+            fill
+            sizes="(min-width: 1024px) 52vw, 100vw"
+            className="object-cover transition-transform duration-[1.5s] group-hover:scale-105"
+            priority
           />
 
-          <div className="absolute left-4 top-4 border border-white/40 bg-white/50 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur">
+          <div className="absolute left-4 top-4 border border-white/40 bg-white/50 px-3 py-1.5 font-subhead text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur">
             {active + 1} / {images.length}
           </div>
 
@@ -105,7 +111,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
         </div>
 
         {images.length > 1 && (
-          <div className="grid grid-cols-3 gap-px bg-ink/8 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/36">
+          <div className="grid grid-cols-3 gap-px bg-ink/8 font-subhead text-[9px] uppercase tracking-[0.14em] text-ink/36">
             <div className="bg-ivory py-3 text-center">Macro</div>
             <div className="bg-ivory py-3 text-center">Scale</div>
             <div className="bg-ivory py-3 text-center">Finish</div>
@@ -121,11 +127,15 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
           onClick={() => setLightbox(false)}
           className="fixed inset-0 z-[100] bg-ink/95 backdrop-blur-sm flex items-center justify-center p-8 cursor-zoom-out"
         >
-          <img
-            src={current.url}
-            alt={current.alt || title}
-            className="max-h-full max-w-full object-contain"
-          />
+          <div className="relative h-[86vh] w-[88vw]" onClick={(event) => event.stopPropagation()}>
+            <Image
+              src={current.url}
+              alt={current.alt || title}
+              fill
+              sizes="88vw"
+              className="object-contain"
+            />
+          </div>
           <button
             type="button"
             onClick={() => setLightbox(false)}
