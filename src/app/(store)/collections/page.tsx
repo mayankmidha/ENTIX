@@ -2,17 +2,21 @@ import { prisma } from '@/lib/prisma';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { entixImages } from '@/lib/visual-assets';
+import { hasDatabaseUrl } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
 export default async function CollectionsLandingPage() {
-  const [collections, productCount] = await Promise.all([
-    prisma.collection.findMany({
-      where: { isActive: true },
-      orderBy: { position: 'asc' }
-    }),
-    prisma.product.count({ where: { isActive: true } }).catch(() => 0),
-  ]);
+  const [collections, productCount] = hasDatabaseUrl()
+    ? await Promise.all([
+        prisma.collection.findMany({
+          where: { isActive: true },
+          orderBy: { position: 'asc' }
+        }).catch(() => []),
+        prisma.product.count({ where: { isActive: true } }).catch(() => 0),
+      ])
+    : [[], 0];
 
   const rooms = collections.length > 0 ? collections : SAMPLE_COLLECTIONS;
 
@@ -87,28 +91,28 @@ const SAMPLE_COLLECTIONS = [
     slug: 'all',
     title: 'Ceremony',
     subtitle: 'Bridal, festive, and evening pieces for the first catalogue import.',
-    heroImage: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1300&q=92',
+    heroImage: entixImages.ceremonialBride,
   },
   {
     id: 'sample-bangles',
     slug: 'bangles',
     title: 'Bangles',
     subtitle: 'Stackable forms, cuffs, and sculptural wristwear.',
-    heroImage: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1300&q=92',
+    heroImage: entixImages.bangles,
   },
   {
     id: 'sample-necklaces',
     slug: 'necklaces',
     title: 'Necklines',
     subtitle: 'Pendants, chains, and statement necklaces.',
-    heroImage: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1300&q=92',
+    heroImage: entixImages.necklacePortrait,
   },
   {
     id: 'sample-gifting',
     slug: 'earrings',
     title: 'Gifting',
     subtitle: 'Accessible shine for birthdays, festivals, and everyday rituals.',
-    heroImage: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1300&q=92',
+    heroImage: entixImages.gifting,
   },
 ];
 

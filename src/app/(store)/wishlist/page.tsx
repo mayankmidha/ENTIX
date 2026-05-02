@@ -1,10 +1,12 @@
 'use client';
 
+import Image from 'next/image';
 import { useWishlist } from '@/stores/wishlist-store';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { Heart, ArrowRight, ShoppingBag } from 'lucide-react';
+import { Heart, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { entixImages } from '@/lib/visual-assets';
 
 export default function WishlistPage() {
   const { items } = useWishlist();
@@ -59,8 +61,8 @@ export default function WishlistPage() {
                  </p>
                  <Link href="/contact" className="mt-8 inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-ink underline-draw">Contact Entix Care <ArrowRight size={14} /></Link>
               </div>
-              <div className="aspect-[16/7] overflow-hidden border border-ink/5">
-                 <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=85" className="h-full w-full object-cover grayscale" alt="" />
+              <div className="relative aspect-[16/7] overflow-hidden border border-ink/5">
+                 <Image src={entixImages.necklacePortrait} fill sizes="(min-width: 1024px) 50vw, 92vw" className="object-cover grayscale" alt="Entix necklace detail" />
               </div>
            </div>
         </div>

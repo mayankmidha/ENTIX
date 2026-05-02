@@ -3,10 +3,10 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 const heroImages = [
-  'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1400&q=90',
-  'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=90',
-  'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=90',
-  'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=90',
+  '/images/entix/entix-collection-still-life.png',
+  '/images/entix/entix-hero-bangles-rings.png',
+  '/images/entix/entix-gift-box-still-life.png',
+  '/images/entix/entix-collection-still-life.png',
 ];
 
 const products = [
@@ -85,13 +85,7 @@ async function main() {
 
   const bySlug = new Map(collectionRows.map((collection) => [collection.slug, collection]));
 
-  const imagePool = [
-    'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=90',
-    'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=90',
-    'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1200&q=90',
-    'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1200&q=90',
-    'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=1200&q=90',
-  ];
+  const imagePool = Array.from({ length: 15 }, (_, index) => `/images/entix/product-${String(index + 1).padStart(2, '0')}.png`);
 
   const createdProducts = [];
 

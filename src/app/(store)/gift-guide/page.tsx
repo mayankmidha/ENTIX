@@ -8,6 +8,7 @@ import { GiftFinder } from '@/components/gift/GiftFinder';
 import { prisma } from '@/lib/prisma';
 import { hasDatabaseUrl } from '@/lib/settings';
 import { editorialCollections, giftEdits, trustLayer } from '@/lib/storefront-world';
+import { entixImages } from '@/lib/visual-assets';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +47,7 @@ export default async function GiftGuidePage() {
     <div className="bg-ivory text-ink">
       <section className="relative min-h-[76svh] overflow-hidden px-6 pb-10 pt-20 lg:px-12 lg:pb-14">
         <Image
-          src="https://images.unsplash.com/photo-1531995811006-35cb42e1a022?auto=format&fit=crop&w=1800&q=92"
+          src={entixImages.gifting}
           alt="Entix jewellery gift guide"
           fill
           priority

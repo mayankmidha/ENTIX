@@ -1,16 +1,17 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Eye, Plus, ShoppingBag } from 'lucide-react';
+import { Eye, Plus } from 'lucide-react';
 import { formatInr } from '@/lib/utils';
 import { useCart } from '@/stores/cart-store';
 import { toast } from 'sonner';
 import { WishlistButton } from './WishlistButton';
+import { normalizeEntixImage } from '@/lib/visual-assets';
 
 export function ProductCard({ product }: { product: any }) {
   const { add } = useCart();
-  const primaryImage = product.image || null;
-  const hoverImage = product.imageHover || null;
+  const primaryImage = normalizeEntixImage(product.image, product.slug || product.title);
+  const hoverImage = product.imageHover ? normalizeEntixImage(product.imageHover, product.slug || product.title, 1) : null;
   const meta = [product.material, product.gemstone || product.finish].filter(Boolean).slice(0, 2).join(' / ');
   const compareAt = product.compareAtInr && product.compareAtInr > product.priceInr ? product.compareAtInr : null;
   const hasStockSignal = product.inventory?.stockQty !== undefined && product.inventory?.stockQty !== null;
@@ -34,19 +35,13 @@ export function ProductCard({ product }: { product: any }) {
     <article className="group transition duration-500 motion-safe:hover:-translate-y-1">
       <div className="relative block aspect-[4/5] overflow-hidden bg-[#eee8de] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)] transition-shadow duration-500 group-hover:shadow-[inset_0_0_0_1px_rgba(166,150,100,0.42),0_28px_80px_rgba(0,0,0,0.12)]">
         <Link href={`/products/${product.slug}`} className="absolute inset-0 z-0" aria-label={`View ${product.title}`}>
-          {primaryImage ? (
-            <Image
-              src={primaryImage}
-              alt={product.title}
-              fill
-              sizes="(min-width: 1280px) 24vw, (min-width: 768px) 45vw, 92vw"
-              className="object-cover transition-transform duration-[1400ms] motion-safe:group-hover:scale-105"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-ivory-2 text-ink/10">
-              <ShoppingBag size={28} />
-            </div>
-          )}
+          <Image
+            src={primaryImage}
+            alt={product.title}
+            fill
+            sizes="(min-width: 1280px) 24vw, (min-width: 768px) 45vw, 92vw"
+            className="object-cover transition-transform duration-[1400ms] motion-safe:group-hover:scale-105"
+          />
           {hoverImage && (
             <Image
               src={hoverImage}

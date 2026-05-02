@@ -1,5 +1,7 @@
+import Image from 'next/image';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { Gem, PackageCheck, ShieldCheck, Sparkles } from 'lucide-react';
+import { entixImages } from '@/lib/visual-assets';
 
 export const dynamic = 'force-dynamic';
 
@@ -7,8 +9,11 @@ export default function AboutPage() {
   return (
     <div className="bg-ivory min-h-screen pb-32">
       <header className="relative h-[70vh] flex items-center justify-center overflow-hidden bg-ink">
-        <img 
-          src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=2000&q=90" 
+        <Image
+          src={entixImages.bridalClose}
+          fill
+          priority
+          sizes="100vw"
           className="absolute inset-0 w-full h-full object-cover opacity-50 grayscale"
           alt="Entix jewellery studio"
         />
@@ -56,15 +61,15 @@ export default function AboutPage() {
 
         <div className="mt-32 grid gap-12 md:grid-cols-2">
            <ScrollReveal delay={0.1}>
-              <div className="aspect-[4/5] overflow-hidden border border-ink/5">
-                 <img src="https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1200&q=88" className="w-full h-full object-cover" alt="" />
+              <div className="relative aspect-[4/5] overflow-hidden border border-ink/5">
+                 <Image src={entixImages.blackJewellery} fill sizes="(min-width: 768px) 50vw, 92vw" className="object-cover" alt="Entix product archive jewellery detail" />
               </div>
               <h3 className="font-display text-2xl font-medium text-ink mt-8">The Product Archive</h3>
               <p className="font-mono text-[12px] text-ink/40 uppercase tracking-widest mt-2">Built for detailed product storytelling.</p>
            </ScrollReveal>
            <ScrollReveal delay={0.2}>
-              <div className="aspect-[4/5] overflow-hidden border border-ink/5 md:translate-y-12">
-                 <img src="https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?auto=format&fit=crop&w=1200&q=88" className="w-full h-full object-cover" alt="" />
+              <div className="relative aspect-[4/5] overflow-hidden border border-ink/5 md:translate-y-12">
+                 <Image src={entixImages.ceremonialBride} fill sizes="(min-width: 768px) 50vw, 92vw" className="object-cover" alt="Entix ceremonial jewellery craft" />
               </div>
               <h3 className="font-display text-2xl font-medium text-ink mt-8 md:mt-20">Artisanal Craft</h3>
               <p className="font-mono text-[12px] text-ink/40 uppercase tracking-widest mt-2">Finished by hand, for you.</p>

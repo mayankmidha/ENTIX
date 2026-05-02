@@ -7,8 +7,9 @@ import { Hero } from '@/components/home/HeroClient';
 import { Marquee } from '@/components/home/Marquee';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { giftEdits, housePrinciples, lookbookScenes, trustLayer } from '@/lib/storefront-world';
+import { editorialCollections, giftEdits, lookbookScenes, trustLayer } from '@/lib/storefront-world';
 import { getSiteSettings, hasDatabaseUrl } from '@/lib/settings';
+import { entixImages } from '@/lib/visual-assets';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 60;
@@ -19,29 +20,22 @@ const collectionRooms = [
     kicker: 'Bridal, vows, family photographs',
     text: 'A room for heavier light: heirloom necklines, statement bangles, and pieces that hold a portrait.',
     href: '/collections/bridal',
-    image: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1500&q=92',
+    image: entixImages.ceremonialBride,
   },
   {
     title: 'The Wrist',
     kicker: 'Stacks, cuffs, bangles',
     text: 'Graphic wristwear with enough presence to stand alone and enough restraint to stack beautifully.',
     href: '/collections/bangles',
-    image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1500&q=92',
+    image: entixImages.bangles,
   },
   {
     title: 'The Portrait',
     kicker: 'Necklines, earrings, rings',
     text: 'Pieces chosen around the face, hand, and collarbone, where jewellery becomes part of expression.',
     href: '/collections/necklaces',
-    image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1500&q=92',
+    image: entixImages.necklacePortrait,
   },
-];
-
-const shopSignals = [
-  { label: 'Bangles', text: 'Stack / cuff / ceremony', href: '/collections/bangles' },
-  { label: 'Necklaces', text: 'Pendant / chain / bridal', href: '/collections/necklaces' },
-  { label: 'Earrings', text: 'Stud / hoop / drop', href: '/collections/earrings' },
-  { label: 'Rings', text: 'Band / object / cocktail', href: '/collections/rings' },
 ];
 
 async function getHomeData() {
@@ -81,81 +75,8 @@ export default async function HomePage() {
       <Hero />
       <Marquee />
 
-      <section className="relative overflow-hidden bg-ink px-6 py-20 text-ivory lg:px-12 lg:py-28">
-        <div className="absolute inset-0 noise opacity-20" />
-        <div className="absolute inset-x-0 top-0 h-px bg-champagne-500/40" />
-        <div className="relative z-10 mx-auto max-w-[1500px]">
-          <ScrollReveal className="grid gap-12 lg:grid-cols-[0.74fr_1.26fr] lg:items-end">
-            <div>
-              <div className="font-subhead text-[10px] uppercase tracking-[0.24em] text-champagne-300">
-                {contentSettings['content.homeEyebrow']}
-              </div>
-              <p className="mt-7 max-w-sm text-[14px] leading-relaxed text-ivory/52">
-                Enter a quiet jewellery house shaped around modern Indian rituals: ceremony, gifting, daily signatures, and the pieces that stay.
-              </p>
-            </div>
-            <h2 className="max-w-5xl font-display text-[clamp(4.2rem,11vw,12.5rem)] font-light leading-[0.78] tracking-normal">
-              A house of jewellery rooms.
-            </h2>
-          </ScrollReveal>
-
-          <div className="mt-16 grid gap-px bg-white/10 lg:grid-cols-[1.15fr_0.85fr]">
-            <ScrollReveal>
-              <Link href="/lookbook" className="group relative block min-h-[620px] overflow-hidden bg-ink text-ivory">
-                <Image
-                  src={lookbookScenes[1].image}
-                  alt={lookbookScenes[1].title}
-                  fill
-                  sizes="(min-width: 1024px) 58vw, 100vw"
-                  className="object-cover opacity-78 transition duration-[1600ms] group-hover:scale-105 group-hover:opacity-92"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(0,0,0,0.92),rgba(0,0,0,0.34)_52%,rgba(0,0,0,0.08))]" />
-                <div className="absolute inset-x-6 bottom-6 sm:inset-x-10 sm:bottom-10">
-                  <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">Opening scene</div>
-                  <h3 className="mt-5 max-w-3xl font-display text-6xl font-light leading-[0.86] tracking-normal sm:text-7xl lg:text-8xl">
-                    Jewellery as a moving frame.
-                  </h3>
-                  <div className="mt-8 inline-flex items-center gap-3 border border-white/20 px-5 py-3 font-subhead text-[10px] uppercase tracking-[0.18em] text-ivory transition-colors group-hover:border-champagne-300 group-hover:text-champagne-200">
-                    View the lookbook <ArrowRight size={13} />
-                  </div>
-                </div>
-              </Link>
-            </ScrollReveal>
-
-            <div className="grid gap-px bg-white/10">
-              {housePrinciples.map((principle, index) => (
-                <ScrollReveal key={principle.title} delay={index * 0.05}>
-                  <div className="grid min-h-[206px] grid-cols-[74px_1fr] bg-ink p-5 transition-colors hover:bg-[#0c0b08] sm:p-7">
-                    <div className="font-display text-[44px] leading-none text-champagne-300/70">{principle.cue}</div>
-                    <div>
-                      <h3 className="font-display text-[34px] font-light leading-none tracking-normal">{principle.title}</h3>
-                      <p className="mt-5 max-w-md text-[13px] leading-relaxed text-ivory/50">{principle.text}</p>
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-ink px-6 py-5 text-ivory lg:px-12">
-        <div className="mx-auto grid max-w-[1500px] gap-px bg-white/12 md:grid-cols-4">
-          {shopSignals.map((signal) => (
-            <Link
-              key={signal.href}
-              href={signal.href}
-              className="group flex min-h-28 flex-col justify-between bg-ink p-5 transition-colors hover:bg-ivory hover:text-ink"
-            >
-              <span className="font-subhead text-[9px] uppercase tracking-[0.16em] text-current/42">{signal.text}</span>
-              <span className="mt-7 flex items-center justify-between gap-4 font-display text-[25px] font-light leading-none tracking-normal">
-                {signal.label}
-                <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
+      <WorldPrelude eyebrow={contentSettings['content.homeEyebrow']} />
+      <SilhouetteIndex />
 
       <section className="relative overflow-hidden bg-ivory px-6 py-20 lg:px-12 lg:py-28">
         <div className="entix-rule opacity-70" />
@@ -354,23 +275,125 @@ function TrustCard({ icon: Icon, title, text }: { icon: LucideIcon; title: strin
   );
 }
 
+function WorldPrelude({ eyebrow }: { eyebrow?: string }) {
+  const chapters = [
+    { label: '01', title: 'Object', text: 'Macro gold, stone, silk, and scale before any catalogue noise.' },
+    { label: '02', title: 'Ritual', text: 'Ceremony, gifting, daily signatures, and the pieces that stay.' },
+    { label: '03', title: 'Proof', text: 'Material, finish, care, dispatch, and authenticity stay beside desire.' },
+  ];
+
+  return (
+    <section className="relative overflow-hidden bg-ink px-6 py-20 text-ivory lg:px-12 lg:py-28">
+      <div className="absolute inset-0 noise opacity-18" />
+      <div className="absolute inset-x-0 top-0 h-px bg-champagne-500/40" />
+      <div className="relative z-10 mx-auto grid max-w-[1500px] gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-end">
+        <ScrollReveal>
+          <div className="font-subhead text-[10px] uppercase tracking-[0.24em] text-champagne-300">
+            {eyebrow || 'Entix Jewellery'}
+          </div>
+          <p className="mt-7 max-w-sm text-[14px] leading-relaxed text-ivory/56">
+            Built like an editorial jewellery house first, then made shoppable: one controlled world of black silk, ivory stone, and muted Entix gold.
+          </p>
+        </ScrollReveal>
+        <ScrollReveal delay={0.08}>
+          <h2 className="max-w-5xl font-display text-[clamp(4.2rem,11vw,12.5rem)] font-light leading-[0.78] tracking-normal">
+            A world before a grid.
+          </h2>
+        </ScrollReveal>
+      </div>
+
+      <div className="relative z-10 mx-auto mt-14 grid max-w-[1500px] gap-px bg-white/10 lg:grid-cols-[1.2fr_0.8fr]">
+        <ScrollReveal>
+          <Link href="/lookbook" className="group relative block min-h-[620px] overflow-hidden bg-ink text-ivory">
+            <Image
+              src={lookbookScenes[1].image}
+              alt="Entix jewellery still life"
+              fill
+              sizes="(min-width: 1024px) 58vw, 100vw"
+              className="object-cover opacity-88 transition duration-[1600ms] group-hover:scale-105 group-hover:opacity-100"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(0,0,0,0.9),rgba(0,0,0,0.28)_52%,rgba(0,0,0,0.02))]" />
+            <div className="absolute inset-x-6 bottom-6 sm:inset-x-10 sm:bottom-10">
+              <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">Opening scene</div>
+              <h3 className="mt-5 max-w-3xl font-display text-6xl font-light leading-[0.86] tracking-normal sm:text-7xl lg:text-8xl">
+                Jewellery staged like desire.
+              </h3>
+              <div className="mt-8 inline-flex items-center gap-3 border border-white/20 px-5 py-3 font-subhead text-[10px] uppercase tracking-[0.18em] text-ivory transition-colors group-hover:border-champagne-300 group-hover:text-champagne-200">
+                View the lookbook <ArrowRight size={13} />
+              </div>
+            </div>
+          </Link>
+        </ScrollReveal>
+
+        <div className="grid gap-px bg-white/10">
+          {chapters.map((chapter, index) => (
+            <ScrollReveal key={chapter.title} delay={index * 0.05}>
+              <div className="grid min-h-[206px] grid-cols-[74px_1fr] bg-ink p-5 transition-colors hover:bg-[#0c0b08] sm:p-7">
+                <div className="font-display text-[44px] leading-none text-champagne-300/70">{chapter.label}</div>
+                <div>
+                  <h3 className="font-display text-[34px] font-light leading-none tracking-normal">{chapter.title}</h3>
+                  <p className="mt-5 max-w-md text-[13px] leading-relaxed text-ivory/50">{chapter.text}</p>
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SilhouetteIndex() {
+  return (
+    <section className="bg-ink px-6 py-5 text-ivory lg:px-12">
+      <div className="mx-auto grid max-w-[1500px] gap-px bg-white/12 md:grid-cols-4">
+        {editorialCollections.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="group grid min-h-[210px] grid-rows-[1fr_auto] bg-ink p-3 transition-colors hover:bg-ivory hover:text-ink"
+          >
+            <div className="relative overflow-hidden bg-white/5">
+              <Image
+                src={item.image}
+                alt={item.label}
+                fill
+                sizes="(min-width: 1024px) 25vw, 92vw"
+                className="object-cover opacity-70 transition duration-[1200ms] group-hover:scale-105 group-hover:opacity-100"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-transparent transition-opacity group-hover:opacity-0" />
+            </div>
+            <div className="flex items-end justify-between gap-4 p-2 pt-4">
+              <div>
+                <span className="font-subhead text-[9px] uppercase tracking-[0.16em] text-current/42">{item.kicker}</span>
+                <span className="mt-3 block font-display text-[30px] font-light leading-none tracking-normal">{item.label}</span>
+              </div>
+              <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function EditorialPlaceholderGrid({ compact = false }: { compact?: boolean }) {
   const items = [
     {
       title: 'Ceremonial Bangles',
-      image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=900&q=92',
+      image: entixImages.bangles,
     },
     {
       title: 'Gold Necklines',
-      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=900&q=92',
+      image: entixImages.necklacePortrait,
     },
     {
       title: 'Ring Objects',
-      image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=92',
+      image: entixImages.ringStudy,
     },
     {
       title: 'Festive Drops',
-      image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=92',
+      image: entixImages.eveningJewellery,
     },
   ];
 

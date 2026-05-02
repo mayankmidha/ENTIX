@@ -9,6 +9,7 @@ import type { Product, ProductVariant, ProductImage, InventoryItem } from '@pris
 import { QuantityStepper } from './QuantityStepper';
 import { SizeGuideButton } from './SizeGuide';
 import { NotifyMe } from './NotifyMe';
+import { normalizeEntixImage } from '@/lib/visual-assets';
 
 interface ProductActionsProps {
   product: Product & { 
@@ -47,7 +48,7 @@ export function ProductActions({ product }: ProductActionsProps) {
       slug: product.slug,
       title: selectedVariant ? `${product.title} - ${selectedVariant.title}` : product.title,
       priceInr: currentPrice,
-      imageUrl: product.images[0]?.url,
+      imageUrl: normalizeEntixImage(product.images[0]?.url, product.slug),
       engraving: engraving.trim() || undefined,
     }, quantity);
     

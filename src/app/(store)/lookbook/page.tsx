@@ -4,6 +4,7 @@ import { ArrowRight, Gem, ShieldCheck, Sparkles } from 'lucide-react';
 import { Metadata } from 'next';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { editorialCollections, lookbookScenes, trustLayer } from '@/lib/storefront-world';
+import { entixImages } from '@/lib/visual-assets';
 
 export const metadata: Metadata = {
   title: 'Lookbook | Entix Jewellery',
@@ -15,7 +16,7 @@ export default function LookbookPage() {
     <div className="bg-ivory text-ink">
       <section className="relative flex min-h-[82svh] items-end overflow-hidden px-6 pb-10 pt-20 lg:px-12 lg:pb-14">
         <Image
-          src="https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?auto=format&fit=crop&w=1800&q=92"
+          src={entixImages.highCeremony}
           alt="Entix jewellery lookbook"
           fill
           priority

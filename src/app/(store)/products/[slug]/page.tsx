@@ -16,6 +16,7 @@ import { RelatedProducts } from '@/components/product/RelatedProducts';
 import { WishlistButton } from '@/components/product/WishlistButton';
 import { getCanonicalBaseUrl } from '@/lib/site-url';
 import { getSiteSettings } from '@/lib/settings';
+import { normalizeEntixImage } from '@/lib/visual-assets';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const format = settings['seo.defaultProductTitle'] || '{product} | Entix Jewellery';
   const title = product.metaTitle || product.seoTitle || format.replace('{product}', product.title);
   const description = product.metaDescription || product.seoDescription || product.description.slice(0, 160);
-  const image = product.images[0]?.url;
+  const image = normalizeEntixImage(product.images[0]?.url, product.slug);
   const baseUrl = getCanonicalBaseUrl(settings['domain.canonical'], settings['domain.primary']);
 
   return {
@@ -105,7 +106,7 @@ export default async function ProductPage({ params }: Props) {
     '@type': 'Product',
     name: product.title,
     description: product.description,
-    image: product.images.map(img => img.url),
+    image: product.images.map((img, index) => normalizeEntixImage(img.url, product.slug, index)),
     sku: product.sku,
     brand: {
       '@type': 'Brand',
@@ -167,8 +168,8 @@ export default async function ProductPage({ params }: Props) {
   const specs = schemaProperties.map((item) => ({ label: item.name, value: item.value }));
   const narrative = product.story || product.description;
   const careText = product.careInstructions || 'Store separately, keep away from perfume and water, and wipe gently with a soft cloth after wear.';
-  const primaryImage = product.images[0]?.url || null;
-  const storyImage = product.images[1]?.url || primaryImage;
+  const primaryImage = normalizeEntixImage(product.images[0]?.url, product.slug);
+  const storyImage = normalizeEntixImage(product.images[1]?.url, product.slug, 1);
 
   return (
     <div className="entix-gold-wash px-6 pb-40 pt-8 lg:px-12 lg:pb-32 lg:pt-10">

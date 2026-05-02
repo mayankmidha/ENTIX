@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight, Expand, X } from 'lucide-react';
+import { normalizeEntixImage } from '@/lib/visual-assets';
 
 interface GalleryImage {
   url: string;
@@ -18,25 +19,23 @@ interface ProductGalleryProps {
 export function ProductGallery({ images, title }: ProductGalleryProps) {
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
+  const safeImages = images.length > 0
+    ? images.map((image, index) => ({
+        ...image,
+        url: normalizeEntixImage(image.url, title, index),
+      }))
+    : [{ url: normalizeEntixImage(null, title), alt: title }];
 
-  if (images.length === 0) {
-    return (
-      <div className="flex aspect-square items-center justify-center border border-ink/8 bg-ivory-2 font-display text-2xl italic text-ink/10">
-        Product imagery required
-      </div>
-    );
-  }
-
-  const current = images[active];
-  const next = () => setActive((active + 1) % images.length);
-  const prev = () => setActive((active - 1 + images.length) % images.length);
+  const current = safeImages[active];
+  const next = () => setActive((active + 1) % safeImages.length);
+  const prev = () => setActive((active - 1 + safeImages.length) % safeImages.length);
 
   return (
-    <div className={cn('grid gap-4', images.length > 1 && 'lg:grid-cols-[88px_1fr]')}>
+    <div className={cn('grid gap-4', safeImages.length > 1 && 'lg:grid-cols-[88px_1fr]')}>
       {/* Thumbnails */}
-      {images.length > 1 && (
+      {safeImages.length > 1 && (
         <div className="order-2 flex gap-3 overflow-x-auto pb-1 lg:order-1 lg:flex-col lg:overflow-visible lg:pb-0">
-          {images.map((img, i) => (
+          {safeImages.map((img, i) => (
             <button
               key={img.url + i}
               type="button"
@@ -74,7 +73,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
           />
 
           <div className="absolute left-4 top-4 border border-white/40 bg-white/50 px-3 py-1.5 font-subhead text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur">
-            {active + 1} / {images.length}
+            {active + 1} / {safeImages.length}
           </div>
 
           {/* Expand button */}
@@ -88,7 +87,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
           </button>
 
           {/* Prev / Next */}
-          {images.length > 1 && (
+          {safeImages.length > 1 && (
             <>
               <button
                 type="button"
@@ -110,7 +109,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
           )}
         </div>
 
-        {images.length > 1 && (
+        {safeImages.length > 1 && (
           <div className="grid grid-cols-3 gap-px bg-ink/8 font-subhead text-[9px] uppercase tracking-[0.14em] text-ink/36">
             <div className="bg-ivory py-3 text-center">Macro</div>
             <div className="bg-ivory py-3 text-center">Scale</div>
@@ -144,7 +143,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
           >
             <X size={18} />
           </button>
-          {images.length > 1 && (
+          {safeImages.length > 1 && (
             <>
               <button
                 type="button"

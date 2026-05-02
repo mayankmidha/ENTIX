@@ -6,11 +6,10 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { useRef } from 'react';
 import { EntixLogo } from '@/components/brand/EntixLogo';
+import { entixImages } from '@/lib/visual-assets';
 
-const heroImage =
-  'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=2200&q=94';
-const detailImage =
-  'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=92';
+const heroImage = entixImages.hero;
+const detailImage = entixImages.heroDetail;
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
