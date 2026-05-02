@@ -9,6 +9,7 @@
 @font-face {
   font-family: 'Brown Sugar';
   src:
+    url('/fonts/entix/Brown-Sugar-Regular.woff2') format('woff2'),
     local('Brown Sugar'),
     local('BrownSugar'),
     local('Brown Sugar Regular');

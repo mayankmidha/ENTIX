@@ -75,7 +75,7 @@ export function Header() {
           </button>
 
           {/* Logo */}
-          <Link href="/" aria-label="Entix Jewellery home" className="absolute left-1/2 w-[128px] -translate-x-1/2 sm:w-[150px]">
+          <Link href="/" aria-label="Entix Jewellery home" className="absolute left-1/2 w-[106px] -translate-x-1/2 sm:w-[150px]">
             <EntixLogo priority />
           </Link>
 
@@ -119,7 +119,7 @@ export function Header() {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-2 sm:gap-6">
             <Link href="/gift-guide" className={cn('hidden xl:block', desktopNavClass)}>
               Gifts
             </Link>
@@ -132,7 +132,7 @@ export function Header() {
             <Link href="/wishlist" className="p-2 hover:text-champagne-500 transition-colors hidden sm:block">
               <Heart size={18} />
             </Link>
-            <Link href="/account" className="p-2 hover:text-champagne-500 transition-colors">
+            <Link href="/account" className="hidden p-2 transition-colors hover:text-champagne-500 sm:block">
               <User size={18} />
             </Link>
             
