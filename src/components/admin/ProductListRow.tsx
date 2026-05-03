@@ -12,6 +12,7 @@ import {
 import { toast } from 'sonner';
 import type { Collection, CollectionProduct, InventoryItem, Product, ProductImage, ProductVariant } from '@prisma/client';
 import { getProductReadiness } from '@/lib/product-readiness';
+import { normalizeEntixImage } from '@/lib/visual-assets';
 
 interface ProductRowProps {
   product: Product & { 
@@ -67,7 +68,7 @@ export function ProductListRow({ product: p }: ProductRowProps) {
         <div className="relative h-20 w-16 overflow-hidden rounded-[14px] bg-ivory-2 border border-ink/5 group-hover:border-ink/10 transition-all">
           {p.images[0] ? (
             <Image
-              src={p.images[0].url}
+              src={normalizeEntixImage(p.images[0].url, p.slug)}
               alt={p.title}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"

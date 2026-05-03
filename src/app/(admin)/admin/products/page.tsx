@@ -6,6 +6,7 @@ import { ProductListRow } from '@/components/admin/ProductListRow';
 import type { Prisma } from '@prisma/client';
 import { getProductReadiness } from '@/lib/product-readiness';
 import { hasDatabaseUrl } from '@/lib/settings';
+import { normalizeEntixImage } from '@/lib/visual-assets';
 
 export const dynamic = 'force-dynamic';
 
@@ -144,7 +145,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
               <div className="flex gap-4">
                 <div className="relative h-24 w-20 shrink-0 overflow-hidden border border-ink/8 bg-[#eee8de]">
                   {product.images[0] ? (
-                    <img src={product.images[0].url} className="h-full w-full object-cover" alt={product.title} />
+                    <img src={normalizeEntixImage(product.images[0].url, product.slug)} className="h-full w-full object-cover" alt={product.title} />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-ink/25">
                       <ImageOff size={18} />

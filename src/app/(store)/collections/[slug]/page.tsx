@@ -11,7 +11,7 @@ import { ArrowRight, Gem, Gift, Sparkles } from 'lucide-react';
 import { getCanonicalBaseUrl } from '@/lib/site-url';
 import { getSiteSettings, hasDatabaseUrl } from '@/lib/settings';
 import { getCollectionMood } from '@/lib/storefront-world';
-import { getCollectionHeroImage } from '@/lib/visual-assets';
+import { getCollectionHeroImage, normalizeEntixImage } from '@/lib/visual-assets';
 
 export const dynamic = 'force-dynamic';
 
@@ -364,7 +364,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
               <div className="relative min-h-[360px] overflow-hidden bg-[#eee8de]">
                 {leadProduct.images[0]?.url ? (
                   <Image
-                    src={leadProduct.images[0].url}
+                    src={normalizeEntixImage(leadProduct.images[0].url, leadProduct.slug)}
                     alt={leadProduct.title}
                     fill
                     sizes="(min-width: 1024px) 62vw, 100vw"

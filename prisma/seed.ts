@@ -85,11 +85,59 @@ async function main() {
 
   const bySlug = new Map(collectionRows.map((collection) => [collection.slug, collection]));
 
-  const imagePool = Array.from({ length: 15 }, (_, index) => `/images/entix/product-${String(index + 1).padStart(2, '0')}.png`);
+  const imagePool = [
+    '/images/entix/product-ref-01-statement-earrings.png',
+    '/images/entix/product-ref-02-gold-bangles.png',
+    '/images/entix/product-ref-03-polki-studs.png',
+    '/images/entix/product-ref-04-gold-necklace.png',
+    '/images/entix/product-ref-05-stack-rings.png',
+    '/images/entix/product-ref-06-pearl-hoops.png',
+    '/images/entix/product-ref-07-bridal-choker.png',
+    '/images/entix/product-ref-08-charm-bracelet.png',
+    '/images/entix/product-ref-09-jhumka-earrings.png',
+    '/images/entix/product-ref-10-mangalsutra.png',
+    '/images/entix/product-ref-11-midi-ring.png',
+    '/images/entix/product-ref-12-diamond-studs.png',
+    '/images/entix/product-ref-13-bangle-set.png',
+    '/images/entix/product-ref-14-drop-earrings.png',
+    '/images/entix/product-ref-15-cocktail-ring.png',
+    '/images/entix/product-ref-16-anklet.png',
+    '/images/entix/product-ref-17-pendant.png',
+    '/images/entix/product-ref-18-layered-necklace.png',
+    '/images/entix/product-ref-19-nose-pin.png',
+    '/images/entix/product-ref-20-gift-set.png',
+  ];
+
+  const productImageBySlug: Record<string, string> = {
+    'cascade-crimson-earrings': imagePool[0],
+    'meher-gold-bangles': imagePool[1],
+    'noor-polki-studs': imagePool[2],
+    'zoya-emerald-necklace': imagePool[3],
+    'isha-stack-ring-set': imagePool[4],
+    'aarika-pearl-hoops': imagePool[5],
+    'ruhani-bridal-choker': imagePool[6],
+    'tara-charm-bracelet': imagePool[7],
+    'amaya-jhumka': imagePool[8],
+    'noor-mangalsutra': imagePool[9],
+    'laila-midi-ring': imagePool[10],
+    'sitara-diamond-studs': imagePool[11],
+    'rukmini-bangle-set': imagePool[12],
+    'kaveri-emerald-drops': imagePool[13],
+    'jaya-cocktail-ring': imagePool[14],
+    'saanvi-nose-pin': imagePool[18],
+    'aisha-anklet': imagePool[15],
+    'vidya-heirloom-pendant': imagePool[16],
+    'maya-hoop-earrings': imagePool[5],
+    'devika-layered-necklace': imagePool[17],
+  };
 
   const createdProducts = [];
 
   for (const [index, [slug, title, subtitle, priceInr, sku, occasion]] of products.entries()) {
+    const primaryImage = productImageBySlug[slug] || imagePool[index % imagePool.length];
+    const primaryImageIndex = imagePool.indexOf(primaryImage);
+    const secondaryImage = imagePool[(primaryImageIndex + 1) % imagePool.length];
+
     const product = await prisma.product.create({
       data: {
         slug,
@@ -116,13 +164,13 @@ async function main() {
         images: {
           create: [
             {
-              url: imagePool[index % imagePool.length],
+              url: primaryImage,
               alt: title,
               position: 0,
               isPrimary: true,
             },
             {
-              url: imagePool[(index + 2) % imagePool.length],
+              url: secondaryImage,
               alt: `${title} detail`,
               position: 1,
             },

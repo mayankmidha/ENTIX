@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getCustomerSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { hasDatabaseUrl } from '@/lib/settings';
+import { normalizeEntixImage } from '@/lib/visual-assets';
 
 async function getCustomerWishlist(customerId: string) {
   const sessionId = `customer:${customerId}`;
@@ -35,7 +36,7 @@ export async function GET() {
       slug: item.product.slug,
       title: item.product.title,
       priceInr: item.product.priceInr,
-      imageUrl: item.product.images[0]?.url || null,
+      imageUrl: normalizeEntixImage(item.product.images[0]?.url, item.product.slug),
     })),
   });
 }

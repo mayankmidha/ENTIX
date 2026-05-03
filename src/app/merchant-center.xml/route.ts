@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCanonicalBaseUrl } from '@/lib/site-url';
 import { getSiteSettings, hasDatabaseUrl } from '@/lib/settings';
+import { normalizeEntixImage } from '@/lib/visual-assets';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
 
   const items = products
     .map((product) => {
-      const image = product.images[0]?.url;
+      const image = normalizeEntixImage(product.images[0]?.url, product.slug);
       const collectionTitle = product.collections[0]?.collection.title;
       const availability = product.inventory?.trackStock === false || (product.inventory?.stockQty ?? 0) > 0 ? 'in_stock' : 'out_of_stock';
       const link = `${baseUrl}/products/${product.slug}`;

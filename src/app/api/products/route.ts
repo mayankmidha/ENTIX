@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hasDatabaseUrl } from '@/lib/settings';
+import { normalizeEntixImage } from '@/lib/visual-assets';
 
 export async function GET(req: NextRequest) {
   try {
@@ -54,7 +55,15 @@ export async function GET(req: NextRequest) {
       take: limit,
     });
 
-    return NextResponse.json({ products });
+    return NextResponse.json({
+      products: products.map((product) => ({
+        ...product,
+        images: product.images.map((image, index) => ({
+          ...image,
+          url: normalizeEntixImage(image.url, product.slug, index),
+        })),
+      })),
+    });
   } catch (error) {
     console.error('Products API error:', error);
     return NextResponse.json({ message: 'Failed to load products' }, { status: 500 });
