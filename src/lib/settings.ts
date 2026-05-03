@@ -27,7 +27,7 @@ export const defaultSiteSettings = {
   'payment.refundWindow': '7',
   'seo.homeTitle': 'Entix - Fine Jewellery for Modern Rituals',
   'seo.homeDescription': 'Shop sculptural jewellery, ceremonial bangles, luminous rings, and refined gifting pieces by Entix.',
-  'seo.ogImage': '',
+  'seo.ogImage': '/images/entix/entix-og-image-wide.png',
   'seo.indexing': 'enabled',
   'seo.defaultProductTitle': '{product} | Entix Jewellery',
   'policy.return': 'Returns and exchanges are reviewed within 7 days of delivery for unworn pieces in original packaging.',

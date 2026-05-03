@@ -1,12 +1,16 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { BadgeCheck, Facebook, Gem, Instagram, Mail, MessageCircle, ShieldCheck, Truck, Twitter } from 'lucide-react';
 import { Newsletter } from './Newsletter';
 import { editorialCollections, trustLayer } from '@/lib/storefront-world';
 import { EntixLogo } from '@/components/brand/EntixLogo';
+import { entixImages } from '@/lib/visual-assets';
 
 export function Footer() {
   return (
     <footer className="relative overflow-hidden bg-ink px-6 pb-12 pt-20 text-ivory lg:px-12">
+      <Image src={entixImages.footerRitual} alt="" fill sizes="100vw" className="object-cover opacity-[0.16]" />
+      <div className="absolute inset-0 bg-ink/86" />
       <div className="absolute inset-0 noise opacity-20 pointer-events-none" />
       <div className="relative z-10 mx-auto max-w-[1440px]">
         <div className="mb-16 grid gap-px bg-white/10 md:grid-cols-4">

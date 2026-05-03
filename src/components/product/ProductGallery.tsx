@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight, Expand, X } from 'lucide-react';
-import { normalizeEntixImage } from '@/lib/visual-assets';
+import { entixPdpGalleryImages, normalizeEntixImage } from '@/lib/visual-assets';
 
 interface GalleryImage {
   url: string;
@@ -24,7 +24,11 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
         ...image,
         url: normalizeEntixImage(image.url, title, index),
       }))
-    : [{ url: normalizeEntixImage(null, title), alt: title }];
+    : entixPdpGalleryImages.map((image, index) => ({
+        ...image,
+        url: normalizeEntixImage(image.url, title, index),
+        alt: `${title} ${image.alt}`,
+      }));
 
   const current = safeImages[active];
   const next = () => setActive((active + 1) % safeImages.length);

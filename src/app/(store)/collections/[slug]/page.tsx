@@ -11,6 +11,7 @@ import { ArrowRight, Gem, Gift, Sparkles } from 'lucide-react';
 import { getCanonicalBaseUrl } from '@/lib/site-url';
 import { getSiteSettings, hasDatabaseUrl } from '@/lib/settings';
 import { getCollectionMood } from '@/lib/storefront-world';
+import { getCollectionHeroImage } from '@/lib/visual-assets';
 
 export const dynamic = 'force-dynamic';
 
@@ -100,7 +101,7 @@ async function resolveCollection(slug: string) {
         title: collection.title,
         description:
           collection.description || `Explore our ${collection.title} collection at Entix Jewellery.`,
-        heroImage: collection.heroImage,
+        heroImage: getCollectionHeroImage(slug, collection.heroImage),
         eyebrow: 'Entix Selection',
         products: collection.products.map((cp) => cp.product),
       };
@@ -132,7 +133,7 @@ async function resolveCollection(slug: string) {
     type: 'taxonomy' as const,
     title: taxonomy.title,
     description: taxonomy.description,
-    heroImage: products[0]?.images[0]?.url || null,
+    heroImage: getCollectionHeroImage(slug, products[0]?.images[0]?.url),
     eyebrow: taxonomy.eyebrow,
     products,
   };

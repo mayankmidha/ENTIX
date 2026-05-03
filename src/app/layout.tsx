@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from 'sonner';
 import { getBaseUrl } from '@/lib/site-url';
 import { enabled, getSiteSettings } from '@/lib/settings';
+import { entixImages } from '@/lib/visual-assets';
 
 function safeUrl(url: string) {
   try {
@@ -18,6 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const description = settings['seo.homeDescription'] || settings['store.businessProfile'];
   const metadataBase = safeUrl(settings['domain.canonical'] || settings['domain.primary'] || getBaseUrl());
   const indexed = enabled(settings['seo.indexing']);
+  const ogImage = settings['seo.ogImage'] || entixImages.ogImage;
 
   return {
     metadataBase,
@@ -36,7 +38,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       siteName: settings['store.name'],
-      images: settings['seo.ogImage'] ? [{ url: settings['seo.ogImage'] }] : ['/brand/entix-full-lockup.svg'],
+      images: [{ url: ogImage }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
     },
     robots: indexed ? undefined : { index: false, follow: false },
   };

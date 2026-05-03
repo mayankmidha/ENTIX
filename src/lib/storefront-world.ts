@@ -1,4 +1,4 @@
-import { entixImages } from '@/lib/visual-assets';
+import { entixCollectionHeroes, entixImages } from '@/lib/visual-assets';
 
 export const editorialCollections = [
   {
@@ -142,43 +142,55 @@ const collectionMoods: Record<string, { wear: string; material: string; gift: st
     wear: 'Build a stack around one hero cuff, then let slimmer bangles carry the rhythm.',
     material: 'Warm gold finishes and hand-scale proportions keep the wrist expressive.',
     gift: 'Strong for festivals, wedding season, and collectors who already know their style.',
-    image: entixImages.bangles,
+    image: entixCollectionHeroes.bangles,
   },
   necklaces: {
     wear: 'Start with the neckline, then choose pendant weight, chain length, and occasion.',
     material: 'Layered metal and stone detail frame the collarbone without crowding it.',
     gift: 'A strong route for anniversaries, bridal trousseau, and everyday keepsakes.',
-    image: entixImages.necklacePortrait,
+    image: entixCollectionHeroes.necklaces,
   },
   earrings: {
     wear: 'Use studs for quiet shine, hoops for shape, and drops when the face needs movement.',
     material: 'Light-catching surfaces matter here because the piece lives close to expression.',
     gift: 'The easiest jewellery gift when size is uncertain.',
-    image: entixImages.portraitJewellery,
+    image: entixCollectionHeroes.earrings,
   },
   rings: {
     wear: 'One sculptural ring can anchor the hand; smaller bands make the stack personal.',
     material: 'Scale, finish, and stone setting decide whether the mood is daily or ceremonial.',
     gift: 'Best when sizing is known, or when the piece is chosen as a statement.',
-    image: entixImages.ringStudy,
+    image: entixCollectionHeroes.rings,
   },
   gifts: {
     wear: 'Choose by confidence first: earrings and pendants for ease, rings when sizing is known.',
     material: 'Look for clear metal notes, care instructions, and pieces that feel personal.',
     gift: 'Built for birthdays, festivals, thank-yous, and a little self-celebration.',
-    image: entixImages.gifting,
+    image: entixCollectionHeroes.gifts,
   },
   bridal: {
     wear: 'Let one ceremonial piece lead, then echo the finish through the rest of the look.',
     material: 'Heirloom tone, visible stonework, and proportion matter in photographs.',
     gift: 'A considered path for trousseau, engagement gifting, and family ceremonies.',
-    image: entixImages.ceremonialBride,
+    image: entixCollectionHeroes.bridal,
   },
   everyday: {
     wear: 'Choose pieces that disappear into routine but still catch light when you move.',
     material: 'Lower-profile shapes, clean finishes, and easy care make daily wear effortless.',
     gift: 'Ideal for first jewellery gifts and pieces meant to be worn often.',
-    image: entixImages.necklacePortrait,
+    image: entixCollectionHeroes.everyday,
+  },
+  all: {
+    wear: 'Start with the newest visual direction, then narrow by silhouette, price, and occasion.',
+    material: 'Use the full catalogue view to compare metal tone, stone presence, finish, and scale.',
+    gift: 'A strong entry when the shopper wants to discover before choosing a room.',
+    image: entixCollectionHeroes.all,
+  },
+  'new-arrivals': {
+    wear: 'Start with the pieces that set the next Entix season before moving into permanent rooms.',
+    material: 'New arrivals should show the clearest material, finish, and styling direction for the shoot.',
+    gift: 'Ideal for shoppers who want the freshest edit and visual reference for the brand.',
+    image: entixCollectionHeroes['new-arrivals'],
   },
 };
 

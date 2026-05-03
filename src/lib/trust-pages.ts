@@ -1,4 +1,4 @@
-import { entixImages } from '@/lib/visual-assets';
+import { entixImages, entixPdpImages } from '@/lib/visual-assets';
 
 export type TrustPageContent = {
   slug: string;
@@ -25,7 +25,7 @@ export const trustPages = {
     kicker: 'Quality Promise',
     title: 'Authenticity is a system, not a slogan.',
     description: 'Entix authenticity and quality standards for jewellery materials, product details, certificate fields, and dispatch checks.',
-    image: entixImages.ringStudy,
+    image: entixImages.authenticityMacro,
     intro:
       'Every Entix piece should earn trust before checkout: clear SKU, material, finish, stone, dimensions, care, dispatch, warranty, and return notes surfaced where customers make decisions.',
     sections: [
@@ -53,7 +53,7 @@ export const trustPages = {
     kicker: 'Material Library',
     title: 'Care begins before the piece leaves the box.',
     description: 'Material and care education for Entix jewellery including storage, cleaning, perfume, water, stones, plating, and finish protection.',
-    image: entixImages.blackJewellery,
+    image: entixImages.careMaterials,
     intro:
       'Jewellery decisions depend on touch, finish, stone, and future care. Entix turns those details into visible product guidance rather than hidden support copy.',
     sections: [
@@ -81,7 +81,7 @@ export const trustPages = {
     kicker: 'Aftercare',
     title: 'A luxury purchase needs a calm aftercare path.',
     description: 'Entix warranty, repair, resizing, exchange, and return guidance for jewellery customers and operators.',
-    image: entixImages.ceremonialBride,
+    image: entixImages.openingScene,
     intro:
       'The return and repair experience should feel as considered as the product page. Entix keeps order history, return requests, support notes, and eligibility close to the customer record.',
     sections: [
@@ -109,7 +109,7 @@ export const trustPages = {
     kicker: 'Fit Guides',
     title: 'Sizing should remove doubt before checkout.',
     description: 'Entix jewellery size guide for rings, bangles, bracelets, necklaces, fit notes, dimensions, and concierge support.',
-    image: entixImages.necklacePortrait,
+    image: entixPdpImages.scaleReference,
     intro:
       'For rings, bangles, bracelets, necklaces, and bridal pieces, size is part of the product decision. Entix treats dimensions and fit cues as mandatory launch data.',
     sections: [
@@ -137,7 +137,7 @@ export const trustPages = {
     kicker: 'Gifting Ritual',
     title: 'The box should feel like part of the jewellery.',
     description: 'Entix packaging and gifting experience with gift wrap, notes, delivery care, wishlist, and concierge support.',
-    image: entixImages.gifting,
+    image: entixImages.packaging,
     intro:
       'A gift journey is not just checkout. It is browsing, confidence, wrapping, message, delivery timing, and post-purchase support working together.',
     sections: [

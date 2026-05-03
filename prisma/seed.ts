@@ -3,10 +3,10 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 const heroImages = [
-  '/images/entix/entix-collection-still-life.png',
-  '/images/entix/entix-hero-bangles-rings.png',
-  '/images/entix/entix-gift-box-still-life.png',
-  '/images/entix/entix-collection-still-life.png',
+  '/images/entix/collection-new-arrivals-hero.png',
+  '/images/entix/collection-bridal-hero.png',
+  '/images/entix/collection-everyday-hero.png',
+  '/images/entix/collection-gifts-hero.png',
 ];
 
 const products = [
@@ -253,6 +253,10 @@ async function main() {
       {
         key: 'store.name',
         value: 'Entix Jewellery',
+      },
+      {
+        key: 'seo.ogImage',
+        value: '/images/entix/entix-og-image-wide.png',
       },
     ],
   });

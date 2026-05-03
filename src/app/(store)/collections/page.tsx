@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { entixImages } from '@/lib/visual-assets';
+import { entixImages, getCollectionHeroImage } from '@/lib/visual-assets';
 import { hasDatabaseUrl } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +18,12 @@ export default async function CollectionsLandingPage() {
       ])
     : [[], 0];
 
-  const rooms = collections.length > 0 ? collections : SAMPLE_COLLECTIONS;
+  const rooms = collections.length > 0
+    ? collections.map((collection) => ({
+        ...collection,
+        heroImage: getCollectionHeroImage(collection.slug, collection.heroImage),
+      }))
+    : SAMPLE_COLLECTIONS;
 
   return (
     <div className="min-h-screen bg-ivory px-6 pb-28 pt-16 lg:px-12">

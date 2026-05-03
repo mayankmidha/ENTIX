@@ -16,7 +16,7 @@ import { RelatedProducts } from '@/components/product/RelatedProducts';
 import { WishlistButton } from '@/components/product/WishlistButton';
 import { getCanonicalBaseUrl } from '@/lib/site-url';
 import { getSiteSettings } from '@/lib/settings';
-import { normalizeEntixImage } from '@/lib/visual-assets';
+import { entixPdpImages, normalizeEntixImage } from '@/lib/visual-assets';
 
 export const dynamic = 'force-dynamic';
 
@@ -170,6 +170,9 @@ export default async function ProductPage({ params }: Props) {
   const careText = product.careInstructions || 'Store separately, keep away from perfume and water, and wipe gently with a soft cloth after wear.';
   const primaryImage = normalizeEntixImage(product.images[0]?.url, product.slug);
   const storyImage = normalizeEntixImage(product.images[1]?.url, product.slug, 1);
+  const materialProofImage = entixPdpImages.materialProof;
+  const packagingImage = entixPdpImages.packagingShot;
+  const completeLookImage = entixPdpImages.completeTheLook;
 
   return (
     <div className="entix-gold-wash px-6 pb-40 pt-8 lg:px-12 lg:pb-32 lg:pt-10">
@@ -305,6 +308,37 @@ export default async function ProductPage({ params }: Props) {
           </ScrollReveal>
         </section>
 
+        <section className="mt-20 grid gap-px overflow-hidden bg-ink/10 lg:grid-cols-[0.82fr_1.18fr]">
+          <ScrollReveal>
+            <div className="grid h-full gap-px bg-ink/10 sm:grid-cols-2 lg:grid-cols-1">
+              <PdpReferenceImage src={materialProofImage} alt={`${product.title} material reference`} label="Material proof" />
+              <PdpReferenceImage src={packagingImage} alt={`${product.title} packaging reference`} label="Gift packaging" />
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.08}>
+            <div className="relative min-h-[520px] bg-ink">
+              <Image
+                src={completeLookImage}
+                alt={`${product.title} complete the look reference`}
+                fill
+                sizes="(min-width: 1024px) 58vw, 100vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,15,13,0.74),rgba(18,15,13,0.12))]" />
+              <div className="absolute bottom-8 left-8 right-8 max-w-xl text-ivory">
+                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">Photo-shoot reference</div>
+                <h2 className="mt-5 font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
+                  Every piece needs its proof set.
+                </h2>
+                <p className="mt-5 text-[15px] leading-relaxed text-ivory/64">
+                  Macro detail, scale, hover angle, material proof, packaging, and complete-the-look imagery are the standard for the final catalogue shoot.
+                </p>
+              </div>
+            </div>
+          </ScrollReveal>
+        </section>
+
         <section className="mt-20 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
           <ScrollReveal>
             <div className="h-full border border-ink/8 bg-ink p-7 text-ivory sm:p-9">
@@ -408,6 +442,17 @@ function ProofRow({ icon: Icon, title, text }: { icon: any; title: string; text:
       <div>
         <h3 className="font-subhead text-[10px] uppercase tracking-[0.18em] text-ink/45">{title}</h3>
         <p className="mt-2 text-[13px] leading-relaxed text-ink/55">{text}</p>
+      </div>
+    </div>
+  );
+}
+
+function PdpReferenceImage({ src, alt, label }: { src: string; alt: string; label: string }) {
+  return (
+    <div className="relative min-h-[260px] overflow-hidden bg-ink sm:min-h-[320px]">
+      <Image src={src} alt={alt} fill sizes="(min-width: 1024px) 34vw, 92vw" className="object-cover" />
+      <div className="absolute left-4 top-4 border border-ivory/20 bg-ink/35 px-3 py-2 font-subhead text-[9px] uppercase tracking-[0.16em] text-ivory/72 backdrop-blur">
+        {label}
       </div>
     </div>
   );

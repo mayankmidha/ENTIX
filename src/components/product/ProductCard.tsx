@@ -24,7 +24,7 @@ export function ProductCard({ product }: { product: any }) {
       slug: product.slug,
       title: product.title,
       priceInr: product.priceInr,
-      imageUrl: product.image,
+      imageUrl: primaryImage,
     }, 1);
     toast.success(`${product.title} added to bag`, {
       className: 'bg-ivory font-sans'
