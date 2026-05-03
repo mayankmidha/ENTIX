@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { formatInr } from '@/lib/utils';
-import { ArrowUpRight, Package, Search, ShoppingBag, Users } from 'lucide-react';
+import { ArrowUpRight, BadgePercent, Package, Search, ShoppingBag, Users } from 'lucide-react';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
@@ -9,7 +9,7 @@ export default async function AdminSearchPage({ searchParams }: { searchParams: 
   const { q } = await searchParams;
   const query = (q || '').trim();
 
-  const [orders, products, customers] = query
+  const [orders, products, customers, collections, draftOrders, discounts, giftCards, campaigns] = query
     ? await Promise.all([
         prisma.order.findMany({
           take: 8,
@@ -50,10 +50,63 @@ export default async function AdminSearchPage({ searchParams }: { searchParams: 
           include: { orders: { select: { totalInr: true } } },
           orderBy: { createdAt: 'desc' },
         }),
+        prisma.collection.findMany({
+          take: 8,
+          where: {
+            OR: [
+              { title: { contains: query, mode: 'insensitive' } },
+              { slug: { contains: query, mode: 'insensitive' } },
+              { subtitle: { contains: query, mode: 'insensitive' } },
+            ],
+          },
+          orderBy: { updatedAt: 'desc' },
+        }),
+        prisma.draftOrder.findMany({
+          take: 8,
+          where: {
+            OR: [
+              { name: { contains: query, mode: 'insensitive' } },
+              { customerEmail: { contains: query, mode: 'insensitive' } },
+              { customerName: { contains: query, mode: 'insensitive' } },
+            ],
+          },
+          orderBy: { updatedAt: 'desc' },
+        }),
+        prisma.discount.findMany({
+          take: 8,
+          where: {
+            OR: [
+              { code: { contains: query, mode: 'insensitive' } },
+              { title: { contains: query, mode: 'insensitive' } },
+            ],
+          },
+          orderBy: { updatedAt: 'desc' },
+        }),
+        prisma.giftCard.findMany({
+          take: 8,
+          where: {
+            OR: [
+              { code: { contains: query, mode: 'insensitive' } },
+              { recipientEmail: { contains: query, mode: 'insensitive' } },
+            ],
+          },
+          orderBy: { createdAt: 'desc' },
+        }),
+        prisma.marketingCampaign.findMany({
+          take: 8,
+          where: {
+            OR: [
+              { name: { contains: query, mode: 'insensitive' } },
+              { subject: { contains: query, mode: 'insensitive' } },
+              { body: { contains: query, mode: 'insensitive' } },
+            ],
+          },
+          orderBy: { updatedAt: 'desc' },
+        }),
       ])
-    : [[], [], []];
+    : [[], [], [], [], [], [], [], []];
 
-  const total = orders.length + products.length + customers.length;
+  const total = orders.length + products.length + customers.length + collections.length + draftOrders.length + discounts.length + giftCards.length + campaigns.length;
 
   return (
     <div className="mx-auto max-w-[1280px]">
@@ -80,13 +133,14 @@ export default async function AdminSearchPage({ searchParams }: { searchParams: 
       </header>
 
       {!query ? (
-        <section className="mt-5 grid gap-3 md:grid-cols-3">
+        <section className="mt-5 grid gap-3 md:grid-cols-4">
           <Hint icon={ShoppingBag} label="Orders" text="Search by order number, customer, email, or item title." />
           <Hint icon={Package} label="Products" text="Search by title, SKU, material, or gemstone." />
           <Hint icon={Users} label="Customers" text="Search by name, email, or phone." />
+          <Hint icon={BadgePercent} label="Promotions" text="Search discounts, gift cards, campaigns, and draft orders." />
         </section>
       ) : (
-        <div className="mt-5 grid gap-5 xl:grid-cols-3">
+        <div className="mt-5 grid gap-5 xl:grid-cols-4">
           <ResultPanel title="Orders" count={orders.length} href={`/admin/orders?q=${encodeURIComponent(query)}`}>
             {orders.map((order) => (
               <ResultLink key={order.id} href={`/admin/orders/${order.id}`} eyebrow={order.orderNumber} title={order.shippingName} meta={`${formatInr(order.totalInr)} · ${order.status}`} />
@@ -113,6 +167,36 @@ export default async function AdminSearchPage({ searchParams }: { searchParams: 
                 <ResultLink key={customer.id} href={`/admin/customers/${customer.id}`} eyebrow={customer.email} title={name} meta={`${customer.orders.length} orders · ${formatInr(spend)}`} />
               );
             })}
+          </ResultPanel>
+
+          <ResultPanel title="Collections" count={collections.length} href={`/admin/collections?q=${encodeURIComponent(query)}`}>
+            {collections.map((collection) => (
+              <ResultLink key={collection.id} href={`/admin/collections/${collection.id}`} eyebrow={collection.slug} title={collection.title} meta={collection.isActive ? 'Active collection' : 'Inactive collection'} />
+            ))}
+          </ResultPanel>
+
+          <ResultPanel title="Draft orders" count={draftOrders.length} href={`/admin/draft-orders?q=${encodeURIComponent(query)}`}>
+            {draftOrders.map((draft) => (
+              <ResultLink key={draft.id} href="/admin/draft-orders" eyebrow={draft.name} title={draft.customerName || draft.customerEmail || 'Draft order'} meta={`${formatInr(draft.totalInr)} · ${draft.status}`} />
+            ))}
+          </ResultPanel>
+
+          <ResultPanel title="Discounts" count={discounts.length} href={`/admin/discounts?q=${encodeURIComponent(query)}`}>
+            {discounts.map((discount) => (
+              <ResultLink key={discount.id} href={`/admin/discounts/${discount.id}`} eyebrow={discount.code} title={discount.title} meta={`${discount.type} · ${discount.status}`} />
+            ))}
+          </ResultPanel>
+
+          <ResultPanel title="Gift cards" count={giftCards.length} href={`/admin/gift-cards?q=${encodeURIComponent(query)}`}>
+            {giftCards.map((card) => (
+              <ResultLink key={card.id} href="/admin/gift-cards" eyebrow={card.code} title={card.recipientEmail || 'Gift card'} meta={`${formatInr(card.balanceInr)} balance · ${card.status}`} />
+            ))}
+          </ResultPanel>
+
+          <ResultPanel title="Campaigns" count={campaigns.length} href={`/admin/marketing?q=${encodeURIComponent(query)}`}>
+            {campaigns.map((campaign) => (
+              <ResultLink key={campaign.id} href="/admin/marketing" eyebrow={campaign.channel} title={campaign.name} meta={`${campaign.status} · ${campaign.recipientCount} recipients`} />
+            ))}
           </ResultPanel>
         </div>
       )}

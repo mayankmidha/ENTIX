@@ -6,23 +6,32 @@ import {
   AlertTriangle,
   ArrowUpRight,
   BadgeCheck,
+  BadgePercent,
   BarChart3,
   Box,
   Camera,
   CheckCircle2,
+  ClipboardList,
   Clock,
   FileText,
   Gem,
+  Gift,
+  Image,
+  Mail,
+  Megaphone,
   Package,
   PackageCheck,
+  PenTool,
   Ruler,
   Search,
   Settings,
   ShieldCheck,
   ShoppingBag,
   Sparkles,
+  Store,
   TrendingUp,
   Users,
+  UserRoundCheck,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -52,6 +61,23 @@ function createUnavailableMetrics(error?: unknown) {
     unmerchandisedProducts: 0,
     highValueAbandonedCarts: 0,
     highValueAbandonedValue: 0,
+    draftOrders: 0,
+    activeGiftCards: 0,
+    campaignsCount: 0,
+    subscribersCount: 0,
+    segmentsCount: 0,
+    mediaFilesCount: 0,
+    blogPostsCount: 0,
+    contentBlocks: 0,
+    emailTemplates: 0,
+    shippingZones: 0,
+    taxRates: 0,
+    adminUsers: 0,
+    recentActivityCount: 0,
+    stockNotifications: 0,
+    returnRequests: 0,
+    redirectsCount: 0,
+    recentActivity: [],
     controlSignals: [],
     razorpayReady: Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET),
     resendReady: Boolean(process.env.RESEND_API_KEY),
@@ -80,6 +106,22 @@ async function getMetrics() {
       activeDiscounts,
       readinessProducts,
       abandonedCheckouts,
+      draftOrders,
+      activeGiftCards,
+      campaignsCount,
+      subscribersCount,
+      segmentsCount,
+      mediaFilesCount,
+      blogPostsCount,
+      contentBlocks,
+      emailTemplates,
+      shippingZones,
+      taxRates,
+      adminUsers,
+      recentActivity,
+      stockNotifications,
+      returnRequests,
+      redirectsCount,
     ] = await Promise.all([
       prisma.order.count(),
       prisma.customer.count(),
@@ -120,6 +162,26 @@ async function getMetrics() {
         orderBy: { createdAt: 'desc' },
         take: 100,
       }),
+      prisma.draftOrder.count({ where: { status: { in: ['open', 'invoice_sent'] } } }),
+      prisma.giftCard.count({ where: { status: 'active' } }),
+      prisma.marketingCampaign.count(),
+      prisma.subscriber.count({ where: { active: true } }),
+      prisma.customerSegment.count(),
+      prisma.mediaFile.count(),
+      prisma.blogPost.count(),
+      prisma.pageContent.count(),
+      prisma.emailTemplate.count({ where: { active: true } }),
+      prisma.shippingZone.count(),
+      prisma.taxRate.count({ where: { active: true } }),
+      prisma.adminUser.count(),
+      prisma.activityLog.findMany({
+        take: 6,
+        orderBy: { createdAt: 'desc' },
+        include: { actor: { select: { name: true, email: true } } },
+      }),
+      prisma.stockNotification.count({ where: { notified: false } }),
+      prisma.activityLog.count({ where: { action: 'order.return_requested' } }),
+      prisma.redirect.count(),
     ]);
 
     const totalRevenue = revenueResult._sum.totalInr || 0;
@@ -210,6 +272,23 @@ async function getMetrics() {
       unmerchandisedProducts,
       highValueAbandonedCarts,
       highValueAbandonedValue,
+      draftOrders,
+      activeGiftCards,
+      campaignsCount,
+      subscribersCount,
+      segmentsCount,
+      mediaFilesCount,
+      blogPostsCount,
+      contentBlocks,
+      emailTemplates,
+      shippingZones,
+      taxRates,
+      adminUsers,
+      recentActivityCount: recentActivity.length,
+      stockNotifications,
+      returnRequests,
+      redirectsCount,
+      recentActivity,
       controlSignals,
       razorpayReady: paymentRuntime.razorpayEnabled,
       resendReady: Boolean(process.env.RESEND_API_KEY),
@@ -227,6 +306,30 @@ export default async function AdminDashboard() {
   const m = await getMetrics();
   const catalogueHealth = m.productsCount > 0 ? Math.max(Math.round(((m.productsCount - m.productsMissingImages) / m.productsCount) * 100), 0) : 0;
   const issueCount = m.lowStockCount + m.productsMissingImages + m.reviewQueue + m.productsMissingCare + m.sizeGuideGaps + m.highValueAbandonedCarts;
+  const commerceModules = [
+    { label: 'Orders', value: m.ordersCount, href: '/admin/orders', icon: ShoppingBag, text: 'Payment, fulfilment, tracking, notes, invoices.' },
+    { label: 'Draft orders', value: m.draftOrders, href: '/admin/draft-orders', icon: ClipboardList, text: 'Concierge quotes, manual orders, invoice-ready carts.' },
+    { label: 'Products', value: m.productsCount, href: '/admin/products', icon: Package, text: 'Jewellery fields, variants, SEO, media, readiness.' },
+    { label: 'Inventory', value: m.lowStockCount, href: '/admin/inventory', icon: Box, text: 'Low-stock alerts, stock edits, reorder visibility.' },
+    { label: 'Customers', value: m.customerCount, href: '/admin/customers', icon: Users, text: 'Profiles, order history, wishlist, notes, lifetime value.' },
+    { label: 'Segments', value: m.segmentsCount, href: '/admin/segments', icon: UserRoundCheck, text: 'Audience rules for VIPs, collectors, brides, repeat buyers.' },
+    { label: 'Discounts', value: m.activeDiscounts, href: '/admin/discounts', icon: BadgePercent, text: 'Coupons, rules, limits, campaign-ready promotions.' },
+    { label: 'Gift cards', value: m.activeGiftCards, href: '/admin/gift-cards', icon: Gift, text: 'Balances, recipient notes, gifting operations.' },
+  ];
+  const growthModules = [
+    { label: 'Marketing', value: m.campaignsCount, href: '/admin/marketing', icon: Megaphone, text: 'Email, SMS, WhatsApp campaign planning.' },
+    { label: 'Subscribers', value: m.subscribersCount, href: '/admin/segments', icon: Mail, text: 'Newsletter audience and marketing opt-ins.' },
+    { label: 'Reviews', value: m.reviewQueue, href: '/admin/reviews', icon: BadgeCheck, text: 'Moderation, social proof, product trust.' },
+    { label: 'Abandoned carts', value: m.highValueAbandonedCarts, href: '/admin/abandoned', icon: ShoppingBag, text: 'Recover high-value jewellery intent.' },
+  ];
+  const storeModules = [
+    { label: 'Online store', value: m.activeCollections, href: '/', icon: Store, text: 'Live storefront, collections, PDP, checkout.' },
+    { label: 'Content', value: m.contentBlocks, href: '/admin/content', icon: PenTool, text: 'Homepage, menu, policy and editorial controls.' },
+    { label: 'Files', value: m.mediaFilesCount, href: '/admin/files', icon: Image, text: 'Image library, media references, product assets.' },
+    { label: 'Blog', value: m.blogPostsCount, href: '/admin/blog', icon: FileText, text: 'Journal, SEO content, gifting and care guides.' },
+    { label: 'Settings', value: m.shippingZones + m.taxRates + m.emailTemplates, href: '/admin/settings', icon: Settings, text: 'Payments, shipping, taxes, domains, SEO, users.' },
+    { label: 'Audit trail', value: m.recentActivityCount, href: '/admin/audit', icon: ShieldCheck, text: 'Staff changes, operational traceability.' },
+  ];
 
   return (
     <div className="mx-auto max-w-[1520px]">
@@ -266,6 +369,24 @@ export default async function AdminDashboard() {
         <Metric label="Orders" value={m.ordersCount.toString()} delta={`${m.pendingOrders} active`} icon={ShoppingBag} />
         <Metric label="AOV" value={formatInr(m.aov)} delta="30d" icon={BarChart3} />
         <Metric label="Customers" value={m.customerCount.toString()} delta="collector base" icon={Users} />
+      </section>
+
+      <section className="mt-5 grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+        <Panel title="Commerce OS" action="Search" href="/admin/search">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {commerceModules.map((module) => (
+              <ModuleCard key={module.label} {...module} />
+            ))}
+          </div>
+        </Panel>
+
+        <Panel title="Growth & Storefront" action="Content" href="/admin/content">
+          <div className="grid gap-3 md:grid-cols-2">
+            {[...growthModules, ...storeModules.slice(0, 2)].map((module) => (
+              <ModuleCard key={module.label} {...module} compact />
+            ))}
+          </div>
+        </Panel>
       </section>
 
       <section className="mt-5">
@@ -395,6 +516,30 @@ export default async function AdminDashboard() {
         </Panel>
       </section>
 
+      <section className="mt-5 grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
+        <Panel title="Store Management Coverage" action="Settings" href="/admin/settings">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {storeModules.map((module) => (
+              <ModuleCard key={module.label} {...module} compact />
+            ))}
+          </div>
+        </Panel>
+
+        <Panel title="Recent Activity" action="Audit trail" href="/admin/audit">
+          <div className="grid gap-2">
+            {m.recentActivity.length > 0 ? (
+              m.recentActivity.map((activity: any) => (
+                <ActivityItem key={activity.id} activity={activity} />
+              ))
+            ) : (
+              <div className="border border-ink/8 bg-[#f6f4ef] p-4 text-[13px] text-ink/42">
+                No admin activity yet. Product, order, and settings changes will appear in the audit trail.
+              </div>
+            )}
+          </div>
+        </Panel>
+      </section>
+
       <section className="mt-5 grid gap-3 md:grid-cols-3">
         <QuickAction icon={FileText} label="Import catalogue" href="/admin/products/import" text="Upload or repair product data." />
         <QuickAction icon={PackageCheck} label="Fulfil orders" href="/admin/orders" text="Move paid orders through dispatch." />
@@ -487,6 +632,56 @@ function SignalCard({
       <p className="mt-3 min-h-10 text-[13px] leading-relaxed text-ink/55">{detail}</p>
       <div className="mt-4 inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/35 transition-colors group-hover:text-ink">
         Resolve <ArrowUpRight size={12} />
+      </div>
+    </Link>
+  );
+}
+
+function ModuleCard({
+  icon: Icon,
+  label,
+  value,
+  href,
+  text,
+  compact,
+}: {
+  icon: any;
+  label: string;
+  value: number;
+  href: string;
+  text: string;
+  compact?: boolean;
+}) {
+  return (
+    <Link href={href} className="group block border border-ink/8 bg-[#f6f4ef] p-4 transition-colors hover:bg-white">
+      <div className="flex items-start justify-between gap-3">
+        <span className="flex h-10 w-10 items-center justify-center border border-ink/10 bg-white text-ink/45 transition-colors group-hover:bg-ink group-hover:text-ivory">
+          <Icon size={17} />
+        </span>
+        <span className="min-w-10 bg-white px-2 py-1 text-center font-mono text-[11px] font-medium text-ink/55">{value}</span>
+      </div>
+      <div className="mt-5 font-mono text-[10px] uppercase tracking-[0.16em] text-ink">{label}</div>
+      <p className={`mt-2 text-[13px] leading-relaxed text-ink/50 ${compact ? 'min-h-10' : 'min-h-[56px]'}`}>{text}</p>
+      <div className="mt-4 inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/35 transition-colors group-hover:text-ink">
+        Open <ArrowUpRight size={12} />
+      </div>
+    </Link>
+  );
+}
+
+function ActivityItem({ activity }: { activity: any }) {
+  const actor = activity.actor?.name || activity.actor?.email || 'System';
+  return (
+    <Link href="/admin/audit" className="block border border-ink/8 bg-[#f6f4ef] p-3 transition-colors hover:bg-white">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="truncate font-mono text-[10px] uppercase tracking-[0.14em] text-ink/38">{actor}</div>
+          <div className="mt-1 truncate text-[13px] font-medium text-ink">{activity.action}</div>
+          {activity.subject && <div className="mt-1 truncate text-[12px] text-ink/38">{activity.subject}</div>}
+        </div>
+        <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.1em] text-ink/30">
+          {new Date(activity.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+        </span>
       </div>
     </Link>
   );

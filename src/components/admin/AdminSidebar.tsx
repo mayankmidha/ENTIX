@@ -7,6 +7,7 @@ import {
   BarChart3, BadgePercent,
   Settings, LogOut, Link2, Menu, X, Search, PanelLeft,
   RotateCcw, Star, MailWarning, Gift, Megaphone, FileClock, ShieldCheck,
+  FileText, Image, ClipboardList, UserRoundCheck, PenTool, Store, ReceiptText,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EntixLogo } from '@/components/brand/EntixLogo';
@@ -20,43 +21,51 @@ const groups = [
       { label: 'Collections',       href: '/admin/collections',       icon: LayoutGrid },
       { label: 'Inventory',         href: '/admin/inventory',         icon: Boxes },
       { label: 'Customers',         href: '/admin/customers',         icon: Users },
+      { label: 'Analytics',         href: '/admin/analytics',         icon: BarChart3 },
     ],
   },
   {
     label: 'Operations',
     items: [
+      { label: 'Draft Orders',      href: '/admin/draft-orders',      icon: ClipboardList },
       { label: 'Returns',           href: '/admin/returns',           icon: RotateCcw },
       { label: 'Reviews',           href: '/admin/reviews',           icon: Star },
       { label: 'Abandoned',         href: '/admin/abandoned',         icon: MailWarning },
+      { label: 'Gift Cards',        href: '/admin/gift-cards',        icon: Gift },
     ],
   },
   {
-    label: 'Sales Channels',
+    label: 'Channels',
     items: [
-      { label: 'Online Store',      href: '/',                        icon: Link2 },
+      { label: 'Online Store',      href: '/',                        icon: Store },
       { label: 'Discounts',         href: '/admin/discounts',         icon: BadgePercent },
-      { label: 'Gift Cards',        href: '/admin/gift-cards',        icon: Gift },
+      { label: 'Segments',          href: '/admin/segments',          icon: UserRoundCheck },
+      { label: 'Marketing',         href: '/admin/marketing',         icon: Megaphone },
     ],
   },
   {
     label: 'Content',
     items: [
-      { label: 'Marketing',         href: '/admin/marketing',         icon: Megaphone },
+      { label: 'Content Controls',  href: '/admin/content',           icon: PenTool },
+      { label: 'Menus',             href: '/admin/menus',             icon: Link2 },
+      { label: 'Files',             href: '/admin/files',             icon: Image },
       { label: 'Blog',              href: '/admin/blog',              icon: FileClock },
     ],
   },
   {
     label: 'Insights',
     items: [
-      { label: 'Analytics',         href: '/admin/analytics',         icon: BarChart3 },
+      { label: 'Global Search',     href: '/admin/search',            icon: Search },
       { label: 'Audit Trail',       href: '/admin/audit',             icon: ShieldCheck },
     ],
   },
   {
     label: 'Settings',
     items: [
-      { label: 'Settings',          href: '/admin/settings',          icon: Settings },
-      { label: 'Staff',             href: '/admin/settings/users',    icon: Users },
+      { label: 'Store Settings',    href: '/admin/settings',          icon: Settings },
+      { label: 'Payments',          href: '/admin/settings/payments', icon: ReceiptText },
+      { label: 'Policies',          href: '/admin/settings/policies', icon: FileText },
+      { label: 'Staff & Roles',     href: '/admin/settings/users',    icon: Users },
     ],
   },
 ];
@@ -181,9 +190,9 @@ function SidebarNav({ pathname, onNavigate }: { pathname: string; onNavigate?: (
         <div className="mb-5 border border-ink/8 bg-white p-3">
           <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink/35">Today</div>
           <div className="mt-2 grid grid-cols-3 gap-2 text-center">
-            <Mini label="Orders" value="Live" />
-            <Mini label="Stock" value="Risk" />
-            <Mini label="Launch" value="Ready" />
+            <Mini label="Orders" value="Fulfil" />
+            <Mini label="Stock" value="Track" />
+            <Mini label="Launch" value="Check" />
           </div>
         </div>
 
