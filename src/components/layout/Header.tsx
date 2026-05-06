@@ -2,13 +2,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import Image from 'next/image';
-import { ArrowRight, ChevronDown, Gem, Heart, Menu, Search, ShieldCheck, ShoppingBag, User, X } from 'lucide-react';
+import { ArrowRight, ChevronDown, Heart, Menu, Search, ShoppingBag, User, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CartDrawer } from './CartDrawer';
 import { MegaMenu } from './MegaMenu';
 import { useCart } from '@/stores/cart-store';
-import { editorialCollections, editorialRooms, trustLayer } from '@/lib/storefront-world';
+import { editorialCollections } from '@/lib/storefront-world';
 import { EntixLogo } from '@/components/brand/EntixLogo';
 import {
   mergeEditableSections,
@@ -39,16 +38,7 @@ const EDITORIAL_LINKS = [
 
 const MOBILE_EXTRA = [
   { label: 'New Arrivals', href: '/collections/all?sort=newest' },
-  { label: 'Lookbook', href: '/lookbook' },
   { label: 'Gift Guide', href: '/gift-guide' },
-  { label: 'Size Guide', href: '/size-guide' },
-  { label: 'Materials & Care', href: '/materials-care' },
-  { label: 'Authenticity', href: '/authenticity' },
-  { label: 'About Entix', href: '/about' },
-  { label: 'Contact', href: '/contact' },
-  { label: 'Track Order', href: '/track' },
-  { label: 'Wishlist', href: '/wishlist' },
-  { label: 'Returns', href: '/account/returns' },
 ];
 
 const SHOW_LOOKBOOK_NAV = false;
@@ -61,6 +51,16 @@ const mobileKickerClass =
 const mobileLinkClass =
   'flex items-center justify-between border-b border-ink/8 px-1 py-3.5 font-subhead text-[11px] uppercase tracking-widest text-ink/62 transition-colors last:border-0 hover:text-champagne-700';
 
+const HIDDEN_MOBILE_MENU_PATHS = new Set([
+  '/lookbook',
+  '/size-guide',
+  '/materials-care',
+  '/authenticity',
+  '/account/returns',
+  '/return-policy',
+  '/shipping-policy',
+]);
+
 type HeaderContentBlock = {
   title?: string | null;
   body?: string | null;
@@ -70,17 +70,35 @@ type HeaderContentBlock = {
 const mobileEssentials: MenuLink[] = [
   { label: 'About Entix', href: '/about' },
   { label: 'Contact', href: '/contact' },
-  { label: 'Track Order', href: '/track' },
   { label: 'Wishlist', href: '/wishlist' },
-  { label: 'Returns', href: '/account/returns' },
 ];
+
+function hrefPath(href: string) {
+  return href.split('?')[0].split('#')[0];
+}
+
+function isVisibleMobileMenuLink(link: MenuLink) {
+  return !HIDDEN_MOBILE_MENU_PATHS.has(hrefPath(link.href));
+}
+
+function uniqueMenuLinks(links: MenuLink[]) {
+  const seen = new Set<string>();
+  return links.filter((link) => {
+    const key = `${link.label}:${link.href}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 
 export function Header({
   menuSections,
   menuFeatured,
+  customerLoggedIn = false,
 }: {
   menuSections?: EditableSection[];
   menuFeatured?: HeaderContentBlock | null;
+  customerLoggedIn?: boolean;
 }) {
   const pathname = usePathname();
   const isHome = pathname === '/';
@@ -91,15 +109,17 @@ export function Header({
   const menuSection = (key: string) => sectionByKey(sections, key);
   const collectionTilesSection = menuSection('collectionTiles');
   const quickLinksSection = menuSection('quickLinks');
-  const trustLinksSection = menuSection('trustLinks');
   const accountLinkSection = menuSection('accountLink');
   const menuCollections = sectionEnabled(collectionTilesSection)
     ? parseMenuTiles(collectionTilesSection?.body, editorialCollections)
     : [];
   const quickMenuLinks = sectionEnabled(quickLinksSection)
-    ? parseMenuLinks(quickLinksSection?.body, MOBILE_EXTRA).filter((item) => SHOW_LOOKBOOK_NAV || item.href !== '/lookbook')
+    ? parseMenuLinks(quickLinksSection?.body, MOBILE_EXTRA)
+        .filter((item) => SHOW_LOOKBOOK_NAV || item.href !== '/lookbook')
+        .filter(isVisibleMobileMenuLink)
     : [];
-  const mobileExtraLinks = [...quickMenuLinks, ...mobileEssentials];
+  const customerOnlyLinks: MenuLink[] = customerLoggedIn ? [{ label: 'Track Order', href: '/track' }] : [];
+  const mobileExtraLinks = uniqueMenuLinks([...quickMenuLinks, ...mobileEssentials, ...customerOnlyLinks].filter(isVisibleMobileMenuLink));
   const showAccountLink = sectionEnabled(accountLinkSection);
 
   return (
@@ -153,7 +173,6 @@ export function Header({
                     menuFeatured={menuFeatured}
                     collectionItems={menuCollections}
                     quickLinks={quickMenuLinks}
-                    trustLinks={sectionEnabled(trustLinksSection) ? parseMenuLinks(trustLinksSection?.body, []) : []}
                   />
                 </div>
               )}
@@ -222,30 +241,6 @@ export function Header({
             </div>
 
             <nav className="flex-1 space-y-8 overflow-y-auto p-5 custom-scrollbar">
-              {SHOW_LOOKBOOK_NAV && (
-                <Link
-                  href="/lookbook"
-                  onClick={() => setMobileOpen(false)}
-                  className="group relative block min-h-[236px] overflow-hidden bg-ink text-ivory"
-                >
-                  <Image
-                    src={editorialRooms[2].image}
-                    alt="Entix lookbook"
-                    fill
-                    sizes="430px"
-                    className="object-cover opacity-78 transition duration-[1200ms] group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.88),rgba(0,0,0,0.08))]" />
-                  <div className="absolute inset-x-5 bottom-5">
-                    <div className="font-subhead text-[9px] uppercase tracking-[0.2em] text-champagne-200">Entix world</div>
-                    <div className="mt-3 flex items-end justify-between gap-5">
-                      <div className="font-display text-[42px] font-light leading-[0.88] tracking-normal">Jewellery rooms</div>
-                      <ArrowRight size={18} className="shrink-0" />
-                    </div>
-                  </div>
-                </Link>
-              )}
-
               <div>
                 <div className="flex items-center justify-between border-b border-ink pb-3">
                   <div className="font-subhead text-[9px] uppercase tracking-[0.25em] text-ink/42">Shop rooms</div>
@@ -287,20 +282,6 @@ export function Header({
                     </Link>
                   ))}
                 </div>
-              </div>
-
-              <div className="grid gap-px bg-ink/10">
-                {trustLayer.slice(0, 3).map((item, index) => (
-                  <div key={item.title} className="grid grid-cols-[36px_1fr] items-center gap-3 bg-[#f8f7f2] p-4">
-                    <div className="flex h-9 w-9 items-center justify-center border border-ink/10 text-champagne-700">
-                      {index === 0 ? <ShieldCheck size={15} /> : <Gem size={15} />}
-                    </div>
-                    <div>
-                      <div className="font-subhead text-[9px] uppercase tracking-[0.14em] text-ink/45">{item.title}</div>
-                      <p className="mt-1 line-clamp-1 text-[12px] text-ink/45">{item.text}</p>
-                    </div>
-                  </div>
-                ))}
               </div>
             </nav>
 

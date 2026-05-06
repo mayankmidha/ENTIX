@@ -7,7 +7,7 @@ import { Hero } from '@/components/home/HeroClient';
 import { Marquee } from '@/components/home/Marquee';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { editorialCollections, giftEdits, lookbookScenes, trustLayer } from '@/lib/storefront-world';
+import { editorialCollections, lookbookScenes, trustLayer } from '@/lib/storefront-world';
 import { getSiteSettings, hasDatabaseUrl } from '@/lib/settings';
 import { entixImages, getCollectionHeroImage, normalizeEntixImage } from '@/lib/visual-assets';
 import {
@@ -23,27 +23,56 @@ import {
 export const dynamic = 'force-dynamic';
 export const revalidate = 60;
 
-const collectionRooms = [
+const collectionRooms = editorialCollections.map((item) => ({
+  title: item.label,
+  kicker: item.kicker,
+  text: item.copy,
+  href: item.href,
+  image: item.image,
+}));
+
+const bridalMoments = [
   {
-    title: 'Ceremony',
-    kicker: 'Bridal, vows, family photographs',
-    text: 'A room for heavier light: heirloom necklines, statement bangles, and pieces that hold a portrait.',
+    title: 'Ceremony Sets',
     href: '/collections/bridal',
-    image: entixImages.ceremonialBride,
+    cue: 'Vows and family portraits',
   },
   {
-    title: 'The Wrist',
-    kicker: 'Stacks, cuffs, bangles',
-    text: 'Graphic wristwear with enough presence to stand alone and enough restraint to stack beautifully.',
-    href: '/collections/bangles',
-    image: entixImages.bangles,
+    title: 'Bridal Bangles',
+    href: '/collections/bangles?occasion=bridal',
+    cue: 'Stacked wrist presence',
   },
   {
-    title: 'The Portrait',
-    kicker: 'Necklines, earrings, rings',
-    text: 'Pieces chosen around the face, hand, and collarbone, where jewellery becomes part of expression.',
-    href: '/collections/necklaces',
+    title: 'Reception Light',
+    href: '/collections/earrings?occasion=bridal',
+    cue: 'Movement near the face',
+  },
+];
+
+const budgetReferenceCards = [
+  {
+    title: 'Everyday Studs',
+    cue: 'Easy first piece',
+    href: '/collections/all?priceMax=999&occasion=everyday',
+    image: entixImages.portraitJewellery,
+  },
+  {
+    title: 'Slim Rings',
+    cue: 'Small gift energy',
+    href: '/collections/all?priceMax=999&sort=price_asc',
+    image: entixImages.ringStudy,
+  },
+  {
+    title: 'Light Chains',
+    cue: 'Layering starters',
+    href: '/collections/all?priceMax=999',
     image: entixImages.necklacePortrait,
+  },
+  {
+    title: 'Mini Bangles',
+    cue: 'Daily wristwear',
+    href: '/collections/all?priceMax=999&category=bangles',
+    image: entixImages.bangles,
   },
 ];
 
@@ -105,19 +134,20 @@ function buildCollectionRooms(block?: HomeContentBlock) {
 
   if (!lines.length) return collectionRooms;
 
-  return lines.slice(0, 3).map((line, index) => {
+  return lines.slice(0, 4).map((line, index) => {
     const hrefMatch = line.match(/\/collections\/[^\s,;]+/);
     const href = hrefMatch?.[0] || `/collections/${slugFromTitle(line)}`;
     const rawTitle = hrefMatch ? line.slice(0, hrefMatch.index).replace(/[-:|]+$/g, '').trim() : line;
     const title = rawTitle || titleFromHref(href);
     const slug = href.split('?')[0].split('/').filter(Boolean).pop() || slugFromTitle(title);
+    const matchingDefault = collectionRooms.find((room) => room.href === href || room.title.toLowerCase() === title.toLowerCase());
 
     return {
       title,
-      kicker: cleanCopy(block?.title) || `Rotation 0${index + 1}`,
-      text: 'A current Entix focus for the fortnight, edited by intent, occasion, and quick discovery.',
+      kicker: matchingDefault?.kicker || cleanCopy(block?.title) || `Room 0${index + 1}`,
+      text: matchingDefault?.text || 'A current Entix focus for the fortnight, edited by intent, occasion, and quick discovery.',
       href,
-      image: getCollectionHeroImage(slug),
+      image: matchingDefault?.image || getCollectionHeroImage(slug),
     };
   });
 }
@@ -145,7 +175,7 @@ function extractStorefrontHref(value?: string | null) {
 
 async function getHomeData() {
   if (!hasDatabaseUrl()) {
-    return { featured: [], newArrivals: [], contentBlocks: new Map<string, HomeContentBlock>() };
+    return { featured: [], newArrivals: [], under999: [], contentBlocks: new Map<string, HomeContentBlock>() };
   }
 
   try {
@@ -156,7 +186,7 @@ async function getHomeData() {
     const railTokens = parseProductRailTokens(contentBlocks.get('rotation.productRails')?.body);
     const railKeys = Array.from(new Set(railTokens.flatMap((token) => [token, token.toLowerCase(), token.toUpperCase()])));
 
-    const [defaultFeatured, rotatedProducts, newArrivals] = await Promise.all([
+    const [defaultFeatured, rotatedProducts, newArrivals, under999] = await Promise.all([
       prisma.product.findMany({
         where: { isActive: true, isBestseller: true },
         include: { images: { orderBy: { position: 'asc' } }, inventory: true },
@@ -177,25 +207,32 @@ async function getHomeData() {
         include: { images: { orderBy: { position: 'asc' } }, inventory: true },
         take: 8,
       }),
+      prisma.product.findMany({
+        where: { isActive: true, priceInr: { lte: 999 } },
+        include: { images: { orderBy: { position: 'asc' } }, inventory: true },
+        orderBy: [{ isBestseller: 'desc' }, { createdAt: 'desc' }],
+        take: 8,
+      }),
     ]);
     const orderedRotation = orderProductsByRail(rotatedProducts, railTokens);
     return {
       featured: orderedRotation.length ? orderedRotation.slice(0, 4) : defaultFeatured,
       newArrivals,
+      under999,
       contentBlocks,
     };
   } catch {
-    return { featured: [], newArrivals: [], contentBlocks: new Map<string, HomeContentBlock>() };
+    return { featured: [], newArrivals: [], under999: [], contentBlocks: new Map<string, HomeContentBlock>() };
   }
 }
 
 export default async function HomePage() {
-  const [{ featured, newArrivals, contentBlocks }, contentSettings] = await Promise.all([
+  const [{ featured, under999, contentBlocks }, contentSettings] = await Promise.all([
     getHomeData(),
     getSiteSettings(['content.homeEyebrow', 'content.homeHeadline', 'content.homeBody']),
   ]);
   const hasFeatured = featured.length > 0;
-  const hasNewArrivals = newArrivals.length > 0;
+  const hasUnder999 = under999.length > 0;
   const homeEdit = contentBlocks.get('rotation.homeEdit');
   const collectionSlotBlock = contentBlocks.get('rotation.collectionSlots');
   const productRailBlock = contentBlocks.get('rotation.productRails');
@@ -213,28 +250,58 @@ export default async function HomePage() {
   const trustSection = homeSection('trustLayer');
   const newArrivalsSection = homeSection('newArrivals');
   const activeCollectionRooms = buildCollectionRooms(collectionSlotBlock);
-  const displayedCollectionRooms = activeCollectionRooms.map((room, index) =>
+  const completeCollectionRooms = [
+    ...activeCollectionRooms,
+    ...collectionRooms.filter((room) => !activeCollectionRooms.some((activeRoom) => activeRoom.href === room.href)),
+  ].slice(0, 4);
+  const displayedCollectionRooms = completeCollectionRooms.map((room, index) =>
     index === 0 && isRenderableImageSource(collectionRoomsSection?.imageUrl)
       ? { ...room, image: imageOrFallback(collectionRoomsSection?.imageUrl, room.image) }
       : room,
   );
-  const homeEditTitle = cleanCopy(homeEditSection?.title) || cleanCopy(homeEdit?.title) || 'When the choice needs to feel personal.';
-  const homeEditBody =
-    cleanCopy(homeEditSection?.body) ||
-    cleanCopy(homeEdit?.body) ||
-    'Choose by certainty: earrings and pendants when sizing is unknown, rings when the fit is known, bangles when the gift needs presence.';
-  const homeEditImage = sectionImage(homeEditSection, resolveContentImage(homeEdit?.imageUrl, giftEdits[0].image, 'home-edit'), 'home-edit');
-  const homeEditHref = cleanCopy(homeEditSection?.href) || extractStorefrontHref(homeEdit?.body) || extractStorefrontHref(homeEdit?.imageUrl) || '/gift-guide';
-  const homeEditCta = sectionCopy(homeEditSection, 'cta', 'Open edit');
-  const productRailTitle = cleanCopy(productRailSection?.title) || cleanCopy(productRailBlock?.title) || 'Bestsellers';
-  const productRailEyebrow = cleanCopy(productRailSection?.eyebrow) || (cleanCopy(productRailBlock?.title) ? 'Rotating Product Rail' : 'Selected Pieces');
+  const roomsTitle = /choose by/i.test(cleanCopy(collectionRoomsSection?.title))
+    ? 'Shop the rooms.'
+    : cleanCopy(collectionRoomsSection?.title) || 'Shop the rooms.';
+  const roomsBody = /rooms replace category noise/i.test(cleanCopy(collectionRoomsSection?.body))
+    ? 'Four clear ways into Entix: wrist, neckline, face, and hand. Each room connects directly to its collection.'
+    : cleanCopy(collectionRoomsSection?.body) || 'Four clear ways into Entix: wrist, neckline, face, and hand. Each room connects directly to its collection.';
+  const rawBridalTitle = cleanCopy(homeEditSection?.title) || cleanCopy(homeEdit?.title);
+  const bridalTitle = !rawBridalTitle || /choice needs|personal/i.test(rawBridalTitle)
+    ? 'The bridal room.'
+    : rawBridalTitle;
+  const rawBridalBody = cleanCopy(homeEditSection?.body) || cleanCopy(homeEdit?.body);
+  const bridalBody = !rawBridalBody || /certainty|sizing|gift/i.test(rawBridalBody)
+    ? 'For vows, trousseau, reception light, and family portraits: heavier shine, cleaner silhouettes, and pieces that photograph beautifully.'
+    : rawBridalBody;
+  const rawBridalImage = cleanCopy(homeEditSection?.imageUrl) || cleanCopy(homeEdit?.imageUrl);
+  const bridalImage = /gift|packaging/i.test(rawBridalImage)
+    ? entixImages.ceremonialBride
+    : sectionImage(homeEditSection, resolveContentImage(homeEdit?.imageUrl, entixImages.ceremonialBride, 'bridal-edit'), 'bridal-edit');
+  const rawBridalHref = cleanCopy(homeEditSection?.href) || extractStorefrontHref(homeEdit?.body) || extractStorefrontHref(homeEdit?.imageUrl) || '/collections/bridal';
+  const bridalHref = rawBridalHref === '/gift-guide' ? '/collections/bridal' : rawBridalHref;
+  const rawBridalCta = sectionCopy(homeEditSection, 'cta', 'Shop bridal');
+  const bridalCta = /open edit/i.test(rawBridalCta) ? 'Shop bridal' : rawBridalCta;
+  const rawProductRailTitle = cleanCopy(productRailSection?.title) || cleanCopy(productRailBlock?.title);
+  const productRailTitle = !rawProductRailTitle || /pieces that hold|selected pieces/i.test(rawProductRailTitle)
+    ? 'Bestsellers'
+    : rawProductRailTitle;
+  const productRailEyebrow = cleanCopy(productRailSection?.eyebrow) || 'Selected pieces';
   const productRailHref = sectionCopy(productRailSection, 'href', '/collections/all');
   const productRailCta = sectionCopy(productRailSection, 'cta', 'View all jewellery');
+  const rawUnder999Eyebrow = sectionCopy(newArrivalsSection, 'eyebrow', 'Price edit');
+  const rawUnder999Title = sectionCopy(newArrivalsSection, 'title', 'Under INR 999.');
+  const under999Eyebrow = /new arrivals/i.test(rawUnder999Eyebrow) ? 'Price edit' : rawUnder999Eyebrow;
+  const under999Title = /recently collected/i.test(rawUnder999Title) ? 'Under INR 999.' : rawUnder999Title;
+  const under999Href = sectionCopy(newArrivalsSection, 'href', '/collections/all?priceMax=999');
+  const under999Cta = sectionCopy(newArrivalsSection, 'cta', 'Shop under INR 999');
   const campaignHref = cleanCopy(campaignSection?.href) || extractStorefrontHref(bannerQueue?.imageUrl) || '/collections/all';
   const campaignTitle = cleanCopy(campaignSection?.title) || cleanCopy(bannerQueue?.title) || cleanCopy(bannerQueue?.body);
   const campaignEyebrow = sectionCopy(campaignSection, 'eyebrow', 'Next edit');
   const campaignCta = sectionCopy(campaignSection, 'cta', 'Open');
   const showCampaignBanner = sectionEnabled(campaignSection) && Boolean(campaignTitle || cleanCopy(campaignSection?.body));
+  const showWorldPrelude = false && sectionEnabled(worldPreludeSection);
+  const showSilhouetteIndex = false && sectionEnabled(silhouetteSection);
+  const showTrustLayer = false && sectionEnabled(trustSection);
 
   return (
     <div className="flex flex-col">
@@ -264,12 +331,12 @@ export default async function HomePage() {
         </Link>
       )}
 
-      {sectionEnabled(worldPreludeSection) && (
+      {showWorldPrelude && (
         <div style={sectionStyle(worldPreludeSection)}>
           <WorldPrelude section={worldPreludeSection} fallbackEyebrow={contentSettings['content.homeEyebrow']} />
         </div>
       )}
-      {sectionEnabled(silhouetteSection) && (
+      {showSilhouetteIndex && (
         <div style={sectionStyle(silhouetteSection)}>
           <SilhouetteIndex />
         </div>
@@ -281,27 +348,23 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-[1500px]">
           <ScrollReveal className="grid gap-10 lg:grid-cols-[0.62fr_1.38fr] lg:items-end">
             <div className="max-w-sm border-t border-ink pt-5">
-              <div className="eyebrow">{sectionCopy(collectionRoomsSection, 'eyebrow', 'Collection Architecture')}</div>
+              <div className="eyebrow">{sectionCopy(collectionRoomsSection, 'eyebrow', 'Rooms')}</div>
               <p className="mt-6 text-[14px] leading-relaxed text-ink/52">
-                {sectionCopy(
-                  collectionRoomsSection,
-                  'body',
-                  'Rooms replace category noise. Each path gives the shopper an emotional door and the practical detail to buy with confidence.',
-                )}
+                {roomsBody}
               </p>
             </div>
             <div>
               <h2 className="max-w-5xl font-display text-6xl font-light leading-[0.82] tracking-normal text-ink sm:text-7xl md:text-8xl lg:text-9xl">
-                {sectionCopy(collectionRoomsSection, 'title', 'Choose by the moment the piece must hold.')}
+                {roomsTitle}
               </h2>
             </div>
           </ScrollReveal>
 
-          <div className="mt-16 grid gap-px bg-ink/10 lg:grid-cols-[1.12fr_0.88fr_1fr]">
+          <div className="mt-16 grid gap-px bg-ink/10 sm:grid-cols-2 lg:grid-cols-4">
             {displayedCollectionRooms.map((room, idx) => (
               <ScrollReveal key={room.href} delay={idx * 0.08}>
                 <Link href={room.href} className="group block bg-ivory p-2">
-                  <div className={`relative overflow-hidden bg-ink ${idx === 1 ? 'aspect-[4/5] lg:mt-20' : 'aspect-[4/5]'}`}>
+                  <div className="relative aspect-[4/5] overflow-hidden bg-ink">
                     <Image
                       src={room.image}
                       alt={room.title}
@@ -318,7 +381,7 @@ export default async function HomePage() {
                       <div className="mt-4 font-display text-[44px] font-light leading-none tracking-normal sm:text-[58px]">{room.title}</div>
                       <p className="mt-4 max-w-sm text-[14px] leading-relaxed text-ivory/64">{room.text}</p>
                       <div className="mt-7 inline-flex items-center gap-2 font-subhead text-[10px] uppercase tracking-[0.18em] text-champagne-200">
-                        Enter room <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
+                        Shop {room.title} <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
                       </div>
                     </div>
                   </div>
@@ -368,43 +431,43 @@ export default async function HomePage() {
       )}
 
       {sectionEnabled(homeEditSection) && (
-      <section style={sectionStyle(homeEditSection)} className="bg-ivory px-6 py-20 lg:px-12 lg:py-28">
-        <div className="mx-auto grid max-w-[1500px] gap-px bg-ink/10 lg:grid-cols-[0.98fr_1.02fr]">
+      <section style={sectionStyle(homeEditSection)} className="bg-ink px-6 py-20 text-ivory lg:px-12 lg:py-28">
+        <div className="mx-auto grid max-w-[1500px] gap-px bg-white/10 lg:grid-cols-[1.12fr_0.88fr]">
           <ScrollReveal>
-            <Link href={homeEditHref} className="group relative block min-h-[560px] overflow-hidden bg-ink text-ivory">
+            <Link href={bridalHref} className="group relative block min-h-[620px] overflow-hidden bg-ink text-ivory">
               <Image
-                src={homeEditImage}
-                alt="Entix gift guide"
+                src={bridalImage}
+                alt="Entix bridal jewellery edit"
                 fill
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover opacity-88 transition duration-[1400ms] group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.86),rgba(18,15,13,0.05))]" />
-              <div className="absolute bottom-8 left-8 right-8">
-                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">Homepage Edit</div>
-                <h2 className="mt-5 max-w-lg font-display text-5xl font-light leading-[0.9] tracking-normal sm:text-6xl">
-                  {homeEditTitle}
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,4,0.86),rgba(5,5,4,0.22)_54%,rgba(5,5,4,0.02)),linear-gradient(0deg,rgba(0,0,0,0.72),rgba(0,0,0,0)_48%)]" />
+              <div className="absolute inset-x-7 bottom-8 sm:inset-x-10 sm:bottom-10">
+                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">Bridal section</div>
+                <h2 className="mt-5 max-w-3xl font-display text-6xl font-light leading-[0.84] tracking-normal sm:text-7xl lg:text-8xl">
+                  {bridalTitle}
                 </h2>
                 <div className="mt-8 inline-flex items-center gap-2 font-subhead text-[10px] uppercase tracking-[0.18em] text-champagne-200">
-                  {homeEditCta} <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
+                  {bridalCta} <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
                 </div>
               </div>
             </Link>
           </ScrollReveal>
 
           <ScrollReveal delay={0.08}>
-            <div className="flex h-full flex-col justify-between bg-[#f8f7f2] p-7 sm:p-10 lg:p-12">
+            <div className="flex h-full flex-col justify-between bg-[#0d0b08] p-7 sm:p-10 lg:p-12">
               <div>
-                <HeartHandshake size={22} className="text-champagne-700" />
-                <p className="mt-8 max-w-xl text-[19px] leading-relaxed text-ink/64">
-                  {homeEditBody}
+                <HeartHandshake size={22} className="text-champagne-300" />
+                <p className="mt-8 max-w-xl text-[19px] leading-relaxed text-ivory/64">
+                  {bridalBody}
                 </p>
               </div>
-              <div className="mt-12 grid gap-px bg-ink/10 sm:grid-cols-3">
-                {giftEdits.map((edit) => (
-                  <Link key={edit.title} href={edit.href} className="group bg-ivory p-4 transition-colors hover:bg-ink hover:text-ivory">
-                    <div className="font-subhead text-[9px] uppercase tracking-[0.14em] text-current/40">{edit.cue}</div>
-                    <div className="mt-8 flex items-end justify-between gap-3 font-display text-[22px] font-light leading-none">
+              <div className="mt-12 grid gap-px bg-white/10">
+                {bridalMoments.map((edit) => (
+                  <Link key={edit.title} href={edit.href} className="group bg-white/[0.05] p-5 transition-colors hover:bg-ivory hover:text-ink">
+                    <div className="font-subhead text-[9px] uppercase tracking-[0.14em] text-current/42">{edit.cue}</div>
+                    <div className="mt-8 flex items-end justify-between gap-3 font-display text-[28px] font-light leading-none">
                       {edit.title}
                       <ArrowRight size={13} />
                     </div>
@@ -417,7 +480,7 @@ export default async function HomePage() {
       </section>
       )}
 
-      {sectionEnabled(trustSection) && (
+      {showTrustLayer && (
       <section style={sectionStyle(trustSection)} className="bg-ink px-6 py-24 text-ivory lg:px-12 lg:py-32">
         <div className="mx-auto grid max-w-[1500px] gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <ScrollReveal>
@@ -441,33 +504,69 @@ export default async function HomePage() {
       <section style={sectionStyle(newArrivalsSection)} className="entix-gold-wash px-6 py-20 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-[1500px]">
           <ScrollReveal className="mb-14 text-center">
-            <div className="eyebrow">{sectionCopy(newArrivalsSection, 'eyebrow', 'New Arrivals')}</div>
+            <div className="eyebrow">{under999Eyebrow}</div>
             <h2 className="mt-5 font-display text-5xl font-light leading-tight tracking-normal text-ink sm:text-6xl">
-              {sectionCopy(newArrivalsSection, 'title', 'Recently collected.')}
+              {under999Title}
             </h2>
+            <Link href={under999Href} className="mt-8 inline-flex items-center gap-2 font-subhead text-[11px] uppercase tracking-[0.18em] text-ink/58 underline-draw hover:text-ink">
+              {under999Cta} <ArrowRight size={14} />
+            </Link>
           </ScrollReveal>
 
-          {hasNewArrivals ? (
+          {hasUnder999 ? (
             <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {newArrivals.map((product, idx) => (
+              {under999.map((product, idx) => (
                 <ScrollReveal key={product.id} delay={idx * 0.04}>
                   <ProductCard
                     product={{
                       ...product,
                       image: product.images[0]?.url || '',
                       imageHover: product.images[1]?.url,
-                      tag: 'New piece',
+                      tag: 'Under INR 999',
                     }}
                   />
                 </ScrollReveal>
               ))}
             </div>
           ) : (
-            <EditorialPlaceholderGrid compact />
+            <BudgetReferenceGrid />
           )}
         </div>
       </section>
       )}
+    </div>
+  );
+}
+
+function BudgetReferenceGrid() {
+  return (
+    <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {budgetReferenceCards.map((item, index) => (
+        <ScrollReveal key={item.title} delay={index * 0.05}>
+          <Link href={item.href} className="group block">
+            <div className="relative aspect-[4/5] overflow-hidden border border-ink/8 bg-[#eee8de]">
+              <Image
+                src={item.image}
+                alt={item.title}
+                fill
+                sizes="(min-width:1024px) 24vw, 92vw"
+                className="object-cover transition duration-[1400ms] group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.58),rgba(0,0,0,0)_54%)]" />
+              <div className="absolute left-4 top-4 border border-white/50 bg-white/60 px-3 py-1.5 font-subhead text-[9px] uppercase tracking-[0.16em] text-ink backdrop-blur">
+                Under INR 999
+              </div>
+              <div className="absolute inset-x-5 bottom-5 text-ivory">
+                <div className="font-subhead text-[9px] uppercase tracking-[0.16em] text-champagne-200">{item.cue}</div>
+                <div className="mt-4 flex items-end justify-between gap-4 font-display text-[34px] font-light leading-none">
+                  {item.title}
+                  <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </div>
+          </Link>
+        </ScrollReveal>
+      ))}
     </div>
   );
 }
