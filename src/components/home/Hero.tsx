@@ -7,15 +7,23 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 import { useRef } from 'react';
 import { EntixLogo } from '@/components/brand/EntixLogo';
 import { entixImages } from '@/lib/visual-assets';
+import { imageOrFallback, sectionCopy, type EditableSection } from '@/lib/content-sections';
 
-const heroImage = entixImages.hero;
-const detailImage = entixImages.heroDetail;
-
-export function Hero() {
+export function Hero({ section }: { section?: EditableSection }) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], [0, -68]);
   const imageY = useTransform(scrollYProgress, [0, 1], [0, 90]);
+  const heroImage = imageOrFallback(section?.imageUrl, entixImages.hero);
+  const detailImage = entixImages.heroDetail;
+  const eyebrow = sectionCopy(section, 'eyebrow', 'Jewellery for the moment that stays');
+  const body = sectionCopy(
+    section,
+    'body',
+    'Enter by silhouette, occasion, and feeling. Every Entix piece is framed with story, scale, care, and proof close to purchase.',
+  );
+  const primaryHref = sectionCopy(section, 'href', '/collections/all');
+  const primaryCta = sectionCopy(section, 'cta', 'Shop the rooms');
 
   return (
     <section ref={ref} className="relative isolate min-h-[82svh] overflow-hidden bg-ink text-ivory lg:min-h-[calc(100svh-156px)]">
@@ -52,7 +60,7 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               className="inline-flex items-center gap-3 border border-white/16 bg-white/8 px-4 py-2 font-subhead text-[10px] uppercase tracking-[0.24em] text-champagne-200 backdrop-blur"
             >
-              <Sparkles size={13} /> Jewellery for the moment that stays
+              <Sparkles size={13} /> {eyebrow}
             </motion.div>
 
             <motion.h1
@@ -71,7 +79,7 @@ export function Hero() {
               transition={{ delay: 0.28, duration: 0.9 }}
               className="mt-8 max-w-2xl text-[17px] leading-relaxed text-ivory/72 md:text-[19px]"
             >
-              Enter by silhouette, occasion, and feeling. Every Entix piece is framed with story, scale, care, and proof close to purchase.
+              {body}
             </motion.p>
 
             <motion.div
@@ -80,8 +88,8 @@ export function Hero() {
               transition={{ delay: 0.38, duration: 0.8 }}
               className="mt-10 flex flex-col gap-3 sm:flex-row"
             >
-              <Link href="/collections/all" className="bg-ivory px-9 py-4 text-center font-subhead text-[11px] uppercase tracking-[0.18em] text-ink shadow-xl transition-all hover:bg-champagne-100 active:scale-95">
-                Shop the rooms
+              <Link href={primaryHref} className="bg-ivory px-9 py-4 text-center font-subhead text-[11px] uppercase tracking-[0.18em] text-ink shadow-xl transition-all hover:bg-champagne-100 active:scale-95">
+                {primaryCta}
               </Link>
               <Link href="/gift-guide" className="inline-flex items-center justify-center gap-3 border border-white/22 bg-white/8 px-9 py-4 font-subhead text-[11px] uppercase tracking-[0.18em] text-ivory backdrop-blur transition-all hover:border-white/45 hover:bg-white/14">
                 Find a gift <ArrowRight size={14} />

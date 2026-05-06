@@ -3,10 +3,11 @@
 import { prisma } from '@/lib/prisma';
 import { hashPassword, requireAdminRole } from '@/lib/auth';
 import { writeAuditLog } from '@/lib/audit';
-import { ShippingRateKind } from '@prisma/client';
+import { ShippingRateKind, type Prisma } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { defaultSiteSettings, type SettingKey } from '@/lib/settings';
+import { PAGE_CONTENT_SECTION_KEYS, SECTION_GROUPS, type SectionGroup } from '@/lib/content-sections';
 
 async function saveSetting(key: string, value: string, description?: string) {
   await prisma.siteSetting.upsert({
@@ -35,6 +36,31 @@ function numberValue(formData: FormData, key: string, fallback = 0) {
 
 function integerValue(formData: FormData, key: string, fallback = 0) {
   return Math.round(numberValue(formData, key, fallback));
+}
+
+function textValue(formData: FormData, key: string) {
+  return String(formData.get(key) || '').trim();
+}
+
+function sectionFieldName(group: SectionGroup, key: string, field: string) {
+  return `${group}.sections.${key}.${field}`;
+}
+
+function collectEditableSections(formData: FormData, group: SectionGroup): Prisma.InputJsonObject {
+  return {
+    sections: SECTION_GROUPS[group].sections.map((section) => ({
+      key: section.key,
+      label: section.label,
+      enabled: String(formData.get(sectionFieldName(group, section.key, 'enabled')) || (section.enabled ? 'enabled' : 'hidden')) === 'enabled',
+      position: integerValue(formData, sectionFieldName(group, section.key, 'position'), section.position),
+      eyebrow: textValue(formData, sectionFieldName(group, section.key, 'eyebrow')),
+      title: textValue(formData, sectionFieldName(group, section.key, 'title')),
+      body: textValue(formData, sectionFieldName(group, section.key, 'body')),
+      imageUrl: textValue(formData, sectionFieldName(group, section.key, 'imageUrl')),
+      href: textValue(formData, sectionFieldName(group, section.key, 'href')),
+      cta: textValue(formData, sectionFieldName(group, section.key, 'cta')),
+    })),
+  };
 }
 
 function saved(path: string) {
@@ -385,7 +411,39 @@ export async function saveContentSettings(formData: FormData) {
     'content.homeBody',
   ]);
 
-  const contentBlocks = [
+  const sectionBlocks: { key: string; title: string; body: string; imageUrl: string; data: Prisma.InputJsonObject }[] = [
+    {
+      key: PAGE_CONTENT_SECTION_KEYS[0],
+      title: SECTION_GROUPS.home.title,
+      body: SECTION_GROUPS.home.description,
+      imageUrl: '',
+      data: collectEditableSections(formData, 'home'),
+    },
+    {
+      key: PAGE_CONTENT_SECTION_KEYS[1],
+      title: SECTION_GROUPS.collection.title,
+      body: SECTION_GROUPS.collection.description,
+      imageUrl: '',
+      data: collectEditableSections(formData, 'collection'),
+    },
+    {
+      key: PAGE_CONTENT_SECTION_KEYS[2],
+      title: SECTION_GROUPS.product.title,
+      body: SECTION_GROUPS.product.description,
+      imageUrl: '',
+      data: collectEditableSections(formData, 'product'),
+    },
+    {
+      key: PAGE_CONTENT_SECTION_KEYS[3],
+      title: SECTION_GROUPS.menu.title,
+      body: SECTION_GROUPS.menu.description,
+      imageUrl: '',
+      data: collectEditableSections(formData, 'menu'),
+    },
+  ];
+
+  const contentBlocks: { key: string; title: string; body: string; imageUrl: string; data?: Prisma.InputJsonObject }[] = [
+    ...sectionBlocks,
     {
       key: 'home.hero',
       title: String(formData.get('home.hero.title') || '').trim(),
@@ -398,6 +456,36 @@ export async function saveContentSettings(formData: FormData) {
       body: String(formData.get('menu.featured.body') || '').trim(),
       imageUrl: String(formData.get('menu.featured.imageUrl') || '').trim(),
     },
+    {
+      key: 'rotation.plan',
+      title: String(formData.get('rotation.plan.title') || '').trim(),
+      body: String(formData.get('rotation.plan.body') || '').trim(),
+      imageUrl: String(formData.get('rotation.plan.imageUrl') || '').trim(),
+    },
+    {
+      key: 'rotation.homeEdit',
+      title: String(formData.get('rotation.homeEdit.title') || '').trim(),
+      body: String(formData.get('rotation.homeEdit.body') || '').trim(),
+      imageUrl: String(formData.get('rotation.homeEdit.imageUrl') || '').trim(),
+    },
+    {
+      key: 'rotation.collectionSlots',
+      title: String(formData.get('rotation.collectionSlots.title') || '').trim(),
+      body: String(formData.get('rotation.collectionSlots.body') || '').trim(),
+      imageUrl: String(formData.get('rotation.collectionSlots.imageUrl') || '').trim(),
+    },
+    {
+      key: 'rotation.productRails',
+      title: String(formData.get('rotation.productRails.title') || '').trim(),
+      body: String(formData.get('rotation.productRails.body') || '').trim(),
+      imageUrl: String(formData.get('rotation.productRails.imageUrl') || '').trim(),
+    },
+    {
+      key: 'rotation.bannerQueue',
+      title: String(formData.get('rotation.bannerQueue.title') || '').trim(),
+      body: String(formData.get('rotation.bannerQueue.body') || '').trim(),
+      imageUrl: String(formData.get('rotation.bannerQueue.imageUrl') || '').trim(),
+    },
   ];
 
   await Promise.all(
@@ -409,12 +497,16 @@ export async function saveContentSettings(formData: FormData) {
           title: block.title,
           body: block.body,
           imageUrl: block.imageUrl,
+          data: block.data,
         },
       }),
     ),
   );
 
   revalidatePath('/');
+  revalidatePath('/', 'layout');
+  revalidatePath('/collections/[slug]', 'page');
+  revalidatePath('/products/[slug]', 'page');
   revalidatePath('/admin/content');
   await writeAuditLog(session, 'content.update', 'storefront-content', {
     announcement: String(formData.get('announcement.message') || ''),

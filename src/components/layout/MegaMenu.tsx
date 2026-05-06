@@ -5,6 +5,19 @@ import Link from 'next/link';
 import { ArrowRight, Gem, ShieldCheck, Sparkles } from 'lucide-react';
 import { EntixLogo } from '@/components/brand/EntixLogo';
 import { editorialCollections, editorialRooms, trustLayer } from '@/lib/storefront-world';
+import {
+  imageOrFallback,
+  mergeEditableSections,
+  parseMenuLinks,
+  parseMenuTiles,
+  sectionByKey,
+  sectionCopy,
+  sectionEnabled,
+  sectionStyle,
+  type EditableSection,
+  type MenuLink,
+  type MenuTile,
+} from '@/lib/content-sections';
 
 const quickLinks = [
   { href: '/collections/all?sort=newest', label: 'New arrivals' },
@@ -15,20 +28,76 @@ const quickLinks = [
   { href: '/authenticity', label: 'Authenticity' },
 ];
 
-export function MegaMenu({ onNavigate }: { onNavigate?: () => void }) {
+const SHOW_LOOKBOOK_NAV = false;
+const visibleQuickLinks = quickLinks.filter((item) => SHOW_LOOKBOOK_NAV || item.href !== '/lookbook');
+
+type ContentBlock = {
+  title?: string | null;
+  body?: string | null;
+  imageUrl?: string | null;
+};
+
+export function MegaMenu({
+  onNavigate,
+  menuSections,
+  menuFeatured,
+  collectionItems,
+  quickLinks: providedQuickLinks,
+  trustLinks: providedTrustLinks,
+}: {
+  onNavigate?: () => void;
+  menuSections?: EditableSection[];
+  menuFeatured?: ContentBlock | null;
+  collectionItems?: MenuTile[];
+  quickLinks?: MenuLink[];
+  trustLinks?: MenuLink[];
+}) {
   const feature = editorialRooms[0];
+  const sections = menuSections?.length ? menuSections : mergeEditableSections('menu');
+  const section = (key: string) => sectionByKey(sections, key);
+  const featuredSection = section('featuredRoom');
+  const collectionTilesSection = section('collectionTiles');
+  const quickLinksSection = section('quickLinks');
+  const trustLinksSection = section('trustLinks');
+  const menuCollections = sectionEnabled(collectionTilesSection)
+    ? collectionItems?.length
+      ? collectionItems
+      : parseMenuTiles(collectionTilesSection?.body, editorialCollections)
+    : [];
+  const menuQuickLinks = sectionEnabled(quickLinksSection)
+    ? providedQuickLinks?.length
+      ? providedQuickLinks
+      : parseMenuLinks(quickLinksSection?.body, visibleQuickLinks)
+    : [];
+  const menuTrustLinks = sectionEnabled(trustLinksSection)
+    ? providedTrustLinks?.length
+      ? providedTrustLinks
+      : parseMenuLinks(trustLinksSection?.body, [
+          { label: trustLayer[0].title, href: '/shipping-policy' },
+          { label: trustLayer[1].title, href: '/authenticity' },
+          { label: trustLayer[2].title, href: '/checkout' },
+        ])
+    : [];
+  const featureTitle = sectionCopy(featuredSection, 'title', menuFeatured?.title || 'Enter Bridal.');
+  const featureBody = sectionCopy(featuredSection, 'body', menuFeatured?.body || feature.copy);
+  const featureImage = imageOrFallback(featuredSection?.imageUrl || menuFeatured?.imageUrl, feature.image);
+  const featureHref = sectionCopy(featuredSection, 'href', feature.href);
+  const featureEyebrow = sectionCopy(featuredSection, 'eyebrow', 'Featured room');
+  const featureCta = sectionCopy(featuredSection, 'cta', 'View room');
 
   return (
     <div className="mx-auto max-w-[1500px] bg-white text-ink">
-      <div className="grid min-h-[520px] lg:grid-cols-[0.62fr_1.38fr]">
+      <div className={`grid min-h-[520px] ${sectionEnabled(featuredSection) ? 'lg:grid-cols-[0.62fr_1.38fr]' : 'lg:grid-cols-1'}`}>
+        {sectionEnabled(featuredSection) && (
         <Link
-          href={feature.href}
+          href={featureHref}
+          style={sectionStyle(featuredSection)}
           onClick={onNavigate}
           className="group relative isolate hidden overflow-hidden bg-ink p-8 text-ivory lg:flex lg:flex-col lg:justify-between"
         >
           <Image
-            src={feature.image}
-            alt={feature.label}
+            src={featureImage}
+            alt={featureTitle}
             fill
             priority
             sizes="520px"
@@ -39,41 +108,44 @@ export function MegaMenu({ onNavigate }: { onNavigate?: () => void }) {
             <span className="block w-[118px]">
               <EntixLogo variant="wordmarkWhite" />
             </span>
-            <span className="font-subhead text-[9px] uppercase tracking-[0.22em] text-champagne-200">Featured room</span>
+            <span className="font-subhead text-[9px] uppercase tracking-[0.22em] text-champagne-200">{featureEyebrow}</span>
           </div>
           <div className="relative z-10 max-w-md">
             <div className="mb-5 flex items-center gap-2 font-subhead text-[9px] uppercase tracking-[0.2em] text-champagne-200">
-              <Sparkles size={13} /> Ceremony edit
+              <Sparkles size={13} /> {featureEyebrow}
             </div>
             <p className="font-display text-[78px] font-light leading-[0.82] tracking-normal">
-              Enter<br />Bridal.
+              {featureTitle}
             </p>
-            <p className="mt-6 max-w-xs text-[13px] leading-relaxed text-ivory/58">{feature.copy}</p>
+            <p className="mt-6 max-w-xs text-[13px] leading-relaxed text-ivory/58">{featureBody}</p>
             <div className="mt-9 inline-flex items-center gap-3 border border-white/18 px-5 py-3 font-subhead text-[10px] uppercase tracking-[0.18em] text-ivory transition-colors group-hover:border-champagne-300 group-hover:text-champagne-200">
-              View room <ArrowRight size={13} />
+              {featureCta} <ArrowRight size={13} />
             </div>
           </div>
         </Link>
+        )}
 
         <div className="min-w-0">
+          {sectionEnabled(collectionTilesSection) && (
+          <div style={sectionStyle(collectionTilesSection)}>
           <div className="grid border-b border-ink/10 px-6 py-6 lg:grid-cols-[1fr_auto] lg:items-end lg:px-8">
             <div>
               <div className="font-subhead text-[9px] uppercase tracking-[0.24em] text-ink/38">The Entix index</div>
               <h2 className="mt-2 font-display text-[46px] font-light leading-none tracking-normal text-ink sm:text-[58px]">
-                Shop by silhouette.
+                {sectionCopy(collectionTilesSection, 'title', 'Shop by silhouette.')}
               </h2>
             </div>
             <Link
-              href="/collections/all"
+              href={sectionCopy(collectionTilesSection, 'href', '/collections/all')}
               onClick={onNavigate}
               className="mt-5 inline-flex items-center gap-2 font-subhead text-[10px] uppercase tracking-[0.18em] text-champagne-700 transition-colors hover:text-ink lg:mt-0"
             >
-              View all jewellery <ArrowRight size={13} />
+              {sectionCopy(collectionTilesSection, 'cta', 'View all jewellery')} <ArrowRight size={13} />
             </Link>
           </div>
 
           <div className="grid gap-px bg-ink/10 sm:grid-cols-2 xl:grid-cols-4">
-            {editorialCollections.map((item) => (
+            {(menuCollections.length ? menuCollections : editorialCollections).map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -104,10 +176,13 @@ export function MegaMenu({ onNavigate }: { onNavigate?: () => void }) {
               </Link>
             ))}
           </div>
+          </div>
+          )}
 
           <div className="grid gap-px bg-ink/10 lg:grid-cols-[1fr_1fr]">
+            {sectionEnabled(quickLinksSection) && (
             <div className="grid gap-px bg-ink/10 sm:grid-cols-3">
-              {quickLinks.map((item) => (
+              {menuQuickLinks.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -119,12 +194,14 @@ export function MegaMenu({ onNavigate }: { onNavigate?: () => void }) {
                 </Link>
               ))}
             </div>
+            )}
 
+            {sectionEnabled(trustLinksSection) && (
             <div className="grid gap-px bg-ink/10 sm:grid-cols-3">
-              {trustLayer.slice(0, 3).map((item, index) => (
+              {menuTrustLinks.map((item, index) => (
                 <Link
-                  key={item.title}
-                  href={index === 1 ? '/authenticity' : index === 0 ? '/shipping-policy' : '/checkout'}
+                  key={item.href}
+                  href={item.href}
                   onClick={onNavigate}
                   className="group grid min-h-[72px] grid-cols-[34px_1fr] items-center gap-3 bg-white p-4 transition-colors hover:bg-[#766B48] hover:text-white"
                 >
@@ -132,11 +209,12 @@ export function MegaMenu({ onNavigate }: { onNavigate?: () => void }) {
                     {index === 0 ? <ShieldCheck size={14} /> : <Gem size={14} />}
                   </div>
                   <div className="font-subhead text-[9px] uppercase tracking-[0.15em] text-current/54">
-                    {item.title}
+                    {item.label}
                   </div>
                 </Link>
               ))}
             </div>
+            )}
           </div>
         </div>
       </div>

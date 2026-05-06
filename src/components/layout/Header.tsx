@@ -10,6 +10,16 @@ import { MegaMenu } from './MegaMenu';
 import { useCart } from '@/stores/cart-store';
 import { editorialCollections, editorialRooms, trustLayer } from '@/lib/storefront-world';
 import { EntixLogo } from '@/components/brand/EntixLogo';
+import {
+  mergeEditableSections,
+  parseMenuLinks,
+  parseMenuTiles,
+  sectionByKey,
+  sectionCopy,
+  sectionEnabled,
+  type EditableSection,
+  type MenuLink,
+} from '@/lib/content-sections';
 
 const NAV_LINKS = [
   { label: 'Shop All', href: '/collections/all' },
@@ -41,6 +51,9 @@ const MOBILE_EXTRA = [
   { label: 'Returns', href: '/account/returns' },
 ];
 
+const SHOW_LOOKBOOK_NAV = false;
+const visibleEditorialLinks = EDITORIAL_LINKS.filter((item) => SHOW_LOOKBOOK_NAV || item.href !== '/lookbook');
+
 const desktopNavClass =
   'font-subhead text-[11px] uppercase tracking-[0.2em] transition-colors hover:text-champagne-500';
 const mobileKickerClass =
@@ -48,12 +61,46 @@ const mobileKickerClass =
 const mobileLinkClass =
   'flex items-center justify-between border-b border-ink/8 px-1 py-3.5 font-subhead text-[11px] uppercase tracking-widest text-ink/62 transition-colors last:border-0 hover:text-champagne-700';
 
-export function Header() {
+type HeaderContentBlock = {
+  title?: string | null;
+  body?: string | null;
+  imageUrl?: string | null;
+};
+
+const mobileEssentials: MenuLink[] = [
+  { label: 'About Entix', href: '/about' },
+  { label: 'Contact', href: '/contact' },
+  { label: 'Track Order', href: '/track' },
+  { label: 'Wishlist', href: '/wishlist' },
+  { label: 'Returns', href: '/account/returns' },
+];
+
+export function Header({
+  menuSections,
+  menuFeatured,
+}: {
+  menuSections?: EditableSection[];
+  menuFeatured?: HeaderContentBlock | null;
+}) {
   const pathname = usePathname();
   const isHome = pathname === '/';
   const { totalItems } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
+  const sections = menuSections?.length ? menuSections : mergeEditableSections('menu');
+  const menuSection = (key: string) => sectionByKey(sections, key);
+  const collectionTilesSection = menuSection('collectionTiles');
+  const quickLinksSection = menuSection('quickLinks');
+  const trustLinksSection = menuSection('trustLinks');
+  const accountLinkSection = menuSection('accountLink');
+  const menuCollections = sectionEnabled(collectionTilesSection)
+    ? parseMenuTiles(collectionTilesSection?.body, editorialCollections)
+    : [];
+  const quickMenuLinks = sectionEnabled(quickLinksSection)
+    ? parseMenuLinks(quickLinksSection?.body, MOBILE_EXTRA).filter((item) => SHOW_LOOKBOOK_NAV || item.href !== '/lookbook')
+    : [];
+  const mobileExtraLinks = [...quickMenuLinks, ...mobileEssentials];
+  const showAccountLink = sectionEnabled(accountLinkSection);
 
   return (
     <>
@@ -100,7 +147,14 @@ export function Header() {
                   onMouseEnter={() => setShopOpen(true)}
                   onMouseLeave={() => setShopOpen(false)}
                 >
-                  <MegaMenu onNavigate={() => setShopOpen(false)} />
+                  <MegaMenu
+                    onNavigate={() => setShopOpen(false)}
+                    menuSections={sections}
+                    menuFeatured={menuFeatured}
+                    collectionItems={menuCollections}
+                    quickLinks={quickMenuLinks}
+                    trustLinks={sectionEnabled(trustLinksSection) ? parseMenuLinks(trustLinksSection?.body, []) : []}
+                  />
                 </div>
               )}
             </div>
@@ -109,7 +163,7 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
-            {EDITORIAL_LINKS.slice(0, 1).map((link) => (
+            {visibleEditorialLinks.slice(0, 1).map((link) => (
               <Link key={link.href} href={link.href} className={desktopNavClass}>
                 {link.label}
               </Link>
@@ -168,27 +222,29 @@ export function Header() {
             </div>
 
             <nav className="flex-1 space-y-8 overflow-y-auto p-5 custom-scrollbar">
-              <Link
-                href="/lookbook"
-                onClick={() => setMobileOpen(false)}
-                className="group relative block min-h-[236px] overflow-hidden bg-ink text-ivory"
-              >
-                <Image
-                  src={editorialRooms[2].image}
-                  alt="Entix lookbook"
-                  fill
-                  sizes="430px"
-                  className="object-cover opacity-78 transition duration-[1200ms] group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.88),rgba(0,0,0,0.08))]" />
-                <div className="absolute inset-x-5 bottom-5">
-                  <div className="font-subhead text-[9px] uppercase tracking-[0.2em] text-champagne-200">Entix world</div>
-                  <div className="mt-3 flex items-end justify-between gap-5">
-                    <div className="font-display text-[42px] font-light leading-[0.88] tracking-normal">Jewellery rooms</div>
-                    <ArrowRight size={18} className="shrink-0" />
+              {SHOW_LOOKBOOK_NAV && (
+                <Link
+                  href="/lookbook"
+                  onClick={() => setMobileOpen(false)}
+                  className="group relative block min-h-[236px] overflow-hidden bg-ink text-ivory"
+                >
+                  <Image
+                    src={editorialRooms[2].image}
+                    alt="Entix lookbook"
+                    fill
+                    sizes="430px"
+                    className="object-cover opacity-78 transition duration-[1200ms] group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.88),rgba(0,0,0,0.08))]" />
+                  <div className="absolute inset-x-5 bottom-5">
+                    <div className="font-subhead text-[9px] uppercase tracking-[0.2em] text-champagne-200">Entix world</div>
+                    <div className="mt-3 flex items-end justify-between gap-5">
+                      <div className="font-display text-[42px] font-light leading-[0.88] tracking-normal">Jewellery rooms</div>
+                      <ArrowRight size={18} className="shrink-0" />
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              )}
 
               <div>
                 <div className="flex items-center justify-between border-b border-ink pb-3">
@@ -196,7 +252,7 @@ export function Header() {
                   <div className="font-subhead text-[9px] uppercase tracking-[0.2em] text-champagne-700">Entix</div>
                 </div>
                 <div className="grid grid-cols-2 gap-px bg-ink/10">
-                  {editorialCollections.map((link) => (
+                  {(menuCollections.length ? menuCollections : editorialCollections).map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
@@ -219,7 +275,7 @@ export function Header() {
               <div>
                 <div className="border-b border-ink pb-3 font-subhead text-[9px] uppercase tracking-[0.25em] text-ink/42">More</div>
                 <div>
-                  {MOBILE_EXTRA.map((link) => (
+                  {mobileExtraLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
@@ -248,15 +304,17 @@ export function Header() {
               </div>
             </nav>
 
+            {showAccountLink && (
             <div className="space-y-3 border-t border-ink/5 p-5">
               <Link
-                href="/account"
+                href={sectionCopy(accountLinkSection, 'href', '/account')}
                 onClick={() => setMobileOpen(false)}
                 className="flex items-center gap-3 bg-ink px-4 py-3 font-subhead text-[11px] uppercase tracking-widest text-ivory transition-colors hover:bg-champagne-700"
               >
-                <User size={16} /> My Account
+                <User size={16} /> {sectionCopy(accountLinkSection, 'title', 'My Account')}
               </Link>
             </div>
+            )}
           </div>
         </div>
       )}

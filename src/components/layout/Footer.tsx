@@ -6,6 +6,8 @@ import { editorialCollections, trustLayer } from '@/lib/storefront-world';
 import { EntixLogo } from '@/components/brand/EntixLogo';
 import { entixImages } from '@/lib/visual-assets';
 
+const SHOW_LOOKBOOK_NAV = false;
+
 export function Footer() {
   return (
     <footer className="relative overflow-hidden bg-ink px-6 pb-12 pt-20 text-ivory lg:px-12">
@@ -71,7 +73,9 @@ export function Footer() {
           <div>
             <h4 className="font-subhead text-[10px] uppercase tracking-widest text-ivory/30 mb-8">— Brand World</h4>
             <nav className="flex flex-col gap-4">
-              <Link href="/lookbook" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Lookbook</Link>
+              {SHOW_LOOKBOOK_NAV && (
+                <Link href="/lookbook" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Lookbook</Link>
+              )}
               <Link href="/gift-guide" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Gift Guide</Link>
               <Link href="/authenticity" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Authenticity</Link>
               <Link href="/packaging-gifting" className="font-subhead text-[11px] uppercase tracking-widest hover:text-champagne-500 transition-colors">Packaging</Link>

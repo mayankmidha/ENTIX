@@ -1,5 +1,6 @@
 import { notFound, permanentRedirect, redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { hasDatabaseUrl } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +14,8 @@ export default async function StoreRedirectFallback({
   const [{ slug }, query] = await Promise.all([params, searchParams]);
   const path = `/${slug.join('/')}`;
   const candidates = [path, path.endsWith('/') ? path.slice(0, -1) : `${path}/`];
+
+  if (!hasDatabaseUrl()) notFound();
 
   const savedRedirect = await prisma.redirect
     .findFirst({

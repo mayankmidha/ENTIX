@@ -15,13 +15,28 @@ import { RecentlyViewed } from '@/components/product/RecentlyViewed';
 import { RelatedProducts } from '@/components/product/RelatedProducts';
 import { WishlistButton } from '@/components/product/WishlistButton';
 import { getCanonicalBaseUrl } from '@/lib/site-url';
-import { getSiteSettings } from '@/lib/settings';
+import { getSiteSettings, hasDatabaseUrl } from '@/lib/settings';
 import { entixPdpImages, normalizeEntixImage } from '@/lib/visual-assets';
+import {
+  imageOrFallback,
+  mergeEditableSections,
+  sectionByKey,
+  sectionCopy,
+  sectionEnabled,
+  sectionStyle,
+} from '@/lib/content-sections';
 
 export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ slug: string }>;
+}
+
+async function getProductSections() {
+  if (!hasDatabaseUrl()) return mergeEditableSections('product');
+
+  const row = await prisma.pageContent.findUnique({ where: { key: 'product.sections' } }).catch(() => null);
+  return mergeEditableSections('product', row?.data);
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -75,7 +90,7 @@ export default async function ProductPage({ params }: Props) {
 
   if (!product) return notFound();
 
-  const [approvedReviews, ratingAgg, settings] = await Promise.all([
+  const [approvedReviews, ratingAgg, settings, productSections] = await Promise.all([
     prisma.review.findMany({
       where: { productId: product.id, status: 'approved' },
       orderBy: { createdAt: 'desc' },
@@ -87,7 +102,18 @@ export default async function ProductPage({ params }: Props) {
       _count: { _all: true },
     }),
     getSiteSettings(),
+    getProductSections(),
   ]);
+  const section = (key: string) => sectionByKey(productSections, key);
+  const purchasePanelSection = section('purchasePanel');
+  const dossierSection = section('dossier');
+  const assuranceSection = section('assurance');
+  const feelingSection = section('feelingStory');
+  const proofSetSection = section('proofSet');
+  const careSection = section('care');
+  const reviewsSection = section('reviews');
+  const relatedSection = section('related');
+  const recentlyViewedSection = section('recentlyViewed');
   const averageRating = ratingAgg._avg.rating || 0;
   const totalReviews = ratingAgg._count._all;
   const baseUrl = getCanonicalBaseUrl(settings['domain.canonical'], settings['domain.primary']);
@@ -169,10 +195,10 @@ export default async function ProductPage({ params }: Props) {
   const narrative = product.story || product.description;
   const careText = product.careInstructions || 'Store separately, keep away from perfume and water, and wipe gently with a soft cloth after wear.';
   const primaryImage = normalizeEntixImage(product.images[0]?.url, product.slug);
-  const storyImage = normalizeEntixImage(product.images[1]?.url, product.slug, 1);
+  const storyImage = imageOrFallback(feelingSection?.imageUrl, normalizeEntixImage(product.images[1]?.url, product.slug, 1));
   const materialProofImage = entixPdpImages.materialProof;
   const packagingImage = entixPdpImages.packagingShot;
-  const completeLookImage = entixPdpImages.completeTheLook;
+  const completeLookImage = imageOrFallback(proofSetSection?.imageUrl, entixPdpImages.completeTheLook);
 
   return (
     <div className="entix-gold-wash px-6 pb-40 pt-8 lg:px-12 lg:pb-32 lg:pt-10">
@@ -180,7 +206,9 @@ export default async function ProductPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="max-w-[1440px] mx-auto">
+      <div className="mx-auto flex max-w-[1440px] flex-col">
+        {sectionEnabled(purchasePanelSection) && (
+        <section style={sectionStyle(purchasePanelSection)}>
         <nav className="mb-10 flex items-center gap-2 overflow-x-auto pb-2 font-subhead text-[9px] uppercase tracking-widest text-ink/40">
            <Link href="/" className="hover:text-ink">Home</Link>
            <ChevronRight size={10} />
@@ -225,10 +253,15 @@ export default async function ProductPage({ params }: Props) {
               </div>
             </ScrollReveal>
 
+            {sectionEnabled(dossierSection) && (
             <ScrollReveal delay={0.1}>
               <div className="border border-ink/8 bg-white/72 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.06)] backdrop-blur sm:p-7">
-                <h2 className="font-subhead text-[10px] uppercase tracking-[0.2em] text-ink/35">Piece Dossier</h2>
-                <p className="mt-5 text-[15px] leading-relaxed text-ink/62">{narrative}</p>
+                <h2 className="font-subhead text-[10px] uppercase tracking-[0.2em] text-ink/35">
+                  {sectionCopy(dossierSection, 'eyebrow', 'Piece Dossier')}
+                </h2>
+                <p className="mt-5 text-[15px] leading-relaxed text-ink/62">
+                  {sectionCopy(dossierSection, 'body', narrative)}
+                </p>
 
                 <div className="mt-8 grid gap-px bg-ink/8 sm:grid-cols-2">
                   {specs.length > 0 ? (
@@ -248,14 +281,18 @@ export default async function ProductPage({ params }: Props) {
                 </div>
               </div>
             </ScrollReveal>
+            )}
           </div>
         </div>
+        </section>
+        )}
 
-        <section className="mt-24 grid gap-12 border-y border-ink/10 py-16 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+        {sectionEnabled(assuranceSection) && (
+        <section style={sectionStyle(assuranceSection)} className="mt-24 grid gap-12 border-y border-ink/10 py-16 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
           <ScrollReveal>
-            <div className="eyebrow">Entix Standard</div>
+            <div className="eyebrow">{sectionCopy(assuranceSection, 'eyebrow', 'Entix Standard')}</div>
             <h2 className="mt-5 font-display text-5xl font-light leading-none tracking-normal text-ink md:text-7xl">
-              Built for the moment before yes.
+              {sectionCopy(assuranceSection, 'title', 'Built for the moment before yes.')}
             </h2>
           </ScrollReveal>
 
@@ -266,8 +303,10 @@ export default async function ProductPage({ params }: Props) {
             <AssuranceCell icon={MessageCircle} title="Concierge support" text="Ask about sizing, care, gifting, or styling before committing." />
           </div>
         </section>
+        )}
 
-        <section className="mt-20 grid gap-px overflow-hidden bg-ink/10 lg:grid-cols-[1.05fr_0.95fr]">
+        {sectionEnabled(feelingSection) && (
+        <section style={sectionStyle(feelingSection)} className="mt-20 grid gap-px overflow-hidden bg-ink/10 lg:grid-cols-[1.05fr_0.95fr]">
           <ScrollReveal>
             <div className="relative min-h-[560px] bg-ink">
               {storyImage ? (
@@ -283,9 +322,11 @@ export default async function ProductPage({ params }: Props) {
               )}
               <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.78),rgba(18,15,13,0.08))]" />
               <div className="absolute bottom-8 left-8 right-8 text-ivory">
-                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">The feeling</div>
+                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">
+                  {sectionCopy(feelingSection, 'eyebrow', 'The feeling')}
+                </div>
                 <h2 className="mt-5 max-w-xl font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
-                  A small object with a long memory.
+                  {sectionCopy(feelingSection, 'title', 'A small object with a long memory.')}
                 </h2>
               </div>
             </div>
@@ -296,7 +337,7 @@ export default async function ProductPage({ params }: Props) {
               <div>
                 <div className="eyebrow">Why it stays with you</div>
                 <p className="mt-8 max-w-xl text-[18px] leading-relaxed text-ink/64">
-                  {narrative}
+                  {sectionCopy(feelingSection, 'body', narrative)}
                 </p>
               </div>
               <div className="mt-12 grid gap-px bg-ink/10 sm:grid-cols-3">
@@ -307,8 +348,10 @@ export default async function ProductPage({ params }: Props) {
             </div>
           </ScrollReveal>
         </section>
+        )}
 
-        <section className="mt-20 grid gap-px overflow-hidden bg-ink/10 lg:grid-cols-[0.82fr_1.18fr]">
+        {sectionEnabled(proofSetSection) && (
+        <section style={sectionStyle(proofSetSection)} className="mt-20 grid gap-px overflow-hidden bg-ink/10 lg:grid-cols-[0.82fr_1.18fr]">
           <ScrollReveal>
             <div className="grid h-full gap-px bg-ink/10 sm:grid-cols-2 lg:grid-cols-1">
               <PdpReferenceImage src={materialProofImage} alt={`${product.title} material reference`} label="Material proof" />
@@ -327,26 +370,36 @@ export default async function ProductPage({ params }: Props) {
               />
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,15,13,0.74),rgba(18,15,13,0.12))]" />
               <div className="absolute bottom-8 left-8 right-8 max-w-xl text-ivory">
-                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">Photo-shoot reference</div>
+                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">
+                  {sectionCopy(proofSetSection, 'eyebrow', 'Photo-shoot reference')}
+                </div>
                 <h2 className="mt-5 font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
-                  Every piece needs its proof set.
+                  {sectionCopy(proofSetSection, 'title', 'Every piece needs its proof set.')}
                 </h2>
                 <p className="mt-5 text-[15px] leading-relaxed text-ivory/64">
-                  Macro detail, scale, hover angle, material proof, packaging, and complete-the-look imagery are the standard for the final catalogue shoot.
+                  {sectionCopy(
+                    proofSetSection,
+                    'body',
+                    'Macro detail, scale, hover angle, material proof, packaging, and complete-the-look imagery are the standard for the final catalogue shoot.',
+                  )}
                 </p>
               </div>
             </div>
           </ScrollReveal>
         </section>
+        )}
 
-        <section className="mt-20 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+        {sectionEnabled(careSection) && (
+        <section style={sectionStyle(careSection)} className="mt-20 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
           <ScrollReveal>
             <div className="h-full border border-ink/8 bg-ink p-7 text-ivory sm:p-9">
               <Sparkles size={20} className="text-champagne-300" />
               <h2 className="mt-9 font-display text-4xl font-light leading-tight tracking-normal sm:text-5xl">
-                Care that protects the finish.
+                {sectionCopy(careSection, 'title', 'Care that protects the finish.')}
               </h2>
-              <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ivory/62">{careText}</p>
+              <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ivory/62">
+                {sectionCopy(careSection, 'body', careText)}
+              </p>
             </div>
           </ScrollReveal>
 
@@ -358,37 +411,50 @@ export default async function ProductPage({ params }: Props) {
             </div>
           </ScrollReveal>
         </section>
+        )}
 
-        <ProductReviews
-          productId={product.id}
-          reviews={approvedReviews.map((r) => ({
-            id: r.id,
-            rating: r.rating,
-            title: r.title,
-            body: r.body,
-            authorName: r.authorName,
-            createdAt: r.createdAt,
-          }))}
-          averageRating={averageRating}
-          totalReviews={totalReviews}
-        />
+        {sectionEnabled(reviewsSection) && (
+          <div style={sectionStyle(reviewsSection)}>
+            <ProductReviews
+              productId={product.id}
+              reviews={approvedReviews.map((r) => ({
+                id: r.id,
+                rating: r.rating,
+                title: r.title,
+                body: r.body,
+                authorName: r.authorName,
+                createdAt: r.createdAt,
+              }))}
+              averageRating={averageRating}
+              totalReviews={totalReviews}
+            />
+          </div>
+        )}
 
-        <RelatedProducts
-          productId={product.id}
-          relatedSlugs={product.relatedProducts || []}
-          material={product.material}
-        />
+        {sectionEnabled(relatedSection) && (
+          <div style={sectionStyle(relatedSection)}>
+            <RelatedProducts
+              productId={product.id}
+              relatedSlugs={product.relatedProducts || []}
+              material={product.material}
+            />
+          </div>
+        )}
 
-        <RecentlyViewed
-          current={{
-            productId: product.id,
-            slug: product.slug,
-            title: product.title,
-            priceInr: product.priceInr,
-            imageUrl: primaryImage,
-            material: product.material || product.occasion,
-          }}
-        />
+        {sectionEnabled(recentlyViewedSection) && (
+          <div style={sectionStyle(recentlyViewedSection)}>
+            <RecentlyViewed
+              current={{
+                productId: product.id,
+                slug: product.slug,
+                title: product.title,
+                priceInr: product.priceInr,
+                imageUrl: primaryImage,
+                material: product.material || product.occasion,
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

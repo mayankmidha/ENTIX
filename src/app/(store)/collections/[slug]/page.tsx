@@ -12,6 +12,14 @@ import { getCanonicalBaseUrl } from '@/lib/site-url';
 import { getSiteSettings, hasDatabaseUrl } from '@/lib/settings';
 import { getCollectionMood } from '@/lib/storefront-world';
 import { getCollectionHeroImage, normalizeEntixImage } from '@/lib/visual-assets';
+import {
+  imageOrFallback,
+  mergeEditableSections,
+  sectionByKey,
+  sectionCopy,
+  sectionEnabled,
+  sectionStyle,
+} from '@/lib/content-sections';
 
 export const dynamic = 'force-dynamic';
 
@@ -139,6 +147,13 @@ async function resolveCollection(slug: string) {
   };
 }
 
+async function getCollectionSections() {
+  if (!hasDatabaseUrl()) return mergeEditableSections('collection');
+
+  const row = await prisma.pageContent.findUnique({ where: { key: 'collection.sections' } }).catch(() => null);
+  return mergeEditableSections('collection', row?.data);
+}
+
 function applyCollectionFilters(
   products: any[],
   filters: { sort?: string; priceMin?: string; priceMax?: string; material?: string; stone?: string; occasion?: string; availability?: string }
@@ -220,13 +235,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CollectionPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const filters = await searchParams;
-  const [collection, settings] = await Promise.all([resolveCollection(slug), getSiteSettings()]);
+  const [collection, settings, collectionSections] = await Promise.all([resolveCollection(slug), getSiteSettings(), getCollectionSections()]);
 
   if (!collection) return notFound();
 
+  const section = (key: string) => sectionByKey(collectionSections, key);
+  const heroSection = section('hero');
+  const entryPanelSection = section('entryPanel');
+  const mobileRoomsSection = section('mobileRooms');
+  const leadProductSection = section('leadProduct');
+  const filtersSection = section('filters');
+  const productGridSection = section('productGrid');
   const filteredProducts = applyCollectionFilters(collection.products, filters);
   const mood = getCollectionMood(slug);
   const leadProduct = filteredProducts[0];
+  const collectionHeroImage = imageOrFallback(heroSection?.imageUrl, collection.heroImage);
+  const entryPanelImage = imageOrFallback(entryPanelSection?.imageUrl, mood.image);
   const baseUrl = getCanonicalBaseUrl(settings['domain.canonical'], settings['domain.primary']);
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -246,16 +270,17 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-ivory pb-32">
+    <div className="flex min-h-screen flex-col bg-ivory pb-32">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <header className="relative flex min-h-[70svh] items-end overflow-hidden px-6 pb-12 lg:px-12 lg:pb-16">
+      {sectionEnabled(heroSection) && (
+      <header style={sectionStyle(heroSection)} className="relative flex min-h-[70svh] items-end overflow-hidden px-6 pb-12 lg:px-12 lg:pb-16">
         <div className="absolute inset-0 z-0">
-           {collection.heroImage ? (
+           {collectionHeroImage ? (
              <Image
-               src={collection.heroImage}
+               src={collectionHeroImage}
                alt={collection.title}
                fill
                sizes="100vw"
@@ -270,7 +295,9 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         
         <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
            <ScrollReveal>
-              <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">{collection.eyebrow}</div>
+              <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">
+                {sectionCopy(heroSection, 'eyebrow', collection.eyebrow)}
+              </div>
               <div className="mt-8 max-w-sm border-l border-champagne-300/45 pl-5">
                 <p className="font-subhead text-[16px] italic leading-relaxed text-ivory/68">{mood.wear}</p>
                 <div className="mt-6 flex flex-wrap gap-2">
@@ -284,10 +311,12 @@ export default async function CollectionPage({ params, searchParams }: Props) {
             </ScrollReveal>
             <ScrollReveal delay={0.08}>
               <h1 className="font-display text-6xl font-light leading-[0.9] tracking-normal text-ivory sm:text-7xl md:text-8xl lg:text-9xl">
-                {collection.title}
+                {sectionCopy(heroSection, 'title', collection.title)}
               </h1>
               {collection.description && (
-                <p className="mt-7 max-w-xl text-[17px] leading-relaxed text-ivory/68">{collection.description}</p>
+                <p className="mt-7 max-w-xl text-[17px] leading-relaxed text-ivory/68">
+                  {sectionCopy(heroSection, 'body', collection.description)}
+                </p>
               )}
               <div className="mt-8 flex flex-wrap gap-2">
                 {COLLECTION_NAV.map((item) => (
@@ -303,38 +332,44 @@ export default async function CollectionPage({ params, searchParams }: Props) {
            </ScrollReveal>
         </div>
       </header>
+      )}
 
-      <section className="relative z-10 mx-auto -mt-10 max-w-7xl px-6 lg:px-12">
-        <ScrollReveal>
-          <div className="grid gap-px bg-ink/10 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="relative min-h-[420px] overflow-hidden bg-ink">
-              <Image
-                src={mood.image}
-                alt={`${collection.title} mood`}
-                fill
-                sizes="(min-width: 1024px) 48vw, 100vw"
-                className="object-cover opacity-92"
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.76),rgba(18,15,13,0.08))]" />
-              <div className="absolute bottom-7 left-7 right-7 text-ivory">
-                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">How to enter</div>
-                <h2 className="mt-4 max-w-xl font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
-                  Start with the mood, then choose the piece.
-                </h2>
+      {sectionEnabled(entryPanelSection) && (
+        <section style={sectionStyle(entryPanelSection)} className="relative z-10 mx-auto -mt-10 max-w-7xl px-6 lg:px-12">
+          <ScrollReveal>
+            <div className="grid gap-px bg-ink/10 lg:grid-cols-[0.95fr_1.05fr]">
+              <div className="relative min-h-[420px] overflow-hidden bg-ink">
+                <Image
+                  src={entryPanelImage}
+                  alt={`${collection.title} mood`}
+                  fill
+                  sizes="(min-width: 1024px) 48vw, 100vw"
+                  className="object-cover opacity-92"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,13,0.76),rgba(18,15,13,0.08))]" />
+                <div className="absolute bottom-7 left-7 right-7 text-ivory">
+                  <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">
+                    {sectionCopy(entryPanelSection, 'eyebrow', 'How to enter')}
+                  </div>
+                  <h2 className="mt-4 max-w-xl font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
+                    {sectionCopy(entryPanelSection, 'title', 'Start with the mood, then choose the piece.')}
+                  </h2>
+                </div>
+              </div>
+
+              <div className="grid bg-[#f6f1e8] sm:grid-cols-3 lg:grid-cols-1">
+                <MoodCell icon={Sparkles} title="Wear it" text={mood.wear} />
+                <MoodCell icon={Gem} title="Material cue" text={mood.material} />
+                <MoodCell icon={Gift} title="Gift logic" text={mood.gift} />
               </div>
             </div>
+          </ScrollReveal>
+        </section>
+      )}
 
-            <div className="grid bg-[#f6f1e8] sm:grid-cols-3 lg:grid-cols-1">
-              <MoodCell icon={Sparkles} title="Wear it" text={mood.wear} />
-              <MoodCell icon={Gem} title="Material cue" text={mood.material} />
-              <MoodCell icon={Gift} title="Gift logic" text={mood.gift} />
-            </div>
-          </div>
-        </ScrollReveal>
-      </section>
-
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-24">
-        <div className="mb-10 flex gap-2 overflow-x-auto pb-2 lg:hidden">
+      <div className="mx-auto mt-24 flex w-full max-w-7xl flex-col px-6 lg:px-12">
+        {sectionEnabled(mobileRoomsSection) && (
+        <div style={sectionStyle(mobileRoomsSection)} className="mb-10 flex gap-2 overflow-x-auto pb-2 lg:hidden">
           {COLLECTION_NAV.map((item) => (
             <Link
               key={item.href}
@@ -345,20 +380,23 @@ export default async function CollectionPage({ params, searchParams }: Props) {
             </Link>
           ))}
         </div>
+        )}
 
-        {leadProduct && (
+        {sectionEnabled(leadProductSection) && leadProduct && (
           <ScrollReveal>
-            <Link href={`/products/${leadProduct.slug}`} className="group mb-14 grid gap-px overflow-hidden bg-ink/10 lg:grid-cols-[0.72fr_1.28fr]">
+            <Link style={sectionStyle(leadProductSection)} href={`/products/${leadProduct.slug}`} className="group mb-14 grid gap-px overflow-hidden bg-ink/10 lg:grid-cols-[0.72fr_1.28fr]">
               <div className="bg-ink p-7 text-ivory sm:p-9">
-                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-300">Lead Piece</div>
+                <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-300">
+                  {sectionCopy(leadProductSection, 'eyebrow', 'Lead Piece')}
+                </div>
                 <h2 className="mt-8 font-display text-5xl font-light leading-[0.92] tracking-normal sm:text-6xl">
-                  {leadProduct.title}
+                  {sectionCopy(leadProductSection, 'title', leadProduct.title)}
                 </h2>
                 <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-ivory/58">
-                  {leadProduct.subtitle || leadProduct.story || leadProduct.description}
+                  {sectionCopy(leadProductSection, 'body', leadProduct.subtitle || leadProduct.story || leadProduct.description)}
                 </p>
                 <div className="mt-9 inline-flex items-center gap-2 font-subhead text-[10px] uppercase tracking-[0.18em] text-champagne-200">
-                  View product <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
+                  {sectionCopy(leadProductSection, 'cta', 'View product')} <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
                 </div>
               </div>
               <div className="relative min-h-[360px] overflow-hidden bg-[#eee8de]">
@@ -378,20 +416,25 @@ export default async function CollectionPage({ params, searchParams }: Props) {
           </ScrollReveal>
         )}
 
-        <div className="mb-8 grid gap-4 border-b border-ink/10 pb-5 sm:grid-cols-[1fr_auto] sm:items-end">
-          <span className="font-subhead text-[11px] uppercase tracking-widest text-ink/40">
-            {filteredProducts.length} Piece{filteredProducts.length !== 1 ? 's' : ''}
-          </span>
-          <Link href="/collections" className="font-subhead text-[10px] uppercase tracking-[0.18em] text-ink/45 underline-draw hover:text-ink">
-            All collections
-          </Link>
+        {sectionEnabled(filtersSection) && (
+        <div style={sectionStyle(filtersSection)}>
+          <div className="mb-8 grid gap-4 border-b border-ink/10 pb-5 sm:grid-cols-[1fr_auto] sm:items-end">
+            <span className="font-subhead text-[11px] uppercase tracking-widest text-ink/40">
+              {filteredProducts.length} Piece{filteredProducts.length !== 1 ? 's' : ''}
+            </span>
+            <Link href={sectionCopy(productGridSection, 'href', '/collections')} className="font-subhead text-[10px] uppercase tracking-[0.18em] text-ink/45 underline-draw hover:text-ink">
+              {sectionCopy(productGridSection, 'cta', 'All collections')}
+            </Link>
+          </div>
+
+          <Suspense fallback={null}>
+            <CollectionToolbar />
+          </Suspense>
         </div>
+        )}
 
-        <Suspense fallback={null}>
-          <CollectionToolbar />
-        </Suspense>
-
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {sectionEnabled(productGridSection) && (
+        <div style={sectionStyle(productGridSection)} className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
            {filteredProducts.map((product, idx) => (
              <ScrollReveal key={product.id} delay={idx * 0.05}>
                 <ProductCard 
@@ -405,8 +448,9 @@ export default async function CollectionPage({ params, searchParams }: Props) {
              </ScrollReveal>
            ))}
         </div>
+        )}
 
-        {filteredProducts.length === 0 && (
+        {sectionEnabled(productGridSection) && filteredProducts.length === 0 && (
            <div className="py-40 text-center">
               <p className="font-display text-3xl text-ink/24 italic">This exact edit is hiding for now.</p>
               <p className="mt-4 font-subhead text-[11px] uppercase tracking-widest text-ink/30">Adjust the filters or return to the full room</p>

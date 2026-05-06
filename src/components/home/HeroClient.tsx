@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Component, ReactNode } from 'react';
 import { EntixLogo } from '@/components/brand/EntixLogo';
 import { Skeleton } from '@/components/ui/Skeleton';
+import type { EditableSection } from '@/lib/content-sections';
 
 class HeroErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   constructor(props: { children: ReactNode }) {
@@ -60,10 +61,10 @@ const HeroCanvas = dynamic(() => import('./Hero').then((m) => m.Hero), {
   ),
 });
 
-export function Hero() {
+export function Hero({ section }: { section?: EditableSection }) {
   return (
     <HeroErrorBoundary>
-      <HeroCanvas />
+      <HeroCanvas section={section} />
     </HeroErrorBoundary>
   );
 }
