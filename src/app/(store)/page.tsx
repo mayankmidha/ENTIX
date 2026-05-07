@@ -10,6 +10,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { editorialCollections, lookbookScenes, trustLayer } from '@/lib/storefront-world';
 import { getSiteSettings, hasDatabaseUrl } from '@/lib/settings';
 import { entixImages, getCollectionHeroImage, normalizeEntixImage } from '@/lib/visual-assets';
+import { referenceProducts } from '@/lib/reference-products';
 import {
   imageOrFallback,
   mergeEditableSections,
@@ -175,7 +176,12 @@ function extractStorefrontHref(value?: string | null) {
 
 async function getHomeData() {
   if (!hasDatabaseUrl()) {
-    return { featured: [], newArrivals: [], under999: [], contentBlocks: new Map<string, HomeContentBlock>() };
+    return {
+      featured: referenceProducts.filter((product) => product.isBestseller).slice(0, 4),
+      newArrivals: referenceProducts.filter((product) => product.isNewArrival).slice(0, 8),
+      under999: referenceProducts.filter((product) => product.priceInr <= 999).slice(0, 4),
+      contentBlocks: new Map<string, HomeContentBlock>(),
+    };
   }
 
   try {
@@ -222,7 +228,12 @@ async function getHomeData() {
       contentBlocks,
     };
   } catch {
-    return { featured: [], newArrivals: [], under999: [], contentBlocks: new Map<string, HomeContentBlock>() };
+    return {
+      featured: referenceProducts.filter((product) => product.isBestseller).slice(0, 4),
+      newArrivals: referenceProducts.filter((product) => product.isNewArrival).slice(0, 8),
+      under999: referenceProducts.filter((product) => product.priceInr <= 999).slice(0, 4),
+      contentBlocks: new Map<string, HomeContentBlock>(),
+    };
   }
 }
 
@@ -343,7 +354,7 @@ export default async function HomePage() {
       )}
 
       {sectionEnabled(collectionRoomsSection) && (
-      <section style={sectionStyle(collectionRoomsSection)} className="relative overflow-hidden bg-ivory px-6 py-20 lg:px-12 lg:py-28">
+      <section style={sectionStyle(collectionRoomsSection)} className="relative overflow-hidden bg-ivory px-6 py-16 lg:px-12 lg:py-24">
         <div className="entix-rule opacity-70" />
         <div className="relative mx-auto max-w-[1500px]">
           <ScrollReveal className="grid gap-10 lg:grid-cols-[0.62fr_1.38fr] lg:items-end">
@@ -360,7 +371,7 @@ export default async function HomePage() {
             </div>
           </ScrollReveal>
 
-          <div className="mt-16 grid gap-px bg-ink/10 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-14 grid gap-px bg-ink/10 sm:grid-cols-2 lg:grid-cols-4">
             {displayedCollectionRooms.map((room, idx) => (
               <ScrollReveal key={room.href} delay={idx * 0.08}>
                 <Link href={room.href} className="group block bg-ivory p-2">

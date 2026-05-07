@@ -10,8 +10,9 @@ import Link from 'next/link';
 import { ArrowRight, Gem, Gift, Sparkles } from 'lucide-react';
 import { getCanonicalBaseUrl } from '@/lib/site-url';
 import { getSiteSettings, hasDatabaseUrl } from '@/lib/settings';
+import { getReferenceProductsForCollection } from '@/lib/reference-products';
 import { getCollectionMood } from '@/lib/storefront-world';
-import { getCollectionHeroImage, normalizeEntixImage } from '@/lib/visual-assets';
+import { entixCollectionHeroes, entixProductImages, getCollectionHeroImage, normalizeEntixImage } from '@/lib/visual-assets';
 import {
   imageOrFallback,
   mergeEditableSections,
@@ -25,16 +26,50 @@ export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ sort?: string; priceMin?: string; priceMax?: string; material?: string; stone?: string; occasion?: string; availability?: string }>;
+  searchParams: Promise<{ sort?: string; priceMin?: string; priceMax?: string; color?: string; material?: string; stone?: string; occasion?: string; availability?: string }>;
 }
 
-const COLLECTION_NAV = [
-  { label: 'All', href: '/collections/all' },
-  { label: 'Bangles', href: '/collections/bangles' },
-  { label: 'Necklaces', href: '/collections/necklaces' },
-  { label: 'Earrings', href: '/collections/earrings' },
-  { label: 'Rings', href: '/collections/rings' },
-];
+const COLLECTION_ROOM_TYPES: Record<
+  string,
+  Array<{ label: string; kicker: string; copy: string; href: string; image: string }>
+> = {
+  bangles: [
+    { label: 'Kadas', kicker: 'Bridal weight', copy: 'Single, confident wrist pieces for ceremony and heirloom styling.', href: '/collections/bangles?occasion=bridal', image: entixProductImages[12] },
+    { label: 'Stacks', kicker: 'Daily rhythm', copy: 'Slim layered bangles that create movement without feeling heavy.', href: '/collections/bangles?occasion=everyday', image: entixProductImages[1] },
+    { label: 'Cuffs', kicker: 'One hero object', copy: 'Sculptural wristwear for a look that needs one strong anchor.', href: '/collections/bangles?sort=bestseller', image: entixCollectionHeroes.bangles },
+    { label: 'Gift Sets', kicker: 'Easy to choose', copy: 'Polished bangle sets for festivals, birthdays, and trousseau gifting.', href: '/collections/bangles?occasion=gifting', image: entixProductImages[19] },
+  ],
+  necklaces: [
+    { label: 'Pendants', kicker: 'Close to skin', copy: 'Pendant-led pieces for daily styling and first Entix gifts.', href: '/collections/necklaces?occasion=everyday', image: entixProductImages[16] },
+    { label: 'Chains', kicker: 'Layering base', copy: 'Clean chain silhouettes that carry charms, lockets, and small stones.', href: '/collections/necklaces?sort=newest', image: entixCollectionHeroes.necklaces },
+    { label: 'Chokers', kicker: 'Portrait frame', copy: 'Shorter ceremonial necklines for bridal, festive, and evening looks.', href: '/collections/necklaces?occasion=bridal', image: entixProductImages[6] },
+    { label: 'Layered', kicker: 'Heirloom mood', copy: 'Multiple-line necklaces designed to hold a complete look.', href: '/collections/necklaces?sort=bestseller', image: entixProductImages[17] },
+  ],
+  earrings: [
+    { label: 'Studs', kicker: 'Everyday light', copy: 'Small, easy pieces that brighten the face without asking for size.', href: '/collections/earrings?occasion=everyday', image: entixProductImages[11] },
+    { label: 'Hoops', kicker: 'Modern shape', copy: 'Curved silhouettes for movement, gifting, and lighter styling.', href: '/collections/earrings?sort=newest', image: entixProductImages[5] },
+    { label: 'Drops', kicker: 'Evening motion', copy: 'Longer lines that photograph well beside the face.', href: '/collections/earrings?occasion=festive', image: entixProductImages[13] },
+    { label: 'Jhumkas', kicker: 'Ceremony sound', copy: 'Festive forms with volume, polish, and traditional presence.', href: '/collections/earrings?occasion=bridal', image: entixProductImages[8] },
+  ],
+  rings: [
+    { label: 'Bands', kicker: 'Stack base', copy: 'Slim rings built for daily stacking and subtle shine.', href: '/collections/rings?occasion=everyday', image: entixProductImages[10] },
+    { label: 'Cocktail', kicker: 'Statement hand', copy: 'One larger ring that becomes the focus of the hand.', href: '/collections/rings?sort=bestseller', image: entixProductImages[14] },
+    { label: 'Stacks', kicker: 'Personal set', copy: 'Mixed profiles for shoppers who want to build a rhythm.', href: '/collections/rings?sort=newest', image: entixProductImages[4] },
+    { label: 'Bridal', kicker: 'Ceremonial mark', copy: 'Rings with stronger shine for wedding season and family gifting.', href: '/collections/rings?occasion=bridal', image: entixCollectionHeroes.rings },
+  ],
+  bridal: [
+    { label: 'Chokers', kicker: 'Portrait piece', copy: 'A short ceremonial neckline that leads the bridal look.', href: '/collections/bridal?material=gold', image: entixProductImages[6] },
+    { label: 'Bangles', kicker: 'Trousseau stack', copy: 'Wrist pieces with enough weight for wedding photography.', href: '/collections/bridal?occasion=bridal', image: entixProductImages[12] },
+    { label: 'Earrings', kicker: 'Face frame', copy: 'Drops and jhumkas that hold expression and movement.', href: '/collections/bridal?sort=bestseller', image: entixProductImages[8] },
+    { label: 'Sets', kicker: 'Complete look', copy: 'Matched pieces for ceremony, reception, and family portraits.', href: '/collections/bridal?sort=newest', image: entixCollectionHeroes.bridal },
+  ],
+  gifts: [
+    { label: 'Under 999', kicker: 'Easy yes', copy: 'Small pieces and references for accessible gifting edits.', href: '/collections/gifts?priceMax=999', image: entixProductImages[19] },
+    { label: 'Studs', kicker: 'No sizing risk', copy: 'The safest jewellery gift when size is unknown.', href: '/collections/gifts?occasion=gifting', image: entixProductImages[11] },
+    { label: 'Pendants', kicker: 'Personal note', copy: 'A pendant gives the gift a story without needing a set.', href: '/collections/gifts?sort=bestseller', image: entixProductImages[16] },
+    { label: 'Festive', kicker: 'More presence', copy: 'Occasion pieces with stronger polish and packaging appeal.', href: '/collections/gifts?occasion=festive', image: entixCollectionHeroes.gifts },
+  ],
+};
 
 const TAXONOMY_COLLECTIONS: Record<
   string,
@@ -104,6 +139,8 @@ async function resolveCollection(slug: string) {
     }).catch(() => null);
 
     if (collection) {
+      const collectionProducts = collection.products.map((cp) => cp.product);
+
       return {
         type: 'collection' as const,
         title: collection.title,
@@ -111,7 +148,7 @@ async function resolveCollection(slug: string) {
           collection.description || `Explore our ${collection.title} collection at Entix Jewellery.`,
         heroImage: getCollectionHeroImage(slug, collection.heroImage),
         eyebrow: 'Entix Selection',
-        products: collection.products.map((cp) => cp.product),
+        products: collectionProducts.length ? collectionProducts : getReferenceProductsForCollection(slug),
       };
     }
   }
@@ -143,7 +180,7 @@ async function resolveCollection(slug: string) {
     description: taxonomy.description,
     heroImage: getCollectionHeroImage(slug, products[0]?.images[0]?.url),
     eyebrow: taxonomy.eyebrow,
-    products,
+    products: products.length ? products : getReferenceProductsForCollection(slug),
   };
 }
 
@@ -156,7 +193,7 @@ async function getCollectionSections() {
 
 function applyCollectionFilters(
   products: any[],
-  filters: { sort?: string; priceMin?: string; priceMax?: string; material?: string; stone?: string; occasion?: string; availability?: string }
+  filters: { sort?: string; priceMin?: string; priceMax?: string; color?: string; material?: string; stone?: string; occasion?: string; availability?: string }
 ) {
   let filteredProducts = [...products];
 
@@ -168,9 +205,17 @@ function applyCollectionFilters(
     const max = parseInt(filters.priceMax);
     filteredProducts = filteredProducts.filter((p) => p.priceInr <= max);
   }
-  if (filters.material) {
+  if (filters.color) {
+    const color = filters.color.toLowerCase();
     filteredProducts = filteredProducts.filter((p) =>
-      [p.material, p.finish].some((value) => value?.toLowerCase().includes(filters.material!.toLowerCase()))
+      [p.title, p.subtitle, p.description, p.material, p.finish, p.gemstone, p.occasion]
+        .some((value) => value?.toLowerCase().includes(color))
+    );
+  }
+  if (filters.material) {
+    const polish = filters.material.toLowerCase().replace(/\s+polish$/, '');
+    filteredProducts = filteredProducts.filter((p) =>
+      [p.title, p.subtitle, p.description, p.material, p.finish].some((value) => value?.toLowerCase().includes(polish))
     );
   }
   if (filters.stone) {
@@ -242,7 +287,6 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   const section = (key: string) => sectionByKey(collectionSections, key);
   const heroSection = section('hero');
   const entryPanelSection = section('entryPanel');
-  const mobileRoomsSection = section('mobileRooms');
   const leadProductSection = section('leadProduct');
   const filtersSection = section('filters');
   const productGridSection = section('productGrid');
@@ -251,6 +295,9 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   const leadProduct = filteredProducts[0];
   const collectionHeroImage = imageOrFallback(heroSection?.imageUrl, collection.heroImage);
   const entryPanelImage = imageOrFallback(entryPanelSection?.imageUrl, mood.image);
+  const showEntryPanel = false && sectionEnabled(entryPanelSection);
+  const rawHeroBody = sectionCopy(heroSection, 'body', collection.description);
+  const heroBody = /use each collection page as a room/i.test(rawHeroBody) ? collection.description : rawHeroBody;
   const baseUrl = getCanonicalBaseUrl(settings['domain.canonical'], settings['domain.primary']);
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -276,7 +323,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {sectionEnabled(heroSection) && (
-      <header style={sectionStyle(heroSection)} className="relative flex min-h-[70svh] items-end overflow-hidden px-6 pb-12 lg:px-12 lg:pb-16">
+      <header className="relative isolate min-h-[68svh] overflow-hidden bg-ink px-6 py-10 lg:min-h-[74svh] lg:px-12 lg:py-14">
         <div className="absolute inset-0 z-0">
            {collectionHeroImage ? (
              <Image
@@ -290,51 +337,55 @@ export default async function CollectionPage({ params, searchParams }: Props) {
            ) : (
              <div className="h-full w-full bg-ink" />
            )}
-           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,15,13,0.82),rgba(18,15,13,0.22)),linear-gradient(0deg,rgba(18,15,13,0.72),rgba(18,15,13,0)_48%)]" />
+           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,8,7,0.82),rgba(8,8,7,0.34)_42%,rgba(8,8,7,0.08)),linear-gradient(180deg,rgba(0,0,0,0.48),rgba(0,0,0,0.08)_42%,rgba(0,0,0,0.66))]" />
         </div>
         
-        <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
-           <ScrollReveal>
-              <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">
+        <div className="relative z-10 mx-auto flex min-h-[calc(68svh-5rem)] w-full max-w-[1500px] flex-col justify-between lg:min-h-[calc(74svh-7rem)]">
+          <div className="grid gap-8 lg:grid-cols-[1.16fr_0.84fr] lg:items-start">
+            <div className="max-w-5xl">
+              <div className="font-subhead text-[10px] uppercase tracking-[0.24em] text-champagne-200">
                 {sectionCopy(heroSection, 'eyebrow', collection.eyebrow)}
               </div>
-              <div className="mt-8 max-w-sm border-l border-champagne-300/45 pl-5">
-                <p className="font-subhead text-[16px] italic leading-relaxed text-ivory/68">{mood.wear}</p>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {['Material clarity', 'Size confidence', 'Gift logic'].map((item) => (
-                    <span key={item} className="border border-white/16 bg-white/8 px-3 py-1.5 font-subhead text-[9px] uppercase tracking-[0.16em] text-ivory/56 backdrop-blur">
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </ScrollReveal>
-            <ScrollReveal delay={0.08}>
-              <h1 className="font-display text-6xl font-light leading-[0.9] tracking-normal text-ivory sm:text-7xl md:text-8xl lg:text-9xl">
+              <h1 className="mt-8 max-w-[980px] text-balance font-display text-[clamp(5.6rem,17vw,14rem)] font-light leading-[0.78] tracking-normal text-ivory drop-shadow-[0_24px_80px_rgba(0,0,0,0.72)]">
                 {sectionCopy(heroSection, 'title', collection.title)}
               </h1>
               {collection.description && (
-                <p className="mt-7 max-w-xl text-[17px] leading-relaxed text-ivory/68">
-                  {sectionCopy(heroSection, 'body', collection.description)}
+                <p className="mt-8 max-w-2xl border border-white/12 bg-black/42 px-4 py-3 text-[17px] leading-relaxed text-white/85 shadow-[0_24px_90px_rgba(0,0,0,0.32)] backdrop-blur-sm md:text-[19px]">
+                  {heroBody}
                 </p>
               )}
-              <div className="mt-8 flex flex-wrap gap-2">
-                {COLLECTION_NAV.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="border border-ivory/22 bg-ivory/8 px-4 py-2 font-subhead text-[10px] uppercase tracking-[0.16em] text-ivory/72 backdrop-blur transition-colors hover:bg-ivory hover:text-ink"
-                  >
-                    {item.label}
-                  </Link>
+            </div>
+            <div className="border border-white/18 bg-black/38 p-5 text-ivory shadow-[0_30px_100px_rgba(0,0,0,0.28)] backdrop-blur-md lg:mt-8">
+              <div className="font-subhead text-[10px] uppercase tracking-[0.22em] text-champagne-200">How this room works</div>
+              <p className="mt-5 font-subhead text-[15px] italic leading-relaxed text-white/80">{mood.wear}</p>
+              <div className="mt-7 grid grid-cols-3 gap-px bg-white/12">
+                {['Price', 'Color', 'Polish'].map((item) => (
+                  <span key={item} className="bg-ink/72 px-3 py-3 text-center font-subhead text-[9px] uppercase tracking-[0.16em] text-white/70">
+                    {item}
+                  </span>
                 ))}
               </div>
-           </ScrollReveal>
+            </div>
+          </div>
+
+          <div className="mt-12 grid gap-4 border-t border-white/16 pt-5 sm:grid-cols-[auto_auto_1fr] sm:items-center">
+            <a href="#collection-pieces" className="bg-ivory px-6 py-3 text-center font-subhead text-[10px] uppercase tracking-[0.18em] text-ink transition-colors hover:bg-champagne-100">
+                  Shop this room
+            </a>
+            <Link href="/gift-guide" className="inline-flex items-center justify-center gap-2 border border-ivory/30 bg-black/34 px-6 py-3 font-subhead text-[10px] uppercase tracking-[0.18em] text-white/85 backdrop-blur transition-colors hover:bg-ivory hover:text-ink">
+                  Find a gift <ArrowRight size={13} />
+            </Link>
+            <div className="font-subhead text-[9px] uppercase tracking-[0.22em] text-white/65 sm:text-right">
+              {filteredProducts.length ? `${filteredProducts.length} pieces / ${collection.title} edit` : `${collection.title} edit`}
+            </div>
+          </div>
         </div>
       </header>
       )}
 
-      {sectionEnabled(entryPanelSection) && (
+      <CollectionTypeRooms slug={slug} collectionTitle={collection.title} />
+
+      {showEntryPanel && (
         <section style={sectionStyle(entryPanelSection)} className="relative z-10 mx-auto -mt-10 max-w-7xl px-6 lg:px-12">
           <ScrollReveal>
             <div className="grid gap-px bg-ink/10 lg:grid-cols-[0.95fr_1.05fr]">
@@ -368,20 +419,6 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       )}
 
       <div className="mx-auto mt-24 flex w-full max-w-7xl flex-col px-6 lg:px-12">
-        {sectionEnabled(mobileRoomsSection) && (
-        <div style={sectionStyle(mobileRoomsSection)} className="mb-10 flex gap-2 overflow-x-auto pb-2 lg:hidden">
-          {COLLECTION_NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="shrink-0 border border-ink/10 bg-white/55 px-4 py-2 font-subhead text-[10px] uppercase tracking-[0.14em] text-ink/55"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-        )}
-
         {sectionEnabled(leadProductSection) && leadProduct && (
           <ScrollReveal>
             <Link style={sectionStyle(leadProductSection)} href={`/products/${leadProduct.slug}`} className="group mb-14 grid gap-px overflow-hidden bg-ink/10 lg:grid-cols-[0.72fr_1.28fr]">
@@ -417,7 +454,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         )}
 
         {sectionEnabled(filtersSection) && (
-        <div style={sectionStyle(filtersSection)}>
+        <div id="collection-pieces" style={sectionStyle(filtersSection)}>
           <div className="mb-8 grid gap-4 border-b border-ink/10 pb-5 sm:grid-cols-[1fr_auto] sm:items-end">
             <span className="font-subhead text-[11px] uppercase tracking-widest text-ink/40">
               {filteredProducts.length} Piece{filteredProducts.length !== 1 ? 's' : ''}
@@ -458,6 +495,71 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         )}
       </div>
     </div>
+  );
+}
+
+function CollectionTypeRooms({ slug, collectionTitle }: { slug: string; collectionTitle: string }) {
+  const rooms =
+    COLLECTION_ROOM_TYPES[slug] ||
+    [
+      { label: 'New', kicker: 'Fresh edit', copy: 'The newest visual references and products for this room.', href: `/collections/${slug}?sort=newest`, image: entixCollectionHeroes[slug] || entixProductImages[0] },
+      { label: 'Bestsellers', kicker: 'Most loved', copy: 'Pieces that should sit closest to the top of the collection.', href: `/collections/${slug}?sort=bestseller`, image: entixProductImages[1] },
+      { label: 'Giftable', kicker: 'Easy choice', copy: 'A cleaner path for customers buying for someone else.', href: `/collections/${slug}?occasion=gifting`, image: entixProductImages[19] },
+      { label: 'Ceremony', kicker: 'More presence', copy: 'Higher-impact pieces for weddings, festivals, and evening dressing.', href: `/collections/${slug}?occasion=bridal`, image: entixCollectionHeroes.bridal },
+    ];
+
+  return (
+    <section className="bg-black px-6 py-16 text-ivory lg:px-12 lg:py-20">
+      <div className="mx-auto max-w-[1500px]">
+        <ScrollReveal className="grid gap-8 border-b border-white/12 pb-9 lg:grid-cols-[0.58fr_1.42fr] lg:items-end">
+          <div>
+            <div className="font-subhead text-[10px] uppercase tracking-[0.24em] text-champagne-200">Browse {collectionTitle}</div>
+            <p className="mt-5 max-w-sm text-[14px] leading-relaxed text-ivory/54">
+              Start with type, then refine by price, color, and polish without leaving the room.
+            </p>
+          </div>
+          <h2 className="font-display text-5xl font-light leading-[0.86] tracking-normal text-ivory sm:text-6xl md:text-7xl lg:text-8xl">
+            Choose the type.
+            <br />
+            Find the piece.
+          </h2>
+        </ScrollReveal>
+
+        <div className="mt-10 grid gap-px bg-white/12 sm:grid-cols-2 lg:grid-cols-4">
+          {rooms.map((room, index) => (
+            <ScrollReveal key={room.href} delay={index * 0.06}>
+              <Link href={room.href} className="group grid min-h-[320px] grid-rows-[118px_1fr] bg-black p-4 transition-colors hover:bg-ivory hover:text-ink sm:min-h-[360px]">
+                <div className="relative overflow-hidden bg-ink">
+                  <Image
+                    src={room.image}
+                    alt={`${collectionTitle} ${room.label}`}
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 92vw"
+                    className="object-cover opacity-72 transition duration-[1400ms] group-hover:scale-105 group-hover:opacity-100"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.84),rgba(0,0,0,0.08)_58%)]" />
+                </div>
+                <div className="flex flex-col justify-between pt-6">
+                  <div>
+                    <div className="font-subhead text-[9px] uppercase tracking-[0.2em] text-champagne-200 transition-colors group-hover:text-ink/42">
+                      Type 0{index + 1} / {room.kicker}
+                    </div>
+                    <div className="mt-5 flex items-end justify-between gap-4">
+                      <h3 className="font-display text-[44px] font-light leading-none tracking-normal sm:text-[54px]">{room.label}</h3>
+                      <ArrowRight size={18} className="mb-1 shrink-0 transition-transform group-hover:translate-x-1" />
+                    </div>
+                    <p className="mt-5 max-w-sm text-[13px] leading-relaxed text-current/54">{room.copy}</p>
+                  </div>
+                  <div className="mt-8 border-t border-current/14 pt-4 font-subhead text-[10px] uppercase tracking-[0.18em] text-current/48">
+                    Open {room.label}
+                  </div>
+                </div>
+              </Link>
+            </ScrollReveal>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 

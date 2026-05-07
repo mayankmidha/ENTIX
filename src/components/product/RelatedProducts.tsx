@@ -1,4 +1,6 @@
 import { prisma } from '@/lib/prisma';
+import { referenceProducts } from '@/lib/reference-products';
+import { hasDatabaseUrl } from '@/lib/settings';
 import { ProductCard } from './ProductCard';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
@@ -10,8 +12,9 @@ interface RelatedProductsProps {
 
 export async function RelatedProducts({ productId, relatedSlugs, material }: RelatedProductsProps) {
   let products: any[] = [];
+  const canQueryDatabase = hasDatabaseUrl();
 
-  if (relatedSlugs.length > 0) {
+  if (canQueryDatabase && relatedSlugs.length > 0) {
     products = await prisma.product.findMany({
       where: {
         slug: { in: relatedSlugs },
@@ -22,10 +25,10 @@ export async function RelatedProducts({ productId, relatedSlugs, material }: Rel
         images: { orderBy: { position: 'asc' }, take: 2 },
       },
       take: 4,
-    });
+    }).catch(() => []);
   }
 
-  if (products.length < 4) {
+  if (canQueryDatabase && products.length < 4) {
     const existing = products.map((p) => p.id);
     const fallback = await prisma.product.findMany({
       where: {
@@ -38,8 +41,17 @@ export async function RelatedProducts({ productId, relatedSlugs, material }: Rel
       },
       orderBy: { isBestseller: 'desc' },
       take: 4 - products.length,
-    });
+    }).catch(() => []);
     products = [...products, ...fallback];
+  }
+
+  if (products.length < 4) {
+    const existing = new Set(products.map((p) => p.id));
+    const referenceFallback = referenceProducts
+      .filter((product) => product.id !== productId && !existing.has(product.id))
+      .filter((product) => !material || product.material.toLowerCase().includes(material.toLowerCase()) || product.occasion === 'gifting')
+      .slice(0, 4 - products.length);
+    products = [...products, ...referenceFallback];
   }
 
   if (products.length === 0) return null;

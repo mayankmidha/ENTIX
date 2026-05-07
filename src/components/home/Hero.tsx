@@ -6,7 +6,7 @@ import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { EntixLogo } from '@/components/brand/EntixLogo';
-import { entixImages } from '@/lib/visual-assets';
+import { entixImages, entixProductImages } from '@/lib/visual-assets';
 import { imageOrFallback, sectionCopy, type EditableSection } from '@/lib/content-sections';
 
 export function Hero({ section }: { section?: EditableSection }) {
@@ -36,6 +36,13 @@ export function Hero({ section }: { section?: EditableSection }) {
         href: primaryHref,
         cta: primaryCta,
         image: heroImage,
+        highlight: {
+          eyebrow: 'Featured piece',
+          title: 'Meher Gold Bangles',
+          copy: 'Openwork gold, styled as the first Entix reference piece.',
+          href: '/collections/bangles',
+          image: entixProductImages[1],
+        },
       },
       {
         key: 'bangles',
@@ -46,6 +53,13 @@ export function Hero({ section }: { section?: EditableSection }) {
         href: '/collections/bangles',
         cta: 'Shop bangles',
         image: entixImages.bangles,
+        highlight: {
+          eyebrow: 'Wrist focus',
+          title: 'Rukmini Bangle Set',
+          copy: 'A stacked ceremonial silhouette with high-shine surface work.',
+          href: '/collections/bangles',
+          image: entixProductImages[12],
+        },
       },
       {
         key: 'necklaces',
@@ -56,6 +70,13 @@ export function Hero({ section }: { section?: EditableSection }) {
         href: '/collections/necklaces',
         cta: 'Shop necklaces',
         image: entixImages.necklacePortrait,
+        highlight: {
+          eyebrow: 'Neckline focus',
+          title: 'Devika Layered Necklace',
+          copy: 'A soft portrait piece for layered styling and gifting direction.',
+          href: '/collections/necklaces',
+          image: entixProductImages[17],
+        },
       },
       {
         key: 'earrings',
@@ -66,6 +87,13 @@ export function Hero({ section }: { section?: EditableSection }) {
         href: '/collections/earrings',
         cta: 'Shop earrings',
         image: entixImages.portraitJewellery,
+        highlight: {
+          eyebrow: 'Face focus',
+          title: 'Sitara Diamond Studs',
+          copy: 'Light near the face, shot cleanly for scale and sparkle.',
+          href: '/collections/earrings',
+          image: entixProductImages[11],
+        },
       },
       {
         key: 'rings',
@@ -76,6 +104,13 @@ export function Hero({ section }: { section?: EditableSection }) {
         href: '/collections/rings',
         cta: 'Shop rings',
         image: entixImages.ringStudy,
+        highlight: {
+          eyebrow: 'Hand focus',
+          title: 'Jaya Cocktail Ring',
+          copy: 'A single sculptural object to anchor the hand.',
+          href: '/collections/rings',
+          image: entixProductImages[14],
+        },
       },
     ],
     [body, eyebrow, heroImage, primaryCta, primaryHref],
@@ -112,7 +147,7 @@ export function Hero({ section }: { section?: EditableSection }) {
           />
         </motion.div>
       </AnimatePresence>
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.92),rgba(0,0,0,0.48)_38%,rgba(0,0,0,0.08)_72%),linear-gradient(0deg,rgba(0,0,0,0.74),rgba(0,0,0,0)_48%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.76),rgba(0,0,0,0.42)_38%,rgba(0,0,0,0.04)_72%),linear-gradient(0deg,rgba(0,0,0,0.68),rgba(0,0,0,0)_48%)]" />
       <div className="absolute inset-y-0 left-[8%] hidden w-px bg-white/10 lg:block" />
       <div className="absolute inset-y-0 right-[34%] hidden w-px bg-white/10 lg:block" />
       <div className="absolute inset-x-0 bottom-0 h-px bg-champagne-300/45" />
@@ -149,9 +184,12 @@ export function Hero({ section }: { section?: EditableSection }) {
                 className="mt-8"
               >
                 {current.key === 'all' ? (
-                  <span className="block w-[min(88vw,760px)]">
+                  <span className="relative block w-[min(88vw,820px)]">
                     <span className="sr-only">Entix Jewellery</span>
-                    <EntixLogo variant="wordmarkWhite" priority />
+                    <span className="pointer-events-none absolute -left-10 -top-20 hidden w-[220px] opacity-[0.18] sm:block">
+                      <EntixLogo variant="mark" priority />
+                    </span>
+                    <EntixLogo variant="wordmarkWhite" priority className="relative z-10 drop-shadow-[0_24px_80px_rgba(0,0,0,0.42)]" />
                   </span>
                 ) : (
                   <span className="block font-display text-[clamp(5.4rem,18vw,15rem)] font-light leading-[0.78] tracking-normal">
@@ -193,52 +231,80 @@ export function Hero({ section }: { section?: EditableSection }) {
             transition={{ delay: 0.36, duration: 1 }}
             className="hidden lg:block"
           >
-            <div className="border border-white/14 bg-white/8 p-3 backdrop-blur">
-              <div className="space-y-px bg-white/12">
-                {slides.map((slide, index) => (
-                  <button
-                    key={slide.key}
-                    type="button"
-                    aria-label={`Show ${slide.label} slide`}
-                    onClick={() => setActive(index)}
-                    className={`group grid w-full grid-cols-[38px_1fr_auto] items-center gap-4 px-4 py-4 text-left transition-colors ${
-                      active === index ? 'bg-ivory text-ink' : 'bg-ink/72 text-ivory hover:bg-white/10'
-                    }`}
-                  >
-                    <span className="font-display text-[24px] leading-none text-current/42">{String(index + 1).padStart(2, '0')}</span>
-                    <span className="font-subhead text-[10px] uppercase tracking-[0.18em]">{slide.label}</span>
-                    <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
-                  </button>
-                ))}
+            <Link href={current.highlight.href} className="group block">
+              <div className="border border-white/14 bg-ivory p-3 text-ink shadow-[0_40px_120px_rgba(0,0,0,0.34)]">
+                <div className="relative aspect-[4/5] overflow-hidden bg-ink">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`${current.key}-highlight`}
+                      className="absolute inset-0"
+                      initial={{ opacity: 0, scale: 1.06 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 1.03 }}
+                      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      <Image
+                        src={current.highlight.image}
+                        alt={current.highlight.title}
+                        fill
+                        sizes="340px"
+                        className="object-cover transition duration-[1400ms] group-hover:scale-105"
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                  <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.62),rgba(0,0,0,0)_48%)]" />
+                  <div className="absolute left-4 top-4 border border-white/40 bg-black/20 px-3 py-1.5 font-subhead text-[9px] uppercase tracking-[0.18em] text-champagne-200 backdrop-blur">
+                    {String(active + 1).padStart(2, '0')} / 05
+                  </div>
+                  <div className="absolute inset-x-4 bottom-4 text-ivory">
+                    <div className="font-subhead text-[9px] uppercase tracking-[0.18em] text-champagne-200">{current.highlight.eyebrow}</div>
+                    <div className="mt-3 font-display text-[34px] font-light leading-[0.9] tracking-normal">{current.highlight.title}</div>
+                  </div>
+                </div>
+                <div className="grid gap-5 px-2 py-5">
+                  <p className="text-[13px] leading-relaxed text-ink/54">{current.highlight.copy}</p>
+                  <div className="inline-flex items-center gap-2 font-subhead text-[10px] uppercase tracking-[0.18em] text-ink/62">
+                    View room <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
+                  </div>
+                </div>
               </div>
-              <div className="mt-3 h-px overflow-hidden bg-white/12">
-                <motion.div
-                  key={current.key}
-                  className="h-full bg-champagne-300"
-                  initial={{ width: '0%' }}
-                  animate={{ width: '100%' }}
-                  transition={{ duration: 5.2, ease: 'linear' }}
-                />
-              </div>
-              <div className="mt-5 grid grid-cols-5 gap-1">
-                {slides.map((slide, index) => (
-                  <button
-                    key={`${slide.key}-dot`}
-                    type="button"
-                    aria-label={`Go to ${slide.label}`}
-                    onClick={() => setActive(index)}
-                    className={`h-1 transition-colors ${active === index ? 'bg-champagne-300' : 'bg-white/18 hover:bg-white/42'}`}
-                  />
-                ))}
-              </div>
-            </div>
+            </Link>
           </motion.div>
         </motion.div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/14 pt-5 font-subhead text-[9px] uppercase tracking-[0.22em] text-ivory/48">
-          <span>All jewellery</span>
-          <span>Bangles / Necklaces / Earrings / Rings</span>
-          <span>Modern ritual objects</span>
+        <div className="grid gap-4 border-t border-white/14 pt-5 font-subhead text-[9px] uppercase tracking-[0.22em] text-ivory/48 lg:grid-cols-[auto_1fr_auto] lg:items-center">
+          <span>{String(active + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}</span>
+          <div className="grid gap-2 sm:grid-cols-5">
+            {slides.map((slide, index) => {
+              const isActive = index === active;
+
+              return (
+                <button
+                  key={slide.key}
+                  type="button"
+                  aria-label={`Show ${slide.label}`}
+                  onClick={() => setActive(index)}
+                  className="group text-left"
+                >
+                  <span className={isActive ? 'text-champagne-200' : 'text-ivory/42 group-hover:text-ivory/76'}>
+                    {slide.label}
+                  </span>
+                  <span className="mt-2 block h-px overflow-hidden bg-white/12">
+                    {isActive && (
+                      <motion.span
+                        key={slide.key}
+                        className="block h-full bg-champagne-300"
+                        initial={{ width: '0%' }}
+                        animate={{ width: '100%' }}
+                        transition={{ duration: 5.2, ease: 'linear' }}
+                      />
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <span className="sm:text-right">{current.label}</span>
         </div>
       </div>
     </section>

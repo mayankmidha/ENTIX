@@ -130,7 +130,7 @@ export function Header({
           ? "border-champagne-500/28 bg-white/94 shadow-[0_14px_50px_rgba(0,0,0,0.06)] backdrop-blur-2xl"
           : "border-ink/5 bg-ivory/88 backdrop-blur-xl"
       )} onMouseLeave={() => setShopOpen(false)}>
-        <div className="relative mx-auto grid h-[74px] max-w-[1500px] grid-cols-[44px_minmax(104px,1fr)_auto] items-center gap-2 px-4 sm:h-20 sm:grid-cols-[52px_minmax(128px,1fr)_auto] sm:px-6 lg:flex lg:justify-between lg:gap-8 lg:px-12">
+        <div className="relative mx-auto grid h-[70px] max-w-[1500px] grid-cols-[44px_minmax(96px,1fr)_92px] items-center gap-1 px-3 sm:h-20 sm:grid-cols-[52px_minmax(128px,1fr)_auto] sm:gap-2 sm:px-6 lg:flex lg:justify-between lg:gap-8 lg:px-12">
           {/* Mobile menu toggle */}
           <button
             type="button"
@@ -142,7 +142,7 @@ export function Header({
           </button>
 
           {/* Logo */}
-          <Link href="/" aria-label="Entix Jewellery home" className="w-[104px] justify-self-center sm:w-[140px] lg:absolute lg:left-1/2 lg:w-[150px] lg:-translate-x-1/2">
+          <Link href="/" aria-label="Entix Jewellery home" className="w-[96px] justify-self-center sm:w-[140px] lg:absolute lg:left-1/2 lg:w-[150px] lg:-translate-x-1/2">
             <EntixLogo priority />
           </Link>
 
@@ -177,7 +177,7 @@ export function Header({
                 </div>
               )}
             </div>
-            {NAV_LINKS.slice(1, 4).map((link) => (
+            {NAV_LINKS.slice(1, 5).map((link) => (
               <Link key={link.href} href={link.href} className={desktopNavClass}>
                 {link.label}
               </Link>
@@ -190,14 +190,14 @@ export function Header({
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-1 justify-self-end sm:gap-4 lg:gap-6">
+          <div className="flex items-center justify-end gap-0 justify-self-end sm:gap-4 lg:gap-6">
             <Link href="/gift-guide" className={cn('hidden xl:block', desktopNavClass)}>
               Gifts
             </Link>
             <Link href="/contact" className={cn('hidden xl:block', desktopNavClass)}>
               Contact
             </Link>
-            <Link href="/search" aria-label="Search Entix" className="flex h-11 w-9 items-center justify-center transition-colors hover:text-champagne-500 sm:w-11">
+            <Link href="/search" aria-label="Search Entix" className="flex h-10 w-10 items-center justify-center transition-colors hover:text-champagne-500 sm:h-11 sm:w-11">
               <Search size={18} />
             </Link>
             <Link href="/wishlist" aria-label="Wishlist" className="hidden h-11 w-11 items-center justify-center transition-colors hover:text-champagne-500 sm:flex">
@@ -208,7 +208,7 @@ export function Header({
             </Link>
             
             <CartDrawer>
-              <button type="button" aria-label="Open cart" className="group relative flex h-11 w-9 items-center justify-center transition-colors hover:text-champagne-500 sm:w-11">
+              <button type="button" aria-label="Open cart" className="group relative flex h-10 w-10 items-center justify-center transition-colors hover:text-champagne-500 sm:h-11 sm:w-11">
                 <ShoppingBag size={18} />
                 {totalItems() > 0 && (
                   <span className="absolute -top-1 -right-1 h-4 w-4 bg-champagne-500 text-ink text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-ivory group-hover:scale-110 transition-transform">

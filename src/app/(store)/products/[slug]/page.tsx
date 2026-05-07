@@ -16,6 +16,7 @@ import { RelatedProducts } from '@/components/product/RelatedProducts';
 import { WishlistButton } from '@/components/product/WishlistButton';
 import { getCanonicalBaseUrl } from '@/lib/site-url';
 import { getSiteSettings, hasDatabaseUrl } from '@/lib/settings';
+import { getReferenceProductBySlug } from '@/lib/reference-products';
 import { entixPdpImages, normalizeEntixImage } from '@/lib/visual-assets';
 import {
   imageOrFallback,
@@ -41,10 +42,12 @@ async function getProductSections() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await prisma.product.findUnique({
-    where: { slug },
-    include: { images: { orderBy: { position: 'asc' }, take: 1 } }
-  });
+  const product = hasDatabaseUrl()
+    ? await prisma.product.findUnique({
+        where: { slug },
+        include: { images: { orderBy: { position: 'asc' }, take: 1 } }
+      }).catch(() => null) || getReferenceProductBySlug(slug)
+    : getReferenceProductBySlug(slug);
 
   if (!product) return {};
 
@@ -79,28 +82,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
   
-  const product = await prisma.product.findUnique({
-    where: { slug },
-    include: { 
-      images: { orderBy: { position: 'asc' } },
-      variants: { orderBy: { title: 'asc' } },
-      inventory: true,
-    }
-  });
+  const dbProduct = hasDatabaseUrl()
+    ? await prisma.product.findUnique({
+        where: { slug },
+        include: { 
+          images: { orderBy: { position: 'asc' } },
+          variants: { orderBy: { title: 'asc' } },
+          inventory: true,
+        }
+      }).catch(() => null)
+    : null;
+  const product = dbProduct || getReferenceProductBySlug(slug);
 
   if (!product) return notFound();
 
   const [approvedReviews, ratingAgg, settings, productSections] = await Promise.all([
-    prisma.review.findMany({
-      where: { productId: product.id, status: 'approved' },
-      orderBy: { createdAt: 'desc' },
-      take: 50,
-    }),
-    prisma.review.aggregate({
-      where: { productId: product.id, status: 'approved' },
-      _avg: { rating: true },
-      _count: { _all: true },
-    }),
+    dbProduct
+      ? prisma.review.findMany({
+          where: { productId: product.id, status: 'approved' },
+          orderBy: { createdAt: 'desc' },
+          take: 50,
+        })
+      : Promise.resolve([]),
+    dbProduct
+      ? prisma.review.aggregate({
+          where: { productId: product.id, status: 'approved' },
+          _avg: { rating: true },
+          _count: { _all: true },
+        })
+      : Promise.resolve({ _avg: { rating: null }, _count: { _all: 0 } }),
     getSiteSettings(),
     getProductSections(),
   ]);
@@ -232,7 +242,7 @@ export default async function ProductPage({ params }: Props) {
                     <p className="mt-4 font-display text-[22px] italic leading-snug text-champagne-600">{product.subtitle}</p>
                   )}
                   <div className="mt-5 flex flex-wrap items-center gap-3 font-subhead text-[10px] uppercase tracking-[0.14em] text-ink/42">
-                    <ProductSignal label={totalReviews > 0 ? `${averageRating.toFixed(1)} rating` : 'Reviews open'} />
+                    <ProductSignal label={totalReviews > 0 ? `${averageRating.toFixed(1)} rating` : 'Concierge checked'} />
                     <ProductSignal label={product.isBestseller ? 'Most loved' : product.isNewArrival ? 'New piece' : 'Entix edit'} />
                     {product.sku && <ProductSignal label={`SKU ${product.sku}`} />}
                   </div>
